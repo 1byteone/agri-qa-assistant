@@ -1,0 +1,20 @@
+=== 山东 2023 endpoint ===
+province=山东 provinceFull=山东省 year=2023
+total_production=168089500.0 total_area=229288800.0
+n_crops=27
+sorted desc: True
+pct sum: 100.0
+aggregates present: []
+top_crop == crops[0]: True
+top_crop: {"crop": "蔬菜", "category": "经济作物", "production": 92724000.0, "area": 23683800.0, "pct_of_total": 55.2}
+first 5 crops: [["蔬菜", 92724000.0, 55.2], ["冬小麦", 26738000.0, 15.9], ["小麦", 26737600.0, 15.9], ["苹果", 10398200.0, 6.2], ["花生", 2768100.0, 1.6]]
+
+=== 山东 1999 ===
+crops len=0, top_crop=None, total_prod=0
+
+=== /api/dashboard province ===
+n_province=62
+all have top_crop key: True
+sample: {"year": 2023, "province": "河南", "provinceFull": "河南", "production": 337188940.1, "area": 654470500.0, "top_crop": "蔬菜"}
+null top_crop count: 9
+top_crop values sample: [["河南", "蔬菜"], ["山东", "蔬菜"], ["黑龙江", "玉米"], ["江苏", "蔬菜"], ["安徽", "蔬菜"], ["广西", "甘蔗"], ["河北", "蔬菜"], ["湖南", "蔬菜"]]

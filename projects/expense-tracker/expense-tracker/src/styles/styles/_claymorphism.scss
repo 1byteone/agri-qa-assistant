@@ -1,0 +1,116 @@
+/* ============================================================
+   CLAYMORPHISM — 3D 粘土拟态
+   核心特征: 3D 粘土质感、圆润大圆角、柔和投影、暖色调、立体感
+   ============================================================ */
+
+[data-style="claymorphism"] {
+  --stl-radius: 18px;
+  --stl-border-width: 0px;
+  --stl-border-style: solid;
+  --stl-font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  --stl-font-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  --stl-letter-spacing: 0;
+  --stl-line-height: 1.5;
+  --stl-shadow: 0 6px 12px rgba(0, 0, 0, 0.1), 0 12px 24px rgba(0, 0, 0, 0.06);
+  --stl-chip-style: clay;
+  --stl-btn-style: clay;
+  --stl-header-border: none;
+  --stl-decoration: none;
+
+  .section, .header {
+    border-radius: 18px;
+    background: linear-gradient(145deg, var(--pal-surface), var(--pal-surface-alt)) !important;
+  }
+
+  .chip {
+    border-radius: 14px;
+    background: linear-gradient(145deg, var(--pal-surface-alt), var(--pal-surface)) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .btn-submit {
+    border-radius: 14px;
+    background: linear-gradient(145deg, var(--pal-text-main), #333) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-transform: none;
+    letter-spacing: 0.02em;
+  }
+
+  .btn-outline {
+    border-radius: 14px;
+    background: linear-gradient(145deg, var(--pal-surface), var(--pal-surface-alt));
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .btn-demo {
+    border-radius: 14px;
+    background: linear-gradient(145deg, var(--pal-primary), color-mix(in srgb, var(--pal-primary), black 8%));
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .form-control {
+    border-radius: 14px;
+    background: linear-gradient(145deg, var(--pal-surface-alt), var(--pal-surface));
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+  }
+
+  .section-title {
+    border-bottom: none;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+  }
+
+  .record {
+    border-bottom: none;
+    border-radius: 12px;
+    margin: 4px 0;
+    padding: 12px;
+    transition: all 0.2s;
+    &:hover { background: linear-gradient(145deg, var(--pal-surface-alt), var(--pal-surface)); }
+  }
+
+  .stat-item {
+    border-bottom: none;
+  }
+
+  .stat-total {
+    border-top: none;
+  }
+
+  .avatar-trigger {
+    border-radius: 14px;
+    background: linear-gradient(145deg, var(--pal-surface), var(--pal-surface-alt));
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .avatar-preview { border-radius: 12px; }
+  .avatar-option { border-radius: 12px; }
+  .avatar-panel { border-radius: 18px; }
+
+  .palette-swatch { border-radius: 50%; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); }
+  .style-swatch { border-radius: 12px; }
+
+  .guide-banner {
+    border-radius: 14px;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .toast {
+    border-radius: 14px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  .modal {
+    border-radius: 18px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  }
+
+  .modal-overlay {
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  .insight-text {
+    border-radius: 12px;
+  }
+}

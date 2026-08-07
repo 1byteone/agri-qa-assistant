@@ -1,0 +1,57 @@
+/* ============================================================
+   表单输入 — 文本、数字、日期、选择
+   ============================================================ */
+
+.form-group {
+  margin-bottom: calc(var(--grid-base) * 2);
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: calc(var(--grid-base) * 1);
+  }
+}
+
+.form-control {
+  width: 100%;
+  padding: calc(var(--grid-base) * 1) calc(var(--grid-base) * 1.5);
+  font-size: 14px;
+  border: var(--stl-border);
+  background: var(--surface);
+  color: var(--text-main);
+  font-family: inherit;
+  transition: all 0.2s ease;
+  border-radius: var(--radius);
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-soft);
+  }
+}
+
+.month-filter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: none;
+
+  input {
+    border: var(--stl-border);
+    background: var(--surface);
+    color: var(--text-main);
+    padding: 3px 5px;
+    font: inherit;
+    border-radius: var(--radius);
+
+    &:focus {
+      outline: 2px solid var(--primary);
+      border-color: var(--primary);
+    }
+  }
+}

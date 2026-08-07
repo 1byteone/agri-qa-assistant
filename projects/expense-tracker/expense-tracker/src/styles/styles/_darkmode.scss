@@ -1,0 +1,111 @@
+/* ============================================================
+   DARK MODE — 暗黑模式
+   核心特征: 深色背景、浅色文字、低饱和强调色、减少蓝光
+   ============================================================ */
+
+[data-style="darkmode"] {
+  --stl-radius: 6px;
+  --stl-border-width: 1px;
+  --stl-border-style: solid;
+  --stl-font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  --stl-font-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  --stl-letter-spacing: 0;
+  --stl-line-height: 1.5;
+  --stl-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --stl-chip-style: solid;
+  --stl-btn-style: solid;
+  --stl-header-border: 2px solid var(--pal-text-main);
+  --stl-decoration: none;
+
+  body {
+    background: #0d0d0d !important;
+    color: #e0e0e0;
+  }
+
+  .section, .header {
+    background: #1a1a1a !important;
+    border-color: #333;
+  }
+
+  .chip {
+    background: #2a2a2a !important;
+    color: #e0e0e0;
+    border-color: #444;
+    &.active { background: var(--pal-primary) !important; color: #fff; }
+  }
+
+  .form-control {
+    background: #2a2a2a !important;
+    color: #e0e0e0;
+    border-color: #444;
+    &:focus { border-color: var(--pal-primary); }
+  }
+
+  .month-filter input {
+    background: #2a2a2a !important;
+    color: #e0e0e0;
+    border-color: #444;
+  }
+
+  .btn-submit {
+    background: #333;
+    border: 1px solid #555;
+    &:hover { background: #444; }
+  }
+
+  .btn-outline {
+    border-color: #444;
+    color: #999;
+    &:hover { border-color: #fff; color: #fff; }
+  }
+
+  .btn-demo {
+    background: var(--pal-primary);
+    &:hover { opacity: 0.8; }
+  }
+
+  .avatar-trigger {
+    border-color: #444;
+    background: #1a1a1a;
+  }
+
+  .avatar-preview { border-color: #444; }
+  .avatar-option { border-color: #444; background: #2a2a2a; }
+  .avatar-panel { border-color: #444; background: #1a1a1a; }
+
+  .palette-swatch { border-color: #555; }
+  .style-swatch { border-color: #555; }
+
+  .guide-banner {
+    border-color: var(--pal-primary);
+    background: rgba(0, 0, 0, 0.3) !important;
+  }
+
+  .toast {
+    background: #333;
+    color: #e0e0e0;
+  }
+
+  .modal {
+    background: #1a1a1a;
+    border-color: #444;
+  }
+
+  .modal-overlay { background: rgba(0, 0, 0, 0.7); }
+
+  .insight-text {
+    background: #2a2a2a;
+    color: #999;
+  }
+
+  .record {
+    border-bottom-color: #333;
+    &:hover { background: #222; }
+  }
+
+  .stat-item { border-bottom-color: #333; }
+  .stat-total { border-top-color: #555; }
+
+  .empty, .empty-text { color: #666; }
+  .empty svg { opacity: 0.3; }
+}

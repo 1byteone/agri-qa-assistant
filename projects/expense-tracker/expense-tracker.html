@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日常开销记账簿</title>
+<style>
+/* ============================================================
+   THEME SYSTEM — 双层架构: Palette (21 色) + Style (20 种设计风格)
+   ============================================================ */
+
+/* ===== Palette 变量 (颜色, data-palette) ===== */
+:root {
+  --pal-primary: #0066ff;
+  --pal-primary-soft: #eaf2ff;
+  --pal-bg: #f6f8fb;
+  --pal-surface: #fff;
+  --pal-surface-alt: #f8fafc;
+  --pal-text-main: #111827;
+  --pal-text-muted: #667085;
+  --pal-border: #cfd6e0;
+  --pal-success: #138a63;
+  --pal-warning: #b7791f;
+  --pal-danger: #dc2626;
+}
+
+/* ===== Style 变量 (设计风格, data-style) ===== */
+:root {
+  --stl-radius: 4px;
+  --stl-border-width: 1px;
+  --stl-border-style: solid;
+  --stl-shadow: 0 10px 28px rgba(17,24,39,0.06);
+  --stl-font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+  --stl-font-heading: var(--stl-font-ui);
+  --stl-letter-spacing: 0;
+  --stl-line-height: 1.5;
+  --stl-transition-speed: 0.25s;
+  --stl-chip-style: solid;
+  --stl-btn-style: solid;
+  --stl-header-border: 2px solid var(--pal-text-main);
+  --stl-decoration: none;
+  --stl-border-color: var(--pal-border);
+  --stl-border: var(--stl-border-width) var(--stl-border-style) var(--pal-border);
+}
+
+/* 兼容层：旧变量名映射到新变量 */
+:root {
+  --grid-base: 8px;
+  --primary: var(--pal-primary);
+  --primary-soft: var(--pal-primary-soft);
+  --bg: var(--pal-bg);
+  --surface: var(--pal-surface);
+  --surface-alt: var(--pal-surface-alt);
+  --text-main: var(--pal-text-main);
+  --text-muted: var(--pal-text-muted);
+  --border: var(--pal-border);
+  --success: var(--pal-success);
+  --warning: var(--pal-warning);
+  --danger: var(--pal-danger);
+  --radius: var(--stl-radius);
+  --shadow: var(--stl-shadow);
+  --font-ui: var(--stl-font-ui);
+  --transition-speed: var(--stl-transition-speed);
+}
+/* Palette overrides: each palette resets the color tokens */
+[data-palette="ocean"]    { --pal-primary:#0369a1; --pal-primary-soft:#e0f2fe; --pal-bg:#f0f9ff; --pal-surface:#fff; --pal-surface-alt:#f0f9ff; --pal-text-main:#0c4a6e; --pal-text-muted:#0284c7; --pal-border:#bae6fd; }
+[data-palette="midnight"] { --pal-primary:#818cf8; --pal-primary-soft:#1e1b4b; --pal-bg:#0f172a; --pal-surface:#1e293b; --pal-surface-alt:#334155; --pal-text-main:#f1f5f9; --pal-text-muted:#94a3b8; --pal-border:#334155; }
+[data-palette="warm"]     { --pal-primary:#d97706; --pal-primary-soft:#fef3cd; --pal-bg:#fef9f3; --pal-surface:#fff8f0; --pal-surface-alt:#fdf0e0; --pal-text-main:#451a03; --pal-text-muted:#92400e; --pal-border:#e5d5c8; }
+[data-palette="mint"]     { --pal-primary:#059669; --pal-primary-soft:#d1fae5; --pal-bg:#ecfdf5; --pal-surface:#fff; --pal-surface-alt:#f0fdf4; --pal-text-main:#064e3b; --pal-text-muted:#047857; --pal-border:#a7f3d0; }
+[data-palette="rose"]     { --pal-primary:#be185d; --pal-primary-soft:#ffe4e6; --pal-bg:#fff1f2; --pal-surface:#fff; --pal-surface-alt:#fff5f7; --pal-text-main:#831843; --pal-text-muted:#be185d; --pal-border:#fda4af; }
+[data-palette="lavender"] { --pal-primary:#7c3aed; --pal-primary-soft:#ede9fe; --pal-bg:#f5f3ff; --pal-surface:#fff; --pal-surface-alt:#faf5ff; --pal-text-main:#2e1065; --pal-text-muted:#6d28d9; --pal-border:#c4b5fd; }
+[data-palette="forest"]   { --pal-primary:#15803d; --pal-primary-soft:#dcfce7; --pal-bg:#f0fdf4; --pal-surface:#fff; --pal-surface-alt:#f0fdf4; --pal-text-main:#14532d; --pal-text-muted:#166534; --pal-border:#bbf7d0; }
+[data-palette="cherry"]   { --pal-primary:#be123c; --pal-primary-soft:#ffe4e6; --pal-bg:#fff5f5; --pal-surface:#fff; --pal-surface-alt:#fff8f8; --pal-text-main:#7f1d1d; --pal-text-muted:#b91c1c; --pal-border:#fecaca; }
+[data-palette="gold"]     { --pal-primary:#a16207; --pal-primary-soft:#fef9c3; --pal-bg:#fefce8; --pal-surface:#fffbeb; --pal-surface-alt:#fff7ed; --pal-text-main:#451a03; --pal-text-muted:#a16207; --pal-border:#fde68a; }
+[data-palette="coral"]    { --pal-primary:#e8590c; --pal-primary-soft:#fff0e0; --pal-bg:#fff7ed; --pal-surface:#fff; --pal-surface-alt:#fff5ee; --pal-text-main:#431407; --pal-text-muted:#c2410c; --pal-border:#fed7aa; }
+[data-palette="sage"]     { --pal-primary:#5a675a; --pal-primary-soft:#e8ebe8; --pal-bg:#f5f7f5; --pal-surface:#fff; --pal-surface-alt:#f0f2f0; --pal-text-main:#2c332c; --pal-text-muted:#6b7c6b; --pal-border:#c4cec4; }
+[data-palette="sky"]      { --pal-primary:#0284c7; --pal-primary-soft:#e0f2fe; --pal-bg:#f0f9ff; --pal-surface:#fff; --pal-surface-alt:#f0f9ff; --pal-text-main:#075985; --pal-text-muted:#0369a1; --pal-border:#bae6fd; }
+[data-palette="charcoal"] { --pal-primary:#64748b; --pal-primary-soft:#f1f5f9; --pal-bg:#f8fafc; --pal-surface:#fff; --pal-surface-alt:#f8fafc; --pal-text-main:#1e293b; --pal-text-muted:#64748b; --pal-border:#cbd5e1; }
+[data-palette="berry"]    { --pal-primary:#9d174d; --pal-primary-soft:#fce7f3; --pal-bg:#fdf2f8; --pal-surface:#fff; --pal-surface-alt:#fdf8fb; --pal-text-main:#500724; --pal-text-muted:#be185d; --pal-border:#f9a8d4; }
+[data-palette="peach"]    { --pal-primary:#ea580c; --pal-primary-soft:#fff0e8; --pal-bg:#fff8f0; --pal-surface:#fff; --pal-surface-alt:#fff5ee; --pal-text-main:#431407; --pal-text-muted:#c2410c; --pal-border:#fed7aa; }
+[data-palette="teal"]     { --pal-primary:#0d9488; --pal-primary-soft:#ccfbf1; --pal-bg:#f0fdfa; --pal-surface:#fff; --pal-surface-alt:#f0fdfa; --pal-text-main:#134e4a; --pal-text-muted:#0f766e; --pal-border:#99f6e4; }
+[data-palette="indigo"]   { --pal-primary:#4f46e5; --pal-primary-soft:#eef2ff; --pal-bg:#f5f3ff; --pal-surface:#fff; --pal-surface-alt:#faf5ff; --pal-text-main:#1e1b4b; --pal-text-muted:#4338ca; --pal-border:#c7d2fe; }
+[data-palette="monochrome"]{ --pal-primary:#374151; --pal-primary-soft:#f3f4f6; --pal-bg:#fafafa; --pal-surface:#fff; --pal-surface-alt:#f9fafb; --pal-text-main:#111827; --pal-text-muted:#6b7280; --pal-border:#e5e7eb; }
+[data-palette="neon"]     { --pal-primary:#22d3ee; --pal-primary-soft:#cffafe; --pal-bg:#0a0e1a; --pal-surface:#111827; --pal-surface-alt:#1e293b; --pal-text-main:#f0f9ff; --pal-text-muted:#67e8f9; --pal-border:#164e63; }
+[data-palette="pastel"]   { --pal-primary:#a78bfa; --pal-primary-soft:#ede9fe; --pal-bg:#f5f3ff; --pal-surface:#fff; --pal-surface-alt:#faf5ff; --pal-text-main:#3b0764; --pal-text-muted:#7c3aed; --pal-border:#ddd6fe; }
+
+/* ============================================================
+   BASE STYLES
+   ============================================================ */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-ui); background: var(--bg); color: var(--text-main); line-height: 1.5; padding: calc(var(--grid-base) * 4); transition: background var(--transition-speed) ease, color var(--transition-speed) ease; }
+.container { max-width: 960px; margin: 0 auto; display: grid; gap: calc(var(--grid-base) * 3); }
+
+/* Header */
+.header { text-align: left; border-bottom: 2px solid var(--text-main); padding-bottom: calc(var(--grid-base) * 2); animation: slideDown 0.4s ease-out; position: relative; background: var(--surface); box-shadow: var(--shadow); border-radius: var(--radius); }
+.header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; display: inline-block; }
+.header .subtitle { font-size: 14px; color: var(--text-muted); margin-top: 4px; animation: fadeIn 0.5s ease-out 0.1s both; }
+.status-badge { position: absolute; right: 0; top: 50%; transform: translateY(-50%); font-size: 11px; padding: 2px 8px; background: var(--primary-soft); border-radius: 999px; color: var(--primary); font-weight: 600; opacity: 0; transition: opacity 0.3s; }
+.status-badge.show { opacity: 1; }
+
+/* Profile / Avatar */
+.profile-bar { margin-top: 16px; position: relative; max-width: 420px; }
+.avatar-trigger { width: 100%; display: flex; align-items: center; gap: 12px; padding: 8px 10px; border: var(--stl-border); border-radius: var(--radius); background: var(--surface); color: var(--text-main); cursor: pointer; text-align: left; transition: border-color 0.2s, box-shadow 0.2s; }
+.avatar-trigger:hover, .avatar-trigger:focus-visible { border-color: var(--primary); outline: none; box-shadow: 0 0 0 2px rgba(0,102,255,0.12); }
+.avatar-preview { width: 42px; height: 42px; flex: 0 0 42px; display: grid; place-items: center; border: var(--stl-border); border-radius: var(--radius); background: var(--surface-alt); overflow: hidden; }
+.avatar-image { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.avatar-image svg { width: 100%; height: 100%; display: block; }
+.avatar-copy { display: grid; gap: 2px; flex: 1; }
+.avatar-copy strong { font-size: 13px; }
+.avatar-copy small { color: var(--text-muted); font-size: 11px; }
+.avatar-chevron { width: 16px; height: 16px; transition: transform 0.2s ease; }
+.avatar-trigger[aria-expanded="true"] .avatar-chevron { transform: rotate(180deg); }
+.avatar-panel { margin-top: 8px; padding: 12px; border: var(--stl-border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); animation: fadeIn 0.2s ease-out; }
+.avatar-panel[hidden] { display: none; }
+.avatar-panel-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.avatar-close { border: 0; background: transparent; color: var(--text-muted); cursor: pointer; font-size: 11px; padding: 2px 4px; }
+.avatar-license { margin-top: 10px; font-size: 10px; color: var(--text-muted); text-align: center; }
+.avatar-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+.avatar-option { min-width: 0; aspect-ratio: 1; border: var(--stl-border); border-radius: var(--radius); background: var(--surface-alt); cursor: pointer; padding: 2px; transition: border-color 0.2s, transform 0.2s, background 0.2s; }
+.avatar-option:hover, .avatar-option:focus-visible { border-color: var(--primary); transform: translateY(-2px); outline: none; }
+.avatar-option.selected { border: 2px solid var(--primary); background: var(--primary-soft); }
+
+/* Palette + Style selector bars */
+.palette-bar { display: flex; align-items: center; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+.palette-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-right: 4px; }
+.palette-swatch { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border); cursor: pointer; transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s; position: relative; }
+.palette-swatch:hover { transform: scale(1.15); }
+.palette-swatch:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.palette-swatch.active { border-color: var(--text-main); box-shadow: 0 0 0 2px var(--primary-soft); transform: scale(1.15); }
+.palette-swatch::after { content: attr(data-name); position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); font-size: 9px; white-space: nowrap; color: var(--text-muted); opacity: 0; pointer-events: none; transition: opacity 0.15s; }
+.palette-swatch:hover::after { opacity: 1; }
+.palette-name-display { margin-left: 8px; font-size: 11px; color: var(--text-muted); }
+
+.style-bar { display: flex; align-items: center; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+.style-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-right: 4px; }
+.style-swatch { width: 58px; height: 24px; border: 2px solid var(--border); border-radius: 4px; cursor: pointer; transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s; position: relative; display: inline-flex; align-items: center; justify-content: center; overflow: hidden; }
+.style-swatch:hover { transform: scale(1.08); z-index: 1; }
+.style-swatch:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.style-swatch.active { border-color: var(--text-main); box-shadow: 0 0 0 2px var(--primary-soft); transform: scale(1.08); z-index: 1; }
+.style-swatch-label { font-size: 8px; font-weight: 700; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); letter-spacing: 0.04em; pointer-events: none; white-space: nowrap; }
+.style-name-display { margin-left: 8px; font-size: 11px; color: var(--text-muted); }
+
+/* Layout grid */
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: calc(var(--grid-base) * 3); animation: slideUp 0.5s ease-out 0.2s both; }
+@media (max-width: 768px) { .grid { grid-template-columns: 1fr; } .avatar-grid { grid-template-columns: repeat(3, 1fr); } }
+
+/* Sections */
+.section { border: var(--stl-border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); padding: calc(var(--grid-base) * 2); position: relative; animation: fadeIn 0.6s ease-out 0.3s both; }
+.section-title { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: calc(var(--grid-base) * 2); border-bottom: var(--stl-border-width) var(--stl-border-style) var(--pal-border); padding-bottom: calc(var(--grid-base) * 1); }
+.stats-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.month-filter { display: flex; align-items: center; gap: 6px; color: var(--text-muted); font-size: 10px; letter-spacing: 0.04em; text-transform: none; }
+.month-filter input { border: var(--stl-border); background: var(--surface); color: var(--text-main); padding: 3px 5px; font: inherit; border-radius: var(--radius); }
+.month-filter input:focus { outline: 2px solid var(--primary); border-color: var(--primary); }
+
+/* Form */
+.form-group { margin-bottom: calc(var(--grid-base) * 2); }
+.form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-main); margin-bottom: calc(var(--grid-base) * 1); }
+.form-control { width: 100%; padding: calc(var(--grid-base) * 1) calc(var(--grid-base) * 1.5); font-size: 14px; border: var(--stl-border); background: var(--surface); color: var(--text-main); font-family: inherit; transition: all 0.2s ease; border-radius: var(--radius); }
+.form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-soft); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { font-size: 12px; padding: 6px 12px; border: var(--stl-border); cursor: pointer; transition: all 0.2s ease; position: relative; overflow: hidden; display: flex; align-items: center; gap: 6px; border-radius: var(--radius); background: var(--surface-alt); color: var(--text-main); }
+.chip:hover { transform: translateY(-1px); }
+.chip.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.chip svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+.chip.active svg { stroke: #fff; }
+
+.btn-submit { width: 100%; padding: 12px; font-size: 14px; font-weight: 700; background: var(--text-main); color: #fff; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s ease; position: relative; overflow: hidden; border-radius: var(--radius); }
+.btn-submit:hover { opacity: 0.9; transform: translateY(-1px); }
+
+/* Stats */
+.stat-item { display: flex; justify-content: space-between; font-size: 13px; padding: 8px 0; border-bottom: 1px dashed var(--border); opacity: 0; animation: slideInLeft 0.4s ease-out forwards; }
+.stat-label { color: var(--text-muted); }
+.stat-value { font-weight: 700; font-variant-numeric: tabular-nums; }
+.stat-total { font-size: 16px; margin-top: 12px; padding-top: 12px; border-top: 2px solid var(--text-main); font-weight: 700; opacity: 0; animation: slideInLeft 0.4s ease-out 0.2s both; }
+.trend-indicator { font-size: 11px; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-left: 6px; }
+.trend-up { color: var(--success); background: var(--surface-alt); }
+.trend-down { color: var(--warning); background: var(--surface-alt); }
+
+/* Record list */
+.record-list { list-style: none; max-height: 350px; overflow-y: auto; font-size: 13px; }
+.record { display: grid; grid-template-columns: 36px 1fr 80px 56px; gap: 12px; padding: 10px 0; border-bottom: var(--stl-border-width) var(--stl-border-style) var(--pal-border); align-items: center; opacity: 0; transform: translateX(20px); animation: slideInRight 0.4s ease-out forwards; transition: all 0.2s; }
+.record:first-child { border-top: var(--stl-border-width) var(--stl-border-style) var(--pal-border); }
+.record:hover { background: var(--surface-alt); transform: translateX(2px); }
+.record-icon { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; }
+.record-icon svg { width: 24px; height: 24px; stroke: var(--text-muted); stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.btn-del svg, .btn-edit svg { width: 15px; height: 15px; display: block; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.record-cat { font-weight: 600; }
+.record-note { font-weight: 400; color: var(--text-muted); }
+.record-actions { display: flex; justify-content: flex-end; gap: 4px; }
+.record-meta { font-size: 11px; color: var(--text-muted); font-weight: 400; }
+.record-amount { text-align: right; font-variant-numeric: tabular-nums; }
+.btn-del { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 14px; padding: 2px; transition: color 0.2s, background 0.2s; border-radius: 4px; }
+.btn-del:hover { color: var(--danger); background: rgba(220,38,38,0.08); transform: scale(1.1); }
+.btn-edit { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 2px; border-radius: 4px; transition: color 0.2s, background 0.2s; }
+.btn-edit:hover { color: var(--primary); background: var(--primary-soft); }
+.empty { text-align: center; color: var(--text-muted); font-size: 12px; padding: calc(var(--grid-base) * 6) 0; animation: fadeIn 0.6s ease-out; }
+.empty svg { display: block; margin: 0 auto 16px; opacity: 0.5; animation: pulse 2s infinite; }
+.empty-text { font-size: 14px; color: var(--text-muted); margin-top: 8px; font-weight: 500; }
+
+/* Footer actions */
+.footer-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 16px; border-top: var(--stl-border-width) var(--stl-border-style) var(--pal-border); padding-top: 16px; }
+.btn-outline { background: transparent; border: var(--stl-border); color: var(--text-muted); padding: 6px 12px; font-size: 12px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s; border-radius: var(--radius); }
+.btn-outline:hover { border-color: var(--text-main); color: var(--text-main); background: var(--surface); }
+.btn-demo { background: var(--primary); border: none; color: #fff; padding: 6px 12px; font-size: 12px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s; border-radius: var(--radius); }
+.btn-demo:hover { opacity: 0.85; }
+
+/* First-run guide */
+.guide-banner { background: var(--primary-soft); border: 1px solid var(--primary); border-radius: var(--radius); padding: 12px 16px; margin-top: 12px; animation: fadeIn 0.5s ease-out; }
+.guide-banner p { font-size: 13px; color: var(--text-main); margin-bottom: 8px; line-height: 1.6; }
+.guide-banner ul { margin: 0 0 8px 16px; font-size: 12px; color: var(--text-muted); }
+.guide-banner li { margin-bottom: 2px; }
+.guide-dismiss { font-size: 11px; color: var(--primary); cursor: pointer; border: none; background: none; font-weight: 600; }
+.guide-dismiss:hover { text-decoration: underline; }
+
+/* Toast */
+.toast { position: fixed; bottom: 20px; right: 20px; background: var(--text-main); color: var(--surface); padding: 10px 20px; border-radius: 6px; z-index: 9999; opacity: 0; transform: translateY(20px); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); font-size: 13px; }
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/* Animations */
+@keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes pulse { 0%, 100% { opacity: 0.5; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.05); } }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- HEADER -->
+  <div class="header section">
+    <h1>日常开销记账簿</h1>
+    <div class="subtitle">简洁实用的日常开销管理工具 v4.0</div>
+
+    <!-- Avatar picker -->
+    <div class="profile-bar">
+      <button class="avatar-trigger" id="avatarTrigger" type="button" aria-expanded="false" aria-controls="avatarPanel">
+        <span class="avatar-preview" id="avatarPreview" aria-hidden="true"></span>
+        <span class="avatar-copy"><strong id="profileName">我的账本</strong><small>选择一个可爱的本地头像</small></span>
+        <svg class="avatar-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      </button>
+      <div class="avatar-panel" id="avatarPanel" hidden>
+        <div class="avatar-panel-head"><span>头像库</span><button class="avatar-close" id="avatarClose" type="button">关闭</button></div>
+        <div class="avatar-grid" id="avatarGrid" role="listbox" aria-label="选择头像"></div>
+        <p class="avatar-license">头像为本地内嵌 SVG · 无网络请求 · 数据只保存在当前浏览器</p>
+      </div>
+    </div>
+
+    <!-- Palette bar -->
+    <div class="palette-bar">
+      <span class="palette-label">调色板</span>
+      <div id="paletteSwatches" role="radiogroup" aria-label="选择调色板"></div>
+      <span class="palette-name-display" id="paletteNameDisplay"></span>
+    </div>
+
+    <!-- Style bar -->
+    <div class="style-bar">
+      <span class="style-label">风格</span>
+      <div id="styleSwatches" role="listbox" aria-label="选择设计风格"></div>
+      <span class="style-name-display" id="styleNameDisplay"></span>
+    </div>
+
+    <div class="status-badge" id="statusBadge">就绪</div>
+
+    <!-- Style dynamic CSS injector (hidden) -->
+    <style id="styleInject"></style>
+
+    <!-- Guide banner (hidden when data exists) -->
+    <div class="guide-banner" id="guideBanner" hidden>
+      <p>欢迎使用记账簿！还没开始记账？试试下面这些功能：</p>
+      <ul>
+        <li>点击「添加示例数据」快速体验完整界面效果</li>
+        <li>选择可爱的本地头像个性化你的账本</li>
+        <li>切换调色板（21 色）和设计风格（20 种）搭配组合</li>
+        <li>按月查看支出统计和消费洞察</li>
+      </ul>
+      <button class="guide-dismiss" id="guideDismiss">暂不需要引导，我知道了</button>
+    </div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="grid">
+    <!-- LEFT: New Entry form -->
+    <div class="section">
+      <div class="section-title">新增记录</div>
+      <form id="entryForm">
+        <div class="form-group"><label for="amount">金额（元）</label><input type="number" step="0.01" min="0.01" class="form-control" id="amount" required placeholder="0.00" autofocus></div>
+        <div class="form-group"><label>分类</label><div class="chips" id="categoryChips">
+          <div class="chip active" data-cat="餐饮"><svg viewBox="0 0 24 24"><path d="M3 2l9 13 9-13A4 4 0 0 0 13 2H7a4 4 0 0 0-2 3.4"></path><path d="M21 16v-2a8 8 0 0 0-8-8"></path><circle cx="13" cy="19" r="2"></circle></svg> 餐饮</div>
+          <div class="chip" data-cat="交通"><svg viewBox="0 0 24 24"><polygon points="6 2 3 6 14 6 14 18 20 18 21 10 14 6 6 2"></polygon><line x1="1" y1="1" x2="23" y2="23"></line></svg> 交通</div>
+          <div class="chip" data-cat="购物"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline><circle cx="12" cy="5" r="2"></circle><path d="M12 15v5"></path><path d="M6 15V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10"></path></svg> 购物</div>
+          <div class="chip" data-cat="娱乐"><svg viewBox="0 0 24 24"><polygon points="23 2 2 2 2 23 23 23 23 2"></polygon><circle cx="12" cy="12" r="2"></circle></svg> 娱乐</div>
+          <div class="chip" data-cat="医疗"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><line x1="7" y1="11" x2="7" y2="7"></line><line x1="17" y1="11" x2="17" y2="7"></line></svg> 医疗</div>
+          <div class="chip" data-cat="固定账单"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"></path><path d="M9 8h6M9 12h6"></path></svg> 固定账单</div>
+          <div class="chip" data-cat="其他"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> 其他</div>
+        </div><input type="hidden" id="categoryInput" value="餐饮"></div>
+        <div class="form-group"><label for="date">日期</label><input type="date" class="form-control" id="date" required></div>
+        <div class="form-group"><label for="note">备注</label><input type="text" class="form-control" id="note" placeholder="可选，例如：周末早餐"></div>
+        <button type="submit" class="btn-submit">保存记录</button>
+      </form>
+    </div>
+
+    <!-- RIGHT: Statistics -->
+    <div class="section">
+      <div class="section-title stats-heading"><span>统计概览</span><label class="month-filter" for="monthFilter">月份 <input type="month" id="monthFilter"></label></div>
+      <div id="statsContent">
+        <div class="stat-item"><span class="stat-label">本月支出</span><span class="stat-value" id="monthTotal"><span id="monthTotalVal">0.00</span> <span id="monthTrend" class="trend-indicator trend-up"></span></span></div>
+        <div class="stat-item"><span class="stat-label">今日支出</span><span class="stat-value" id="todayTotal">0.00</span></div>
+        <div class="stat-item"><span class="stat-label">日均支出</span><span class="stat-value" id="avgDaily">0.00</span></div>
+        <div class="stat-item stat-total"><span class="stat-label">记录数量</span><span class="stat-value" id="recordCount">0</span></div>
+      </div>
+      <div style="margin-top:20px;"><div class="section-title" style="font-size:12px;margin-top:0;">分类统计</div><div id="catStats"></div></div>
+      <div style="margin-top:16px;"><div class="section-title" style="font-size:12px;margin-top:0;">消费洞察</div><div id="insightText" style="padding:8px;font-size:12px;color:var(--text-muted);background:var(--surface-alt);border-radius:var(--radius);">添加记录后生成消费洞察</div></div>
+    </div>
+  </div>
+
+  <!-- BOTTOM: Record list + actions -->
+  <div class="section">
+    <div class="section-title">消费记录</div>
+    <ul class="record-list" id="recordList"></ul>
+    <div class="footer-actions">
+      <button class="btn-demo" id="demoBtn" title="添加模拟数据体验完整界面">添加示例数据</button>
+      <button class="btn-outline" id="exportBtn">导出数据</button>
+      <button class="btn-outline" id="importBtn">导入数据</button>
+      <input type="file" id="importFile" accept=".json" style="display:none">
+      <button class="btn-outline" id="clearBtn">清空记录</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   SWISS STYLE PRO v4.0 — LOCAL APP
+   ============================================================ */
+
+// === AVATAR LIBRARY ===
+const AVATAR_LIBRARY = [
+  { id: 'orange-cat', name: '小橘猫', fallback: '<svg width="100%" height="100%" viewBox="0 0 80 80" role="img" aria-label="小橘猫头像"><rect width="80" height="80" rx="18" fill="#FFE3B3"/><path d="M18 31 16 13l16 10c5-2 11-2 16 0l16-10-2 18c3 5 4 11 2 17-4 12-14 18-26 18S24 60 20 48c-2-6-1-12 2-17Z" fill="#F28C28" stroke="#8C4A16" stroke-width="2.5" stroke-linejoin="round"/><circle cx="31" cy="43" r="3" fill="#222"/><circle cx="49" cy="43" r="3" fill="#222"/><path d="M37 52q3 3 6 0M24 39l7-3M56 39l-7-3" fill="none" stroke="#222" stroke-width="2.5" stroke-linecap="round"/></svg>' },
+  { id: 'blueberry-rabbit', name: '蓝莓兔', fallback: '<svg width="100%" height="100%" viewBox="0 0 80 80" role="img" aria-label="蓝莓兔头像"><rect width="80" height="80" rx="18" fill="#DDEBFF"/><path d="M25 28C15 15 20 7 27 10l8 13c4-2 9-2 13 0l8-13c7-3 12 5 2 18 4 5 5 12 2 20-4 10-13 15-22 15S20 48 18 38c-1-4 1-7 7-10Z" fill="#78A9FF" stroke="#315BBD" stroke-width="2.5" stroke-linejoin="round"/><circle cx="31" cy="41" r="3" fill="#173A7A"/><circle cx="49" cy="41" r="3" fill="#173A7A"/><path d="M37 50h6M40 48v5" stroke="#173A7A" stroke-width="2.5" stroke-linecap="round"/></svg>' },
+  { id: 'energy-bear', name: '元气熊', fallback: '<svg width="100%" height="100%" viewBox="0 0 80 80" role="img" aria-label="元气熊头像"><rect width="80" height="80" rx="18" fill="#FFF1B8"/><circle cx="24" cy="25" r="10" fill="#B97843" stroke="#70431F" stroke-width="2.5"/><circle cx="56" cy="25" r="10" fill="#B97843" stroke="#70431F" stroke-width="2.5"/><circle cx="40" cy="43" r="25" fill="#D99A5B" stroke="#70431F" stroke-width="2.5"/><circle cx="32" cy="41" r="3" fill="#222"/><circle cx="48" cy="41" r="3" fill="#222"/><ellipse cx="40" cy="51" rx="8" ry="6" fill="#FFE6C5"/><path d="M37 51q3 3 6 0" fill="none" stroke="#70431F" stroke-width="2" stroke-linecap="round"/></svg>' },
+  { id: 'happy-fox', name: '开心狐', fallback: '<svg width="100%" height="100%" viewBox="0 0 80 80" role="img" aria-label="开心狐头像"><rect width="80" height="80" rx="18" fill="#FFE0D2"/><path d="M16 22 22 9l18 11L58 9l6 13c2 5 1 14-3 21-5 9-12 14-21 14S24 52 19 43c-4-7-5-16-3-21Z" fill="#F06F4F" stroke="#9F3522" stroke-width="2.5" stroke-linejoin="round"/><path d="M22 28q18 12 36 0v16c-6 10-30 10-36 0Z" fill="#FFF6EA"/><circle cx="31" cy="37" r="3" fill="#222"/><circle cx="49" cy="37" r="3" fill="#222"/><path d="M35 47q5 5 10 0" fill="none" stroke="#9F3522" stroke-width="2.5" stroke-linecap="round"/></svg>' },
+  { id: 'cloud-buddy', name: '云朵仔', fallback: '<svg width="100%" height="100%" viewBox="0 0 80 80" role="img" aria-label="云朵仔头像"><rect width="80" height="80" rx="18" fill="#E8F7F2"/><path d="M18 51c-7-12 3-21 13-19 3-12 22-14 27-1 12-2 18 13 9 21-5 5-15 5-24 5-10 0-20 0-25-6Z" fill="#FFFFFF" stroke="#55B89A" stroke-width="2.5"/><circle cx="32" cy="42" r="3" fill="#245B50"/><circle cx="49" cy="42" r="3" fill="#245B50"/><path d="M37 50q4 3 8 0" fill="none" stroke="#245B50" stroke-width="2.5" stroke-linecap="round"/><path d="M22 25h5M25 22v6" stroke="#F2B84B" stroke-width="2.5" stroke-linecap="round"/></svg>' },
+  { id: 'rainbow-bird', name: '彩虹鸟', fallback: '<svg width="100%" height="100%" viewBox="0 0 80 80" role="img" aria-label="彩虹鸟头像"><rect width="80" height="80" rx="18" fill="#E8DEFF"/><path d="M18 47c0-16 10-27 25-27 10 0 19 6 22 16l-11 1 7 9-14 1 2 11H31c-8 0-13-4-13-11Z" fill="#8559D6" stroke="#4A2C96" stroke-width="2.5" stroke-linejoin="round"/><path d="M28 31c6-8 16-9 23-3" fill="none" stroke="#F2C94C" stroke-width="4" stroke-linecap="round"/><circle cx="48" cy="35" r="3" fill="#222"/><path d="M64 40h8M64 46h8" stroke="#4A2C96" stroke-width="2.5" stroke-linecap="round"/></svg>' }
+];
+const AVATAR_STORE_KEY = 'swiss_expenses_avatar';
+
+// === PALETTE SYSTEM — 21 色调色板 ===
+const PALETTES = Object.freeze([
+  { id: 'default',  name: '浅蓝',   primary: '#0066ff' },
+  { id: 'ocean',    name: '海洋',   primary: '#0369a1' },
+  { id: 'midnight', name: '暗夜',   primary: '#818cf8' },
+  { id: 'warm',     name: '暖米',   primary: '#d97706' },
+  { id: 'mint',     name: '薄荷',   primary: '#059669' },
+  { id: 'rose',     name: '玫瑰',   primary: '#be185d' },
+  { id: 'lavender', name: '薰衣草', primary: '#7c3aed' },
+  { id: 'forest',   name: '森林',   primary: '#15803d' },
+  { id: 'cherry',   name: '樱桃',   primary: '#be123c' },
+  { id: 'gold',     name: '琥珀',   primary: '#a16207' },
+  { id: 'coral',    name: '珊瑚',   primary: '#e8590c' },
+  { id: 'sage',     name: '鼠尾草', primary: '#5a675a' },
+  { id: 'sky',      name: '天蓝',   primary: '#0284c7' },
+  { id: 'charcoal', name: '炭灰',   primary: '#64748b' },
+  { id: 'berry',    name: '浆果',   primary: '#9d174d' },
+  { id: 'peach',    name: '蜜桃',   primary: '#ea580c' },
+  { id: 'teal',     name: '青色',   primary: '#0d9488' },
+  { id: 'indigo',   name: '靛青',   primary: '#4f46e5' },
+  { id: 'monochrome',name:'黑白',   primary: '#374151' },
+  { id: 'neon',     name: '霓虹',   primary: '#22d3ee' },
+  { id: 'pastel',   name: '柔彩',   primary: '#a78bfa' }
+]);
+const PALETTE_STORE_KEY = 'swiss_expenses_palette';
+const STYLE_STORE_KEY = 'swiss_expenses_style';
+const GUIDE_STORE_KEY = 'swiss_expenses_guide';
+const STORE_KEY = 'swiss_expenses_pro_v4';
+
+// === STYLE SYSTEM — 20 种设计风格 ===
+const STYLE_SWATCH_COLORS = Object.freeze({
+  swiss:'#DA291C', neubrutalism:'#FF6B35', webbrutalism:'#C0C0C0', skeuomorphism:'#8B6914',
+  neumorphism:'#E0E0E0', glassmorphism:'rgba(255,255,255,0.3)', flat20:'#4A90D9',
+  material:'#6200EE', minimalism:'#F5F5F5', maximalism:'#FF0055',
+  vaporwave:'#FF71CE', y2k:'#00C2FF', darkmode:'#121212',
+  bauhaus:'#E30613', memphis:'#FF6600', claymorphism:'#FFB347',
+  organic:'#7CB342', acid:'#00FF41', cyberpunk:'#FF006E',
+  pixel:'#306230'
+});
+const STYLES = Object.freeze([
+  { id:'swiss', name:'瑞士平面设计', short:'Swiss',
+    css:{'--stl-radius':'0px','--stl-border-width':'2px','--stl-border-style':'solid','--stl-font-ui':'Helvetica,"Helvetica Neue",Arial,sans-serif','--stl-font-heading':'var(--stl-font-ui)','--stl-letter-spacing':'-0.02em','--stl-line-height':'1.6','--stl-shadow':'none','--stl-chip-style':'outline','--stl-btn-style':'solid','--stl-header-border':'3px solid var(--pal-text-main)','--stl-decoration':'grid'},
+    injectCSS:null, decoration:'' },
+  { id:'neubrutalism', name:'新丑主义', short:'Neubrut',
+    css:{'--stl-radius':'0px','--stl-border-width':'3px','--stl-border-style':'solid','--stl-font-ui':'"Arial Black","Impact",sans-serif','--stl-font-heading':'var(--stl-font-ui)','--stl-letter-spacing':'0','--stl-line-height':'1.3','--stl-shadow':'8px 8px 0px rgba(0,0,0,0.3)','--stl-chip-style':'solid','--stl-btn-style':'solid','--stl-header-border':'4px solid var(--pal-text-main)','--stl-decoration':'none'},
+    injectCSS:null, decoration:'' },
+  { id:'webbrutalism', name:'野兽主义', short:'Brutal',
+    css:{'--stl-radius':'0px','--stl-border-width':'2px','--stl-border-style':'solid','--stl-font-ui':'"Times New Roman",Times,Georgia,serif','--stl-font-heading':'var(--stl-font-ui)','--stl-letter-spacing':'0','--stl-line-height':'1.4','--stl-shadow':'none','--stl-chip-style':'solid','--stl-btn-style':'solid','--stl-header-border':'3px solid #00f','--stl-decoration':'none'},
+    injectCSS:'.header{font-family:"Times New Roman",serif}a{color:#00f;text-decoration:underline}', decoration:'' },
+  { id:'skeuomorphism', name:'拟物化主义', short:'Skeuo',
+    css:{'--stl-radius':'8px','--stl-border-width':'1px','--stl-border-style':'solid','--stl-font-ui':'"Georgia","Palatino",serif','--stl-font-heading':'var(--stl-font-ui)','--stl-letter-spacing':'0.01em','--stl-line-height':'1.5','--stl-shadow':'inset 0 2px 4px rgba(0,0,0,0.1),0 4px 8px rgba(0,0,0,0.15)','--stl-chip-style':'solid','--stl-btn-style':'solid','--stl-header-border':'2px solid var(--pal-text-main)','--stl-decoration':'none'},
+    injectCSS:null, decoration:'' },
+  { id:'neumorphism', name:'新拟物主义', short:'Neumo',
+    css:{'--stl-radius':'16px','--stl-border-width':'0px','--stl-border-style':'solid','--stl-font-ui':'-apple-system,sans-serif','--stl-font-heading':'var(--stl-font-ui)','--stl-letter-spacing':'0','--stl-line-height':'1.5','--stl-shadow':'9px 9px 16px rgba(0,0,0,0.08),-9px -9px 16px rgba(255,255,255,0.7)','--stl-chip-style':'neumo','--stl-btn-style':'neumo','--stl-header-border':'none','--stl-decoration':'none'},
+    injectCSS:null, decoration:'' },
+  { id:'glassmorphism', name:'玻璃拟态主义', short:'Glass',
+    css:{'--stl-radius':'12px','--stl-border-width':'1px','--stl-border-style':'solid','--stl-font-ui':'-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif','--stl-font-heading':'var(--stl-font-ui)','--stl-letter-spacing':'0','--stl-line-height':'1.5','--stl-shadow':'0 8px 32px rgba(0,0,0,0.1)','--stl-chip-style':'glass','--stl-btn-style':'glass','--stl-header-border':'1px solid rgba(255,255,255,0.3)','--stl-decoration':'none'},
+    injectCSS:'[data-style="glassmorphism"] .section,[data-style="glassmorphism"] .header,[data-style="glassmorphism"] .avatar-panel{background:rgba(255,255,255,0.15)!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.25)}[data-style="glassmorphism"] body{background:linear-gradient(135deg,#667eea,#764ba2)}[data-style="glassmorphism"] .avatar-trigger{background:rgba(255,255,255,0.1)!important;backdrop-filter:blur(8px)}[data-style="glassmorphism"] .palette-swatch{border-color:rgba(255,255,255,0.4)}[data-style="glassmorphism"] .chip{background:rgba(255,255,255,0.12)!important;backdrop-filter:blur(6px)}[data-style="glassmorphism"] .chip.active{background:rgba(255,255,255,0.3)!important}', decoration:'' },
+  { id:'flat20', name:'扁平化 2.0', short:'Flat 2',
+    css:{'--stl-radius':'6px','--stl-border-width':'1px','--stl-border-style':'solid','--stl-font-ui':'-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif','--stl-font-heading':'var(--stl-font-ui)','--stl-letter-spacing':'0','--stl-line-height':'1.5','--stl-shadow':'0 2px 8px rgba(0,0,0,0.08)','--stl-chip-style':'solid','--stl-btn-style':'solid','--stl-header-border':'2px solid var(--pal-text-main)','--stl-decoration':'none'},
+    injectCSS:null, decoration:'' },
+  { id:'material', name:'材料设计主义', short:'Material',
+    css:{'--stl-radius':'4px','--stl-border-width':'0px','--stl-border-style':'solid','--stl-font-ui':'Roboto,"Segoe UI",sans-serif','--stl-font-heading':'var(--stl-font-ui)','--stl-letter-spacing':'0.01em','--stl-line-height':'1.5','--stl-shadow':'0 2px 4px rgba(0,0,0,0.14),0 3px 8px rgba(0,0,0,0.12)','--stl-chip-style':'solid','--stl-btn-style':'raised','--stl-header-border':'none','--stl-decoration':'elevation'},
+    injectCSS:'[data-style="material"] .section{box-shadow:0 2px 4px -1px rgba(0,0,0,0.2),0 4px 5px 0 rgba(0,0,0,0.14),0 1px 10px 0 rgba(0,0,0,0.12)}[data-style="material"] .btn-submit{box-shadow:0 2px 4px -1px rgba(0,0,0,0.2),0 4px 5px 0 rgba(0,0,0,0.14),0 1px 10px 0 rgba(0,0,0,0.12);border-radius:4px}[data-style="material"] .chip.active{transition:box-shadow 0.2s}[data-style="material"] .chip:active{transform:scale(0.96)}', decoration:'' },
+  { id:'minimalism', name:'极简主义', short:'Minimal',
+    css:{'--stl-radius':'0px','--stl-border-width':'1px','--stl-border-style':'solid','--stl-font-ui':'-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif','--stl-font-heading':'var(--stl-font-ui)','--stl-letter-spacing':'0.05em','--stl-line-height':'1.8','--stl-shadow':'none','--stl-chip-style':'outline','--stl-btn-style':'outline','--stl-header-border':'1px solid var(--pal-text-main)','--stl-decoration':'none'},
+    injectCSS:null, decoration:'' },
+  { id:'maximalism', name:'极复主义', short:'Maximal',
+    css:{'--stl-radius':'8px','--stl-border-width':'2px','--stl-border-style':'double','--stl-font-ui':'-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif','--stl-font-heading':'var(--stl-font-ui)','--stl-letter-spacing':'0.02em','--stl-line-height':'1.5','--stl-shadow':'0 4px 16px rgba(0,0,0,0.15)','--stl-chip-style':'solid','--stl-btn-style':'solid','--stl-header-border':'3px double var(--pal-text-main)','--stl-decoration':'pattern'},
+    injectCSS:'[data-style="maximalism"] .section{border:2px double var(--pal-border);background:repeating-linear-gradient(45deg,transparent,transparent 10px,var(--pal-primary-soft) 10px,var(--pal-primary-soft) 11px)}[data-style="maximalism"] .header{background:repeating-linear-gradient(-45deg,transparent,transparent 8px,var(--pal-primary-soft) 8px,var(--pal-primary-soft) 9px)}[data-style="maximalism"] .chip{border-width:2px;border-style:double}', decoration:'' },
+  { id:'vaporwave', name:'蒸汽波主义', short:'Vapor',
+    css:{'--stl-radius':'0px','--stl-border-width':'2px','--stl-border-style':'solid','--stl-font-ui':'"Courier New",monospace','--stl-font-heading':'var(--stl-font-ui)','--stl-letter-spacing':'0.1em','--stl-line-height':'1.5','--stl-shadow':'0 0 10px rgba(255,113,206,0.3)','--stl-chip-style':'solid','--stl-btn-style':'solid','--stl-header-border':'2px solid #FF71CE','--stl-decoration':'grid'},
+    injectCSS:'[data-style="vaporwave"] body{background:linear-gradient(180deg,#0a0a2e 0%,#1a0a3e 30%,#2a1a4e 60%,#ff71ce 100%)}[data-style="vaporwave"] .section,[data-style="vaporwave"] .header{background:rgba(10,10,46,0.85)!important;border:2px solid #FF71CE}[data-style="vaporwave"] .section-title{border-bottom-color:#FF71CE}[data-style="vaporwave"] .record{border-bottom-color:#FF71CE}[data-style="vaporwave"] .header h1{text-shadow:0 0 10px #FF71CE,0 0 20px #00DCFF}', decoration:'' },
+  { id:'y2k', name:'Y2K 千禧风', short:'Y2K',
+    css:{'--stl-radius':'12px','--stl-border-width':'1px','--stl-border-style':'solid','--stl-font-ui':'"Trebuchet MS","Arial",sans-serif','--stl-font-heading':'var(--stl-font-ui)','--stl-letter-spacing':'0.02em','--stl-line-height':'1.55','--stl-shadow':'0 4px 20px rgba(0,0,0,0.07)','--stl-chip-style':'solid','--stl-btn-style':'solid','--stl-header-border':'none','--stl-decoration':'chrome'},
+    injectCSS:'[data-style="y2k"] body{background:radial-gradient(ellipse at 20% 20%,rgba(0,153,204,0.06) 0%,transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(255,102,153,0.04) 0%,transparent 60%),linear-gradient(165deg,#f2f6fc 0%,#e8eef8 25%,#f4f8fc 50%,#eef2fa 75%,#f0f4fb 100%)}[data-style="y2k"] .section,[data-style="y2k"] .header{background:rgba(255,255,255,0.78)!important;backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.5);border-radius:12px}[data-style="y2k"] .section-title{color:#0099CC;border-bottom-color:rgba(0,153,204,0.15)}[data-style="y2k"] .btn-submit{background:linear-gradient(180deg,#0099CC,#007099);border-radius:999px;color:#fff}[data-style="y2k"] .chip{border-radius:999px;border-color:#0099CC}[data-style="y2k"] .chip.active{background:linear-gradient(180deg,#0099CC,#007099);color:#fff;border-color:transparent}[data-style="y2k"] .form-control{border-radius:8px;border-color:rgba(0,153,204,0.3)}[data-style="y2k"] .avatar-trigger{border-radius:999px;border-color:rgba(0,153,204,0.3)}[data-style="y2k"] .avatar-preview{border-radius:50%}[data-style="y2k"] .record-amount{color:#0099CC}[data-style="y2k"] .stat-total{border-top-color:#0099CC}[data-style="y2k"] .status-badge{background:linear-gradient(180deg,#0099CC,#007099)}', decoration:'' },
+  { id:'darkmode', name:'暗黑模式', short:'Dark',
+    css:{'--stl-radius':'6px','--stl-border-width':'1px','--stl-border-style':'solid','--stl-font-ui':'-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif','--stl-font-heading':'var(--stl-font-ui)','--stl-letter-spacing':'0','--stl-line-height':'1.5','--stl-shadow':'0 4px 12px rgba(0,0,0,0.3)','--stl-chip-style':'solid','--stl-btn-style':'solid','--stl-header-border':'2px solid var(--pal-text-main)','--stl-decoration':'none'},
+    injectCSS:'[data-style="darkmode"] body{background:#0d0d0d!important;color:#e0e0e0}[data-style="darkmode"] .section,[data-style="darkmode"] .header{background:#1a1a1a!important;border-color:#333}[data-style="darkmode"] .chip{background:#2a2a2a!important;color:#e0e0e0}[data-style="darkmode"] .form-control{background:#2a2a2a!important;color:#e0e0e0;border-color:#444}[data-style="darkmode"] .month-filter input{background:#2a2a2a!important;color:#e0e0e0;border-color:#444}', decoration:'' },
+  { id:'bauhaus', name:'包豪斯主义', short:'Bauhaus',
+    css:{'--stl-radius':'0px','--stl-border-width':'3px','--stl-border-style':'solid','--stl-font-ui':'"Impact","Arial Black",sans-serif','--stl-font-heading':'var(--stl-font-ui)','--stl-letter-spacing':'0.02em','--stl-line-height':'1.4','--stl-shadow':'none','--stl-chip-style':'solid','--stl-btn-style':'solid','--stl-header-border':'4px solid var(--pal-text-main)','--stl-decoration':'geometric'},
+    injectCSS:'[data-style="bauhaus"] .header h1{background:var(--pal-primary);color:#fff;padding:4px 12px}[data-style="bauhaus"] .section-title{background:var(--pal-primary);color:#fff;padding:4px 8px;border:none}[data-style="bauhaus"] .btn-submit{background:var(--pal-primary);border:3px solid var(--pal-text-main)}[data-style="bauhaus"] .chip.active{background:var(--pal-danger);border-color:var(--pal-text-main)}', decoration:'' },
+  { id:'memphis', name:'孟菲斯主义', short:'Memphis',
+    css:{'--stl-radius':'4px','--stl-border-width':'2px','--stl-border-style':'dotted','--stl-font-ui':'-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif','--stl-font-heading':'var(--stl-font-ui)','--stl-letter-spacing':'0','--stl-line-height':'1.5','--stl-shadow':'4px 4px 0 rgba(0,0,0,0.1)','--stl-chip-style':'solid','--stl-btn-style':'solid','--stl-header-border':'2px dotted var(--pal-text-main)','--stl-decoration':'polka'},
+    injectCSS:'[data-style="memphis"] .section{background:var(--pal-surface);border:2px dotted var(--pal-border);position:relative}[data-style="memphis"] .section::before{content:"";position:absolute;top:8px;right:8px;width:12px;height:12px;background:var(--pal-primary);border-radius:50%;opacity:0.3}[data-style="memphis"] .section::after{content:"";position:absolute;bottom:8px;left:8px;width:8px;height:8px;background:var(--pal-danger);transform:rotate(45deg);opacity:0.3}[data-style="memphis"] .chip{border-style:dotted}', decoration:'' },
+  { id:'claymorphism', name:'3D 粘土拟态', short:'Clay',
+    css:{'--stl-radius':'18px','--stl-border-width':'0px','--stl-border-style':'solid','--stl-font-ui':'-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif','--stl-font-heading':'var(--stl-font-ui)','--stl-letter-spacing':'0','--stl-line-height':'1.5','--stl-shadow':'0 6px 12px rgba(0,0,0,0.1),0 12px 24px rgba(0,0,0,0.06)','--stl-chip-style':'clay','--stl-btn-style':'clay','--stl-header-border':'none','--stl-decoration':'none'},
+    injectCSS:'[data-style="claymorphism"] .section,[data-style="claymorphism"] .header{border-radius:18px;background:linear-gradient(145deg,var(--pal-surface),var(--pal-surface-alt))!important}[data-style="claymorphism"] .chip{border-radius:14px;background:linear-gradient(145deg,var(--pal-surface-alt),var(--pal-surface))!important;box-shadow:0 4px 8px rgba(0,0,0,0.08)}[data-style="claymorphism"] .btn-submit{border-radius:14px;background:linear-gradient(145deg,var(--pal-text-main),#333)!important;box-shadow:0 4px 8px rgba(0,0,0,0.2)}', decoration:'' },
+  { id:'organic', name:'有机自然主义', short:'Organic',
+    css:{'--stl-radius':'12px','--stl-border-width':'1px','--stl-border-style':'solid','--stl-font-ui':'-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif','--stl-font-heading':'var(--stl-font-ui)','--stl-letter-spacing':'0','--stl-line-height':'1.6','--stl-shadow':'0 4px 12px rgba(124,179,66,0.15)','--stl-chip-style':'solid','--stl-btn-style':'solid','--stl-header-border':'2px solid var(--pal-text-main)','--stl-decoration':'leaf'},
+    injectCSS:'[data-style="organic"] body{background:linear-gradient(180deg,#f5faf0,#e8f5e0)}[data-style="organic"] .section{border-radius:12px;border:1px solid var(--pal-border)}[data-style="organic"] .chip{border-radius:999px}[data-style="organic"] .avatar-trigger{border-radius:999px}', decoration:'' },
+  { id:'acid', name:'酸性视觉主义', short:'Acid',
+    css:{'--stl-radius':'0px','--stl-border-width':'2px','--stl-border-style':'solid','--stl-font-ui':'"Impact","Arial Black",sans-serif','--stl-font-heading':'var(--stl-font-ui)','--stl-letter-spacing':'0.1em','--stl-line-height':'1.3','--stl-shadow':'0 0 20px rgba(0,255,65,0.3)','--stl-chip-style':'solid','--stl-btn-style':'solid','--stl-header-border':'2px solid #00FF41','--stl-decoration':'glitch'},
+    injectCSS:'[data-style="acid"] body{background:#0a0a0a!important}[data-style="acid"] .section{background:#111!important;border:2px solid #00FF41;box-shadow:0 0 15px rgba(0,255,65,0.2)}[data-style="acid"] .header{background:#111!important;border-color:#00FF41}[data-style="acid"] .header h1{color:#00FF41!important;text-shadow:0 0 10px #00FF41}[data-style="acid"] .section-title{color:#FF00FF!important}[data-style="acid"] .chip{border:2px solid #FF00FF;color:#FF00FF!important;background:transparent!important}[data-style="acid"] .chip.active{background:#FF00FF!important;color:#000!important}[data-style="acid"] .btn-submit{background:linear-gradient(90deg,#FF00FF,#00FF41)}[data-style="acid"] .stat-value{color:#FF00FF!important}', decoration:'' },
+  { id:'cyberpunk', name:'赛博朋克主义', short:'Cyber',
+    css:{'--stl-radius':'0px','--stl-border-width':'2px','--stl-border-style':'solid','--stl-font-ui':'"Courier New",monospace','--stl-font-heading':'var(--stl-font-ui)','--stl-letter-spacing':'0.05em','--stl-line-height':'1.4','--stl-shadow':'0 0 15px rgba(255,0,110,0.3)','--stl-chip-style':'solid','--stl-btn-style':'solid','--stl-header-border':'2px solid #FF006E','--stl-decoration':'hud'},
+    injectCSS:'[data-style="cyberpunk"] body{background:#0a0e1a!important}[data-style="cyberpunk"] .section{background:#0d1321!important;border:2px solid #FF006E;box-shadow:0 0 10px rgba(255,0,110,0.2),inset 0 0 10px rgba(0,245,255,0.05)}[data-style="cyberpunk"] .header{background:#0d1321!important;border-color:#FF006E}[data-style="cyberpunk"] .header h1{color:#00F5FF!important;text-shadow:0 0 10px #00F5FF,0 0 20px #00F5FF}[data-style="cyberpunk"] .section-title{color:#FF006E!important}[data-style="cyberpunk"] .chip{border:2px solid #00F5FF;color:#00F5FF!important;background:transparent!important}[data-style="cyberpunk"] .chip.active{background:#FF006E!important;border-color:#FF006E;color:#fff!important}[data-style="cyberpunk"] .stat-value{color:#00F5FF!important}[data-style="cyberpunk"] .record{border-bottom-color:#FF006E}[data-style="cyberpunk"] .record:hover{animation:glitch 0.3s ease-in-out}@keyframes glitch{0%{transform:translate(0)}20%{transform:translate(-2px,2px)}40%{transform:translate(2px,-1px)}60%{transform:translate(-1px,-2px)}80%{transform:translate(1px,1px)}100%{transform:translate(0)}}', decoration:'' },
+  { id:'pixel', name:'复古像素主义', short:'8-Bit',
+    css:{'--stl-radius':'0px','--stl-border-width':'2px','--stl-border-style':'solid','--stl-font-ui':'"Courier New","Lucida Console",monospace','--stl-font-heading':'var(--stl-font-ui)','--stl-letter-spacing':'0','--stl-line-height':'1.4','--stl-shadow':'none','--stl-chip-style':'solid','--stl-btn-style':'solid','--stl-header-border':'4px solid var(--pal-text-main)','--stl-decoration':'pixel'},
+    injectCSS:'[data-style="pixel"] .section{border:4px solid var(--pal-border);image-rendering:pixelated}[data-style="pixel"] .header{border:4px solid var(--pal-text-main)}[data-style="pixel"] .chip{border:3px solid var(--pal-border)}[data-style="pixel"] .chip.active{background:var(--pal-primary);border-color:var(--pal-text-main)}[data-style="pixel"] .btn-submit{border:3px solid var(--pal-text-main);box-shadow:4px 4px 0 var(--pal-text-main)}[data-style="pixel"] ::selection{background:var(--pal-primary);color:#fff}', decoration:'' }
+]);
+
+// === CATEGORY ===
+const CATEGORY_ALIASES = Object.freeze({
+  food: '餐饮', transport: '交通', shop: '购物', shopping: '购物',
+  entertainment: '娱乐', health: '医疗', medical: '医疗', bills: '固定账单', other: '其他'
+});
+const CATEGORY_NAMES = Object.freeze(['餐饮', '交通', '购物', '娱乐', '医疗', '固定账单', '其他']);
+
+function normalizeCategory(category) {
+  const value = String(category || '').trim();
+  return CATEGORY_NAMES.includes(value) ? value : (CATEGORY_ALIASES[value.toLowerCase()] || '其他');
+}
+function normalizeRecord(record) {
+  return { ...record, amount: Number(record.amount), category: normalizeCategory(record.category), note: String(record.note || '') };
+}
+function loadRecords() {
+  try {
+    const value = JSON.parse(localStorage.getItem(STORE_KEY));
+    return Array.isArray(value) ? value.filter(isValidRecord).map(normalizeRecord) : [];
+  } catch (error) { return []; }
+}
+function isValidRecord(record) {
+  return record && Number.isFinite(Number(record.amount)) && Number(record.amount) > 0 &&
+    typeof record.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(record.date) &&
+    typeof record.category === 'string';
+}
+
+// === ILLUSTRATIONS ===
+const ILLUSTRATIONS = {
+  empty: `<svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>`,
+  imported: `<svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`,
+  cleared: `<svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline><line x1="12" y1="2" x2="12.01" y2="2"></line></svg>`
+};
+
+// === APP STATE ===
+let records = loadRecords();
+let currentMonth = new Date().toISOString().slice(0,7);
+let selectedCat = '餐饮';
+let selectedAvatarId = (() => { try { return localStorage.getItem(AVATAR_STORE_KEY) || AVATAR_LIBRARY[0].id; } catch(e) { return AVATAR_LIBRARY[0].id; } })();
+let historyStack = [];
+let redoStack = [];
+let isEditing = false;
+let editingId = null;
+
+// DOM
+const form = document.getElementById('entryForm');
+const amountInput = document.getElementById('amount');
+const categoryChips = document.getElementById('categoryChips');
+const recordList = document.getElementById('recordList');
+const statusBadge = document.getElementById('statusBadge');
+const toastEl = document.getElementById('toast');
+const avatarTrigger = document.getElementById('avatarTrigger');
+const avatarPanel = document.getElementById('avatarPanel');
+const avatarGrid = document.getElementById('avatarGrid');
+const avatarPreview = document.getElementById('avatarPreview');
+const avatarClose = document.getElementById('avatarClose');
+const profileName = document.getElementById('profileName');
+const guideBanner = document.getElementById('guideBanner');
+const paletteSwatches = document.getElementById('paletteSwatches');
+const paletteNameDisplay = document.getElementById('paletteNameDisplay');
+const styleSwatches = document.getElementById('styleSwatches');
+const styleNameDisplay = document.getElementById('styleNameDisplay');
+const demoBtn = document.getElementById('demoBtn');
+
+function escapeHtml(v) {
+  return String(v ?? '').replace(/[\u0026\u003c\u003e"\u0027]/g, c => ({'&':'\u0026amp;','<':'\u0026lt;','>':'\u0026gt;','"':'\u0026quot;',"\'":'\u0026#039;'}[c]));
+}
+
+// === PALETTE + STYLE DUAL SYSTEM ===
+function migrateThemeStorage() {
+  try {
+    const oldTheme = localStorage.getItem('swiss_expenses_theme');
+    if (oldTheme && !localStorage.getItem(PALETTE_STORE_KEY)) {
+      localStorage.setItem(PALETTE_STORE_KEY, oldTheme);
+      localStorage.removeItem('swiss_expenses_theme');
+    }
+    if (!localStorage.getItem(STYLE_STORE_KEY)) {
+      localStorage.setItem(STYLE_STORE_KEY, 'swiss');
+    }
+  } catch(e) {}
+}
+function readPalettePreference() {
+  try { return localStorage.getItem(PALETTE_STORE_KEY) || 'default'; } catch(e) { return 'default'; }
+}
+function writePalettePreference(id) {
+  try { localStorage.setItem(PALETTE_STORE_KEY, id); } catch(e) {}
+}
+function readStylePreference() {
+  try { return localStorage.getItem(STYLE_STORE_KEY) || 'swiss'; } catch(e) { return 'swiss'; }
+}
+function writeStylePreference(id) {
+  try { localStorage.setItem(STYLE_STORE_KEY, id); } catch(e) {}
+}
+function applyPalette(id) {
+  const el = document.documentElement;
+  el.removeAttribute('data-palette');
+  if (id && id !== 'default') el.setAttribute('data-palette', id);
+  const p = PALETTES.find(p => p.id === id) || PALETTES[0];
+  paletteNameDisplay.textContent = '调色板：' + p.name;
+  paletteSwatches.querySelectorAll('.palette-swatch').forEach(sw => sw.classList.toggle('active', sw.dataset.paletteId === id));
+  writePalettePreference(id);
+  updateStatus('调色板已切换为「' + p.name + '」');
+}
+function applyStyle(id) {
+  const style = STYLES.find(s => s.id === id) || STYLES[0];
+  document.documentElement.setAttribute('data-style', id);
+  // Apply CSS variables from style definition
+  Object.entries(style.css).forEach(([key, val]) => {
+    document.documentElement.style.setProperty(key, val);
+  });
+  styleNameDisplay.textContent = '设计风格：' + style.name;
+  styleSwatches.querySelectorAll('.style-swatch').forEach(sw => sw.classList.toggle('active', sw.dataset.styleId === id));
+  const injectEl = document.getElementById('styleInject');
+  if (style.injectCSS) { injectEl.textContent = style.injectCSS; } else { injectEl.textContent = ''; }
+  writeStylePreference(id);
+  updateStatus('设计风格已切换为「' + style.name + '」');
+}
+function renderPaletteBar() {
+  const current = readPalettePreference();
+  paletteSwatches.innerHTML = PALETTES.map(p =>
+    `<button class="palette-swatch${p.id === current ? ' active' : ''}" type="button" data-palette-id="${p.id}"
+      style="background:${p.primary};" aria-label="切换到${p.name}调色板" aria-pressed="${p.id === current}" role="radio"></button>`
+  ).join('');
+  paletteSwatches.addEventListener('click', e => {
+    const sw = e.target.closest('.palette-swatch');
+    if (sw) applyPalette(sw.dataset.paletteId);
+  });
+  paletteSwatches.addEventListener('keydown', e => {
+    const sws = [...paletteSwatches.querySelectorAll('.palette-swatch')];
+    const idx = sws.indexOf(document.activeElement);
+    if (idx === -1) return;
+    let next = -1;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (idx + 1) % sws.length;
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = (idx - 1 + sws.length) % sws.length;
+    if (next >= 0) { sws[next].focus(); e.preventDefault(); }
+    if (e.key === 'Enter' || e.key === ' ') { const active = document.activeElement; if (active && active.dataset.paletteId) { applyPalette(active.dataset.paletteId); e.preventDefault(); } }
+  });
+  applyPalette(current);
+}
+function renderStyleBar() {
+  const current = readStylePreference();
+  styleSwatches.innerHTML = STYLES.map(s => {
+    const bg = STYLE_SWATCH_COLORS[s.id] || '#666';
+    return `<button class="style-swatch${s.id === current ? ' active' : ''}" type="button" data-style-id="${s.id}"
+      style="background:${bg};" aria-label="切换到${s.name}" aria-pressed="${s.id === current}" role="radio"><span class="style-swatch-label">${s.short}</span></button>`;
+  }).join('');
+  styleSwatches.addEventListener('click', e => {
+    const sw = e.target.closest('.style-swatch');
+    if (sw) applyStyle(sw.dataset.styleId);
+  });
+  styleSwatches.addEventListener('keydown', e => {
+    const sws = [...styleSwatches.querySelectorAll('.style-swatch')];
+    const idx = sws.indexOf(document.activeElement);
+    if (idx === -1) return;
+    let next = -1;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (idx + 1) % sws.length;
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = (idx - 1 + sws.length) % sws.length;
+    if (next >= 0) { sws[next].focus(); e.preventDefault(); }
+    if (e.key === 'Enter' || e.key === ' ') { const active = document.activeElement; if (active && active.dataset.styleId) { applyStyle(active.dataset.styleId); e.preventDefault(); } }
+  });
+  applyStyle(current);
+}
+
+// === AVATAR ===
+function getSelectedAvatar() { return AVATAR_LIBRARY.find(a => a.id === selectedAvatarId) || AVATAR_LIBRARY[0]; }
+function avatarMarkup(avatar) { return `<span class="avatar-image" role="img" aria-label="${escapeHtml(avatar.name)}头像">${avatar.fallback}</span>`; }
+function renderAvatarLibrary() {
+  const av = getSelectedAvatar();
+  selectedAvatarId = av.id;
+  avatarPreview.innerHTML = avatarMarkup(av);
+  profileName.textContent = av.name + '的账本';
+  try { localStorage.setItem(AVATAR_STORE_KEY, av.id); } catch(e) {}
+  avatarGrid.innerHTML = AVATAR_LIBRARY.map(a =>
+    `<button class="avatar-option${a.id === av.id ? ' selected' : ''}" type="button" role="option" aria-label="选择${escapeHtml(a.name)}头像" aria-selected="${a.id === av.id}" data-avatar-id="${a.id}">${avatarMarkup(a)}</button>`
+  ).join('');
+}
+function setAvatarPanel(open) {
+  avatarPanel.hidden = !open;
+  avatarTrigger.setAttribute('aria-expanded', String(open));
+  if (open) avatarGrid.querySelector('.avatar-option.selected')?.focus();
+}
+function selectAvatar(id) {
+  const av = AVATAR_LIBRARY.find(a => a.id === id); if (!av) return;
+  selectedAvatarId = av.id; renderAvatarLibrary(); setAvatarPanel(false);
+  updateStatus('头像已保存'); showToast('头像已更新', 'success');
+}
+
+// === DATA STATUS ===
+function checkDataStatus() {
+  const hasGuideShown = () => { try { return localStorage.getItem(GUIDE_STORE_KEY) === 'dismissed'; } catch(e) { return false; } };
+  if (records.length > 0) { guideBanner.hidden = true; demoBtn.hidden = true; return; }
+  guideBanner.hidden = hasGuideShown();
+  demoBtn.hidden = hasGuideShown();
+}
+document.getElementById('guideDismiss').addEventListener('click', () => {
+  try { localStorage.setItem(GUIDE_STORE_KEY, 'dismissed'); } catch(e) {}
+  guideBanner.hidden = true;
+  demoBtn.hidden = true;
+});
+
+// === SAMPLE DATA (6 months × ~40 entries) ===
+const SAMPLE_DATA = (() => {
+  const cats = CATEGORY_NAMES;
+  const notes = ['早餐','午餐','晚餐','零食','咖啡','聚餐','外卖','超市采购','地铁','公交','打车','加油','停车','网购','书店','电影票','奶茶','游戏充值','理发','体检','药品','打车回家','朋友聚会','便利店'];
+  const rng = (min,max) => Math.random() * (max-min) + min;
+  const rInt = (min,max) => Math.floor(rng(min,max));
+  const records = [];
+  let id = 1700000000000;
+  // Generate records for 6 months before today
+  const now = new Date();
+  const baseYear = now.getFullYear(), baseMonth = now.getMonth();
+  for (let mOffset = 0; mOffset < 6; mOffset++) {
+    const targetMonth = new Date(baseYear, baseMonth - mOffset, 1);
+    const year = targetMonth.getFullYear(), month = targetMonth.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const entriesPerMonth = rInt(28, 48);
+    for (let i = 0; i < entriesPerMonth; i++) {
+      const day = rInt(1, daysInMonth);
+      const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+      const cat = cats[rInt(0, cats.length)];
+      // Realistic amounts per category
+      let minAmt = 5, maxAmt = 50;
+      if (cat === '餐饮') { minAmt = 8; maxAmt = 120; }
+      else if (cat === '交通') { minAmt = 2; maxAmt = 80; }
+      else if (cat === '购物') { minAmt = 20; maxAmt = 500; }
+      else if (cat === '娱乐') { minAmt = 15; maxAmt = 200; }
+      else if (cat === '医疗') { minAmt = 20; maxAmt = 800; }
+      else if (cat === '固定账单') { minAmt = 200; maxAmt = 2000; }
+      else { minAmt = 5; maxAmt = 200; }
+      const amount = parseFloat((rInt(minAmt, maxAmt) + Math.round(Math.random()*99)/100).toFixed(2));
+      records.push({ id: String(id++), amount, category: cat, date: dateStr, note: notes[rInt(0, notes.length)] });
+    }
+  }
+  return records.sort((a,b) => new Date(b.date) - new Date(a.date));
+})();
+
+// Demo button: add sample data if localStorage is empty
+demoBtn.addEventListener('click', () => {
+  if (records.length > 0) { showToast('已有数据，无需演示'); return; }
+  records = SAMPLE_DATA.map(normalizeRecord);
+  saveAndRender();
+  checkDataStatus();
+  showToast('已添加 200+ 条示例数据', 'success');
+  updateStatus('示例数据已加载');
+});
+
+// === EVENT LISTENERS ===
+function setupEventListeners() {
+  const chips = categoryChips.querySelectorAll('.chip');
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => selectChip(chip));
+    chip.tabIndex = 0;
+    chip.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' ') { e.preventDefault(); selectChip(chip); }});
+  });
+
+  let submitTimer;
+  form.addEventListener('submit', e => {
+    e.preventDefault(); clearTimeout(submitTimer);
+    const amountEl = document.getElementById('amount');
+    const noteEl = document.getElementById('note');
+    submitTimer = setTimeout(() => {
+      const amount = parseFloat(amountEl.value);
+      if(!amount || amount <= 0) { showToast('请输入大于 0 的有效金额'); return; }
+      const record = { id: editingId || Date.now().toString(), amount, category: selectedCat, date: document.getElementById('date').value, note: noteEl.value.trim() || '' };
+      pushHistory();
+      if(editingId) {
+        const idx = records.findIndex(r => r.id === editingId);
+        if(idx > -1) { records[idx] = record; showToast('记录已更新', 'success'); }
+      } else {
+        records.unshift(record);
+        showToast('记录已添加', 'success');
+      }
+      saveAndRender();
+      const addedMonth = record.date.slice(0, 7);
+      if (addedMonth !== currentMonth) { currentMonth = addedMonth; document.getElementById('monthFilter').value = addedMonth; render(); }
+      form.reset(); document.getElementById('date').valueAsDate = new Date();
+      isEditing = false; editingId = null; form.querySelector('.btn-submit').textContent = '保存记录';
+      setTimeout(() => amountEl.focus(), 100);
+    }, 100);
+  });
+
+  window.deleteRecord = function(id) {
+    if(!confirm('确定删除这条记录吗？删除后可按 Ctrl+Z 撤销。')) return;
+    pushHistory();
+    const idx = records.findIndex(r => r.id == id);
+    if(idx > -1) { records.splice(idx, 1); saveAndRender(); showToast('记录已删除，可按 Ctrl+Z 撤销', 'info'); }
+  };
+
+  document.addEventListener('keydown', e => { if((e.ctrlKey||e.metaKey)&&e.key==='z') { e.preventDefault(); undo(); }});
+
+  document.getElementById('exportBtn').onclick = () => {
+    const blob = new Blob([JSON.stringify({records, exportedAt:new Date().toISOString()},null,2)],{type:'application/json'});
+    const url = URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='开销备份_'+new Date().toISOString().split('T')[0]+'.json'; a.click(); URL.revokeObjectURL(url); showToast('数据已导出');
+  };
+
+  document.getElementById('importBtn').onclick = () => document.getElementById('importFile').click();
+  document.getElementById('importFile').onchange = e => {
+    const file=e.target.files[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        const normalizedRecords = (Array.isArray(data?.records) ? data.records : Array.isArray(data) ? data : null)?.filter(isValidRecord).map(normalizeRecord) || null;
+        if (normalizedRecords && confirm('导入会替换当前全部记录，确定继续吗？')) {
+          pushHistory(); records = normalizedRecords; saveAndRender();
+          showToast('数据导入成功', 'success'); checkDataStatus();
+        } else if (!normalizedRecords) { alert('JSON 数据格式无效'); }
+      } catch(err) { alert('文件解析失败：'+err.message); }
+    };
+    reader.readAsText(file);
+  };
+
+  document.getElementById('clearBtn').onclick = () => {
+    if(confirm('确定清空全部记录吗？此操作无法撤销。')) {
+      localStorage.removeItem(STORE_KEY); records = [];
+      historyStack = []; redoStack = []; saveAndRender();
+      showToast('全部记录已清空', 'warning'); checkDataStatus();
+    }
+  };
+}
+
+function selectChip(activeChip) {
+  categoryChips.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  activeChip.classList.add('active'); selectedCat = activeChip.dataset.cat; document.getElementById('categoryInput').value = selectedCat;
+}
+function pushHistory() {
+  historyStack.push(JSON.parse(JSON.stringify(records)));
+  if(historyStack.length > 20) historyStack.shift(); redoStack = [];
+}
+function undo() {
+  if(historyStack.length > 0) {
+    redoStack.push(JSON.parse(JSON.stringify(records)));
+    records = historyStack.pop();
+    saveAndRender(); showToast('已撤销上一步操作', 'info');
+  } else { showToast('没有可撤销的操作'); }
+}
+function saveAndRender() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(records)); } catch(e) { showToast('保存到浏览器失败，本次修改仅在当前页面保留'); }
+  render();
+}
+function editRecord(id) {
+  const record = records.find(item => String(item.id) === String(id)); if (!record) return;
+  editingId = record.id; selectedCat = record.category;
+  document.getElementById('amount').value = record.amount;
+  document.getElementById('date').value = record.date;
+  document.getElementById('note').value = record.note || '';
+  const activeChip = [...categoryChips.querySelectorAll('.chip')].find(chip => chip.dataset.cat === record.category);
+  if (activeChip) selectChip(activeChip);
+  form.querySelector('.btn-submit').textContent = '更新记录';
+  amountInput.focus(); updateStatus('正在编辑记录');
+}
+
+// === RENDER ===
+function render() {
+  const monthExp = records.filter(r => r.date.startsWith(currentMonth));
+  const todayStr = new Date().toISOString().slice(0,10);
+  const todayExp = monthExp.filter(r => r.date === todayStr);
+  const total = monthExp.reduce((s,r) => s+r.amount, 0);
+  const todaySum = todayExp.reduce((s,r) => s+r.amount, 0);
+  const daysWithExp = new Set(monthExp.map(r => r.date)).size;
+  const avgDays = daysWithExp > 0 ? (total/daysWithExp).toFixed(2) : '0.00';
+
+  // Trend comparison: 非当月时，对比查看月份与前一月份的环比变化
+  let trendHtml = '';
+  if(currentMonth !== new Date().toISOString().slice(0,7)) {
+    const prevMonthDate = new Date(currentMonth.substring(0,4), parseInt(currentMonth.substring(5))-1, 1);
+    const prevMonth = new Date(prevMonthDate.setMonth(prevMonthDate.getMonth()-1)).toISOString().slice(0,7);
+    const currentTotal = records.filter(r => r.date.startsWith(currentMonth)).reduce((s,r)=>s+r.amount,0);
+    const prevMonthTotal = records.filter(r => r.date.startsWith(prevMonth)).reduce((s,r)=>s+r.amount,0);
+    let changePct = 0;
+    if(prevMonthTotal>0) changePct=((currentTotal-prevMonthTotal)/prevMonthTotal*100).toFixed(1);
+    else if(currentTotal>0) changePct='+∞';
+    trendHtml = `<span class="trend-indicator ${changePct>0?'trend-up':'trend-down'}">${typeof changePct==='number'?(changePct>0?'+':'')+changePct+'%':changePct}</span>`;
+  }
+
+  document.getElementById('monthTotalVal').textContent = total.toFixed(2);
+  document.getElementById('monthTrend').innerHTML = trendHtml;
+  document.getElementById('todayTotal').textContent = todaySum.toFixed(2);
+  document.getElementById('avgDaily').textContent = avgDays;
+  document.getElementById('recordCount').textContent = monthExp.length;
+
+  // Category stats
+  const catMap = {}; monthExp.forEach(r => { catMap[r.category]=(catMap[r.category]||0)+r.amount; });
+  const sortedCats = Object.entries(catMap).sort(([,a],[,b]) => b-a);
+  const catDiv = document.getElementById('catStats');
+  catDiv.innerHTML = sortedCats.map(([cat, amt]) => {
+    const pct = (amt/total*100).toFixed(1);
+    const isMajor = parseFloat(pct) > 20;
+    return `<div class="stat-item" style="${isMajor?'font-weight:600;background:var(--primary-soft);padding:4px;border-radius:var(--radius);':''}"><span class="stat-label">${escapeHtml(cat)} (${pct}%)</span><span class="stat-value">${amt.toFixed(2)}</span></div>`;
+  }).join('') || '<div class="empty"><div class="empty-text">暂无分类数据</div></div>';
+
+  generateInsights(monthExp, total, sortedCats);
+  renderRecordList(monthExp);
+  checkDataStatus();
+}
+
+function renderRecordList(monthExp) {
+  const sorted = [...monthExp].sort((a,b) => new Date(b.date) - new Date(a.date));
+  if(sorted.length === 0) {
+    recordList.innerHTML = `<li class="empty">${ILLUSTRATIONS.empty}<div class="empty-text">本月暂无记录，添加第一笔开销吧</div></li>`;
+    return;
+  }
+  const icons = {
+    餐饮: '<svg viewBox="0 0 24 24"><path d="M3 2l9 13 9-13A4 4 0 0 0 13 2H7a4 4 0 0 0-2 3.4"></path><path d="M21 16v-2a8 8 0 0 0-8-8"></path><circle cx="13" cy="19" r="2"></circle></svg>',
+    交通: '<svg viewBox="0 0 24 24"><path d="M5 17h14M6 17V8l2-3h8l2 3v9"></path><circle cx="8" cy="18" r="2"></circle><circle cx="16" cy="18" r="2"></circle><path d="M7 10h10"></path></svg>',
+    购物: '<svg viewBox="0 0 24 24"><path d="M6 8h12l-1 12H7L6 8Z"></path><path d="M9 9V6a3 3 0 0 1 6 0v3"></path></svg>',
+    娱乐: '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m10 9 5 3-5 3Z"></path></svg>',
+    医疗: '<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"></rect><path d="M12 8v8M8 12h8"></path></svg>',
+    固定账单: '<svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"></path><path d="M9 8h6M9 12h6"></path></svg>',
+    其他: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="8" cy="12" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="16" cy="12" r="1"></circle></svg>'
+  };
+  recordList.innerHTML = sorted.map(r => {
+    const iconSVG = icons[r.category] || icons['其他'];
+    const noteMarkup = r.note ? ` <span class="record-note">(${escapeHtml(r.note)})</span>` : '';
+    return `<li class="record" data-id="${escapeHtml(r.id)}"><div class="record-icon">${iconSVG}</div><div><div class="record-cat">${escapeHtml(r.category)}${noteMarkup}</div><div class="record-meta">${escapeHtml(r.date)}</div></div><div class="record-amount">-${Number(r.amount).toFixed(2)}</div><div class="record-actions"><button class="btn-edit" type="button" aria-label="编辑${escapeHtml(r.category)}记录" onclick="editRecord('${escapeHtml(r.id)}')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z"></path></svg></button><button class="btn-del" type="button" aria-label="删除${escapeHtml(r.category)}记录" onclick="deleteRecord('${escapeHtml(r.id)}')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button></div></li>`;
+  }).join('');
+}
+
+function generateInsights(monthExp, total, sortedCats) {
+  const insightEl = document.getElementById('insightText');
+  if(monthExp.length === 0) { insightEl.textContent = '添加记录后生成消费洞察'; return; }
+  const [topCat, topAmt] = sortedCats[0] || ['其他', 0];
+  const topPct = ((topAmt/total)*100).toFixed(1);
+  const busyDays = monthExp.filter(r => { const d = new Date(r.date); return d.getDay()===0||d.getDay()===6; }).length;
+  const weekendRatio = (busyDays/monthExp.length*100).toFixed(0);
+  let insight = `本月共支出 ¥${total.toFixed(2)}，其中${topCat}支出最高（¥${topAmt.toFixed(2)}，占 ${topPct}%）。`;
+  if(parseFloat(topPct) > 35) insight += `${topCat}已超过本月支出的三分之一，建议重点检查。`;
+  else if(Number(weekendRatio) > 50) insight += `周末消费记录占 ${weekendRatio}%，可以留意临时性消费。`;
+  else insight += '当前消费分布较为均衡，请继续保持理性记录。';
+  insightEl.textContent = insight;
+}
+
+// === TOAST / STATUS ===
+function showToast(msg, type='info') {
+  toastEl.textContent = msg;
+  toastEl.className = 'toast show';
+  setTimeout(() => { toastEl.className = 'toast'; }, 3000);
+}
+function updateStatus(msg) {
+  statusBadge.textContent = msg;
+  statusBadge.classList.add('show');
+  setTimeout(() => statusBadge.classList.remove('show'), 2000);
+}
+
+// === INITIALIZATION ===
+(function init() {
+  const today = new Date();
+  document.getElementById('date').valueAsDate = today;
+  document.getElementById('monthFilter').value = currentMonth;
+  document.getElementById('monthFilter').addEventListener('change', e => {
+    currentMonth = e.target.value || new Date().toISOString().slice(0, 7);
+    render(); updateStatus(`正在查看 ${currentMonth}`);
+  });
+  renderAvatarLibrary();
+  migrateThemeStorage();
+  renderPaletteBar();
+  renderStyleBar();
+  render();
+  checkDataStatus();
+  setupEventListeners();
+  initAvatarLibrary();
+  updateStatus('就绪');
+})();
+
+// === AVATAR INTERACTIONS ===
+function initAvatarLibrary() {
+  avatarTrigger.addEventListener('click', () => setAvatarPanel(avatarPanel.hidden));
+  avatarClose.addEventListener('click', () => setAvatarPanel(false));
+  avatarGrid.addEventListener('click', e => {
+    const option = e.target.closest('[data-avatar-id]');
+    if (option) selectAvatar(option.dataset.avatarId);
+  });
+  avatarGrid.addEventListener('keydown', e => {
+    const options = [...avatarGrid.querySelectorAll('.avatar-option')];
+    const index = options.indexOf(document.activeElement);
+    if (e.key === 'Escape') setAvatarPanel(false);
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') options[(index+1)%options.length]?.focus();
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') options[(index-1+options.length)%options.length]?.focus();
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (document.activeElement?.dataset.avatarId) selectAvatar(document.activeElement.dataset.avatarId); }
+  });
+  document.addEventListener('click', e => { if (!avatarPanel.hidden && !e.target.closest('.profile-bar')) setAvatarPanel(false); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') setAvatarPanel(false); });
+}
+</script>
+</body>
+</html>

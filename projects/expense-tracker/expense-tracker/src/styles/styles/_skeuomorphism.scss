@@ -1,0 +1,110 @@
+/* ============================================================
+   SKEUOMORPHISM — 拟物化主义
+   核心特征: 内阴影、纹理渐变、皮革/纸张质感、拟物按钮、3D 感
+   ============================================================ */
+
+[data-style="skeuomorphism"] {
+  --stl-radius: 8px;
+  --stl-border-width: 1px;
+  --stl-border-style: solid;
+  --stl-font-ui: "Georgia", "Palatino", serif;
+  --stl-font-heading: "Georgia", "Palatino", serif;
+  --stl-letter-spacing: 0.01em;
+  --stl-line-height: 1.5;
+  --stl-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.15);
+  --stl-chip-style: solid;
+  --stl-btn-style: solid;
+  --stl-header-border: 2px solid var(--pal-text-main);
+  --stl-decoration: none;
+
+  .header {
+    background: linear-gradient(180deg, var(--pal-surface), var(--pal-surface-alt));
+    border-bottom: 2px solid var(--pal-text-main);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 4px 8px rgba(0,0,0,0.12);
+  }
+
+  .section {
+    background: linear-gradient(180deg, var(--pal-surface), var(--pal-surface-alt));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 4px 12px rgba(0,0,0,0.12);
+    border: 1px solid var(--pal-border);
+  }
+
+  .section-title {
+    border-bottom: 1px solid var(--pal-border);
+    text-transform: none;
+    letter-spacing: 0.02em;
+  }
+
+  .btn-submit {
+    background: linear-gradient(180deg, var(--pal-text-main), #333);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.15);
+    border: 1px solid #222;
+    text-transform: none;
+    letter-spacing: 0.02em;
+
+    &:hover {
+      background: linear-gradient(180deg, #333, #111);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+
+    &:active {
+      box-shadow: inset 0 3px 6px rgba(0,0,0,0.3);
+      transform: translateY(1px);
+    }
+  }
+
+  .btn-outline {
+    background: linear-gradient(180deg, var(--pal-surface), var(--pal-surface-alt));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 2px 4px rgba(0,0,0,0.1);
+    text-transform: none;
+  }
+
+  .btn-demo {
+    background: linear-gradient(180deg, var(--pal-primary), var(--pal-primary));
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+
+  .chip {
+    background: linear-gradient(180deg, var(--pal-surface), var(--pal-surface-alt));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 2px 4px rgba(0,0,0,0.08);
+    border: 1px solid var(--pal-border);
+
+    &.active {
+      background: linear-gradient(180deg, var(--pal-primary), color-mix(in srgb, var(--pal-primary), black 10%));
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+    }
+  }
+
+  .form-control {
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.08);
+    border: 1px solid var(--pal-border);
+  }
+
+  .record {
+    border-bottom: 1px solid var(--pal-border);
+  }
+
+  .stat-item {
+    border-bottom: 1px dashed var(--pal-border);
+  }
+
+  .stat-total {
+    border-top: 2px solid var(--pal-text-main);
+  }
+
+  .avatar-trigger {
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .avatar-panel {
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.5);
+  }
+
+  .toast {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+
+  .modal {
+    box-shadow: 0 12px 24px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.5);
+  }
+}

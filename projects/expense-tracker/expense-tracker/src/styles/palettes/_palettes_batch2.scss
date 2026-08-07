@@ -1,0 +1,63 @@
+/* 调色板: 天蓝 */
+[data-palette="sky"] {
+  --pal-primary: #0284c7; --pal-primary-soft: #e0f2fe; --pal-bg: #f0f9ff;
+  --pal-surface: #fff; --pal-surface-alt: #f0f9ff; --pal-text-main: #075985;
+  --pal-text-muted: #0369a1; --pal-border: #bae6fd;
+  --pal-success: #138a63; --pal-warning: #b7791f; --pal-danger: #dc2626;
+}
+/* 调色板: 炭灰 */
+[data-palette="charcoal"] {
+  --pal-primary: #64748b; --pal-primary-soft: #f1f5f9; --pal-bg: #f8fafc;
+  --pal-surface: #fff; --pal-surface-alt: #f8fafc; --pal-text-main: #1e293b;
+  --pal-text-muted: #64748b; --pal-border: #cbd5e1;
+  --pal-success: #138a63; --pal-warning: #b7791f; --pal-danger: #dc2626;
+}
+/* 调色板: 浆果 */
+[data-palette="berry"] {
+  --pal-primary: #9d174d; --pal-primary-soft: #fce7f3; --pal-bg: #fdf2f8;
+  --pal-surface: #fff; --pal-surface-alt: #fdf8fb; --pal-text-main: #500724;
+  --pal-text-muted: #be185d; --pal-border: #f9a8d4;
+  --pal-success: #138a63; --pal-warning: #b7791f; --pal-danger: #dc2626;
+}
+/* 调色板: 蜜桃 */
+[data-palette="peach"] {
+  --pal-primary: #ea580c; --pal-primary-soft: #fff0e8; --pal-bg: #fff8f0;
+  --pal-surface: #fff; --pal-surface-alt: #fff5ee; --pal-text-main: #431407;
+  --pal-text-muted: #c2410c; --pal-border: #fed7aa;
+  --pal-success: #138a63; --pal-warning: #b7791f; --pal-danger: #dc2626;
+}
+/* 调色板: 青色 */
+[data-palette="teal"] {
+  --pal-primary: #0d9488; --pal-primary-soft: #ccfbf1; --pal-bg: #f0fdfa;
+  --pal-surface: #fff; --pal-surface-alt: #f0fdfa; --pal-text-main: #134e4a;
+  --pal-text-muted: #0f766e; --pal-border: #99f6e4;
+  --pal-success: #138a63; --pal-warning: #b7791f; --pal-danger: #dc2626;
+}
+/* 调色板: 靛青 */
+[data-palette="indigo"] {
+  --pal-primary: #4f46e5; --pal-primary-soft: #eef2ff; --pal-bg: #f5f3ff;
+  --pal-surface: #fff; --pal-surface-alt: #faf5ff; --pal-text-main: #1e1b4b;
+  --pal-text-muted: #4338ca; --pal-border: #c7d2fe;
+  --pal-success: #138a63; --pal-warning: #b7791f; --pal-danger: #dc2626;
+}
+/* 调色板: 黑白 */
+[data-palette="monochrome"] {
+  --pal-primary: #374151; --pal-primary-soft: #f3f4f6; --pal-bg: #fafafa;
+  --pal-surface: #fff; --pal-surface-alt: #f9fafb; --pal-text-main: #111827;
+  --pal-text-muted: #6b7280; --pal-border: #e5e7eb;
+  --pal-success: #138a63; --pal-warning: #b7791f; --pal-danger: #dc2626;
+}
+/* 调色板: 霓虹 */
+[data-palette="neon"] {
+  --pal-primary: #22d3ee; --pal-primary-soft: #cffafe; --pal-bg: #0a0e1a;
+  --pal-surface: #111827; --pal-surface-alt: #1e293b; --pal-text-main: #f0f9ff;
+  --pal-text-muted: #67e8f9; --pal-border: #164e63;
+  --pal-success: #138a63; --pal-warning: #b7791f; --pal-danger: #dc2626;
+}
+/* 调色板: 柔彩 */
+[data-palette="pastel"] {
+  --pal-primary: #a78bfa; --pal-primary-soft: #ede9fe; --pal-bg: #f5f3ff;
+  --pal-surface: #fff; --pal-surface-alt: #faf5ff; --pal-text-main: #3b0764;
+  --pal-text-muted: #7c3aed; --pal-border: #ddd6fe;
+  --pal-success: #138a63; --pal-warning: #b7791f; --pal-danger: #dc2626;
+}

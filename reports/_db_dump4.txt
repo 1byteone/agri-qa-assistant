@@ -1,0 +1,44 @@
+ALL-INCLUSIVE: prod=337188940.1 area=654470500.0
+KEPT (excl aggregates): prod=197669740.1 area=225975550.0
+kept/all prod pct=58.62%
+
+=== all crops 河南 2023 sorted by prod desc ===
+蔬菜             prod=  80456000.0 area=  26991000.0 
+粮食             prod=  66242700.0 area= 161779350.0 [AGG]
+谷物             prod=  64097600.0 area= 152714250.0 [AGG]
+小麦             prod=  35497300.0 area=    700000.0 
+冬小麦            prod=  35497000.0 area=  85291500.0 
+玉米             prod=  23657000.0 area=  57965550.0 
+油料             prod=   7030400.0 area=  24153750.0 [AGG]
+花生             prod=   6388600.0 area=  19605600.0 
+稻谷             prod=   4792200.0 area=   8861250.0 
+中稻和一季晚稻        prod=   4792000.0 area=   8862000.0 
+甜瓜             prod=   1526535.9 area=         0.0 
+梨              prod=   1503000.0 area=         0.0 
+薯类             prod=   1186200.0 area=   3019950.0 [AGG]
+豆类             prod=    959000.0 area=   6045150.0 [AGG]
+大豆             prod=    927000.0 area=         0.0 
+葡萄             prod=    914400.0 area=         0.0 
+油菜籽            prod=    457800.0 area=   2913000.0 
+柿子             prod=    435804.2 area=         0.0 
+烟叶             prod=    195100.0 area=   1097850.0 
+烤烟             prod=    190400.0 area=   1074900.0 
+芝麻             prod=    168000.0 area=   1543500.0 
+红枣             prod=    113000.0 area=         0.0 
+甘蔗             prod=     79600.0 area=     16500.0 
+柑桔             prod=     52000.0 area=         0.0 
+绿豆             prod=     22000.0 area=    261000.0 
+红小豆            prod=      5000.0 area=     40500.0 
+麻类             prod=      3300.0 area=     10650.0 [AGG]
+向日葵籽           prod=         0.0 area=     90000.0 
+果园             prod=         0.0 area=   5800800.0 
+柑桔园            prod=         0.0 area=     68550.0 
+梨园             prod=         0.0 area=    887550.0 
+棉花             prod=         0.0 area=     91800.0 
+瓜果类            prod=         0.0 area=   4287450.0 [AGG]
+秋粮             prod=         0.0 area=  76467900.0 [AGG]
+糖料             prod=         0.0 area=     16500.0 [AGG]
+苹果园            prod=         0.0 area=   1512150.0 
+茶园             prod=         0.0 area=   1752000.0 
+葡萄园            prod=         0.0 area=    538050.0 
+黄红麻            prod=         0.0 area=     10500.0 

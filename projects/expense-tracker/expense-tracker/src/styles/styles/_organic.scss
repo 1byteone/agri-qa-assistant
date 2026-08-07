@@ -1,0 +1,132 @@
+/* ============================================================
+   ORGANIC — 有机自然主义
+   核心特征: 圆角胶囊、自然绿/棕色调、柔和曲线、生态感、舒适
+   ============================================================ */
+
+[data-style="organic"] {
+  --stl-radius: 12px;
+  --stl-border-width: 1px;
+  --stl-border-style: solid;
+  --stl-font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  --stl-font-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  --stl-letter-spacing: 0;
+  --stl-line-height: 1.6;
+  --stl-shadow: 0 4px 12px rgba(124, 179, 66, 0.15);
+  --stl-chip-style: solid;
+  --stl-btn-style: solid;
+  --stl-header-border: 2px solid var(--pal-text-main);
+  --stl-decoration: leaf;
+
+  body {
+    background: linear-gradient(180deg, #f5faf0, #e8f5e0) !important;
+  }
+
+  .section {
+    border-radius: 12px;
+    border: 1px solid var(--pal-border);
+  }
+
+  .chip {
+    border-radius: 999px;
+  }
+
+  .avatar-trigger {
+    border-radius: 999px;
+  }
+
+  .avatar-preview {
+    border-radius: 50%;
+  }
+
+  .btn-submit {
+    border-radius: 999px;
+    background: var(--pal-text-main);
+    text-transform: none;
+    letter-spacing: 0.02em;
+    font-weight: 600;
+  }
+
+  .btn-outline {
+    border-radius: 999px;
+    border: 1px solid var(--pal-border);
+    &:hover { border-color: var(--pal-success); color: var(--pal-success); }
+  }
+
+  .btn-demo {
+    border-radius: 999px;
+    background: var(--pal-success);
+  }
+
+  .form-control {
+    border-radius: 999px;
+    padding: 10px 16px;
+  }
+
+  .chip {
+    border-radius: 999px;
+    padding: 6px 18px;
+
+    &.active {
+      background: var(--pal-success);
+      border-color: var(--pal-success);
+    }
+  }
+
+  .section-title {
+    border-bottom: 1px solid var(--pal-border);
+    text-transform: none;
+    letter-spacing: 0.02em;
+  }
+
+  .header h1 {
+    color: var(--pal-success);
+  }
+
+  .header .subtitle {
+    color: var(--pal-text-muted);
+  }
+
+  .record {
+    border-bottom: 1px solid var(--pal-border);
+  }
+
+  .stat-item {
+    border-bottom: 1px dashed var(--pal-border);
+  }
+
+  .stat-total {
+    border-top: 2px solid var(--pal-text-main);
+  }
+
+  .stat-value {
+    color: var(--pal-success);
+  }
+
+  .avatar-option {
+    border-radius: 50%;
+  }
+
+  .avatar-panel {
+    border-radius: 16px;
+  }
+
+  .palette-swatch { border-radius: 50%; }
+  .style-swatch { border-radius: 999px; }
+
+  .guide-banner {
+    border-radius: 12px;
+    border: 1px solid var(--pal-success);
+  }
+
+  .status-badge { border-radius: 999px; }
+  .trend-indicator { border-radius: 999px; }
+  .toast { border-radius: 999px; }
+
+  .modal {
+    border-radius: 16px;
+  }
+
+  .modal-overlay {
+    background: rgba(0, 0, 0, 0.3);
+  }
+}

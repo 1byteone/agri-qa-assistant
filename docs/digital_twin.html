@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>中国种植业数字孪生系统 v2.0</title>
+<script src="vendor/echarts/package/dist/echarts.min.js"></script>
+<script src="vendor/echarts-gl/package/dist/echarts-gl.min.js"></script>
+<!-- Three.js importmap：examples/jsm 内部使用裸导入 from 'three'，必须映射才能解析 -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three/package/build/three.module.js",
+    "three/addons/": "./vendor/three/package/examples/jsm/"
+  }
+}
+</script>
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   数字孪生主题系统 — 深色科技风 + 玻璃质感 + 霓虹光效
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  --bg-primary: #060b18;
+  --bg-secondary: #0a1228;
+  --bg-panel: rgba(10, 18, 40, 0.75);
+  --bg-glass: rgba(10, 18, 40, 0.55);
+  --border-neon: rgba(0, 212, 170, 0.25);
+  --border-glass: rgba(255, 255, 255, 0.06);
+  --glow-cyan: 0 0 20px rgba(0, 212, 170, 0.15);
+  --glow-blue: 0 0 20px rgba(59, 130, 246, 0.12);
+  --text-primary: #e8edf5;
+  --text-secondary: #8892a8;
+  --text-muted: #556077;
+  --accent-cyan: #00d4aa;
+  --accent-blue: #3b82f6;
+  --accent-amber: #f59e0b;
+  --accent-red: #ef4444;
+  --accent-green: #10b981;
+  --font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  --font-sans: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --sidebar-w: 380px;
+  --header-h: 0px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  width: 100%; height: 100%;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  overflow: hidden;
+  user-select: none;
+}
+
+/* ── 数字孪生背景网格 + 粒子 ── */
+#bg-canvas {
+  position: fixed; inset: 0; z-index: 0;
+  pointer-events: none;
+}
+
+/* ── 主布局 ── */
+.app {
+  position: relative; z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr var(--sidebar-w);
+  grid-template-rows: 1fr;
+  grid-template-areas: 'map sidebar';
+  width: 100%; height: 100%;
+}
+
+/* ── 地图区 ── */
+#map-area {
+  grid-area: map;
+  position: relative; overflow: hidden;
+  background: var(--bg-primary);
+}
+#map-chart {
+  width: 100%; height: 100%;
+}
+
+/* ── 地图控件 ── */
+.map-controls {
+  position: absolute; bottom: 24px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; gap: 10px;
+  z-index: 10;
+}
+.map-controls button {
+  padding: 8px 18px;
+  border: 1px solid var(--border-neon);
+  border-radius: 6px;
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.25s;
+  font-family: var(--font-sans);
+}
+.map-controls button:hover {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  box-shadow: var(--glow-cyan);
+  background: rgba(0, 212, 170, 0.08);
+}
+.map-controls button.active {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  background: rgba(0, 212, 170, 0.12);
+}
+
+/* ── 侧边栏 ── */
+#sidebar {
+  grid-area: sidebar;
+  display: flex; flex-direction: column;
+  background: var(--bg-secondary);
+  border-left: 1px solid var(--border-glass);
+  overflow: hidden;
+  position: relative;
+}
+
+/* 侧边栏顶部标题 */
+.sidebar-header {
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--border-glass);
+  flex-shrink: 0;
+}
+.sidebar-header h1 {
+  font-size: 15px;
+  font-weight: 600;
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 1px;
+}
+.sidebar-header .sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-family: var(--font-mono);
+}
+
+/* 年份切换 Tabs */
+.year-tabs {
+  display: flex; gap: 0;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border-glass);
+  flex-shrink: 0;
+}
+.year-tab {
+  flex: 1;
+  padding: 6px 0;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  transition: all 0.25s;
+  background: transparent;
+  font-family: var(--font-sans);
+}
+.year-tab:first-child { border-right: none; }
+.year-tab.active {
+  color: var(--accent-cyan);
+  border-color: var(--border-neon);
+  background: rgba(0, 212, 170, 0.06);
+  box-shadow: var(--glow-cyan);
+}
+.year-tab:hover:not(.active) { color: var(--text-secondary); }
+
+/* 指标切换 */
+.metric-tabs {
+  display: flex; gap: 0;
+  padding: 0 20px 12px;
+  flex-shrink: 0;
+}
+.metric-tab {
+  flex: 1;
+  padding: 5px 0;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  transition: all 0.25s;
+  background: transparent;
+  font-family: var(--font-sans);
+}
+.metric-tab:first-child { border-right: none; }
+.metric-tab.active {
+  color: var(--accent-blue);
+  border-color: rgba(59, 130, 246, 0.25);
+  background: rgba(59, 130, 246, 0.06);
+}
+.metric-tab:hover:not(.active) { color: var(--text-secondary); }
+
+/* ── 滚动内容区 ── */
+.sidebar-scroll {
+  flex: 1; overflow-y: auto;
+  padding: 0 20px 20px;
+}
+.sidebar-scroll::-webkit-scrollbar { width: 4px; }
+.sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
+.sidebar-scroll::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 2px; }
+
+/* ── KPI 卡片 ── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 16px 0;
+}
+.kpi-card {
+  background: var(--bg-glass);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-glass);
+  border-radius: 8px;
+  padding: 14px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+.kpi-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+  opacity: 0.4;
+}
+.kpi-card:hover { border-color: var(--border-neon); }
+.kpi-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  display: flex; align-items: center; gap: 6px;
+}
+.kpi-value {
+  font-size: 20px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+}
+.kpi-unit {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-left: 2px;
+}
+.kpi-yoy {
+  display: inline-flex; align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 4px;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+.kpi-yoy.up { color: var(--accent-green); background: rgba(16,185,129,0.1); }
+.kpi-yoy.down { color: var(--accent-red); background: rgba(239,68,68,0.1); }
+
+/* ── 面板标题 ── */
+.panel-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin: 20px 0 10px;
+  display: flex; align-items: center; gap: 8px;
+  letter-spacing: 0.5px;
+}
+.panel-title::after {
+  content: '';
+  flex: 1; height: 1px;
+  background: linear-gradient(90deg, var(--border-glass), transparent);
+}
+
+/* ── 排名列表 ── */
+.rank-list {
+  list-style: none;
+}
+.rank-item {
+  display: flex; align-items: center;
+  padding: 8px 10px;
+  margin-bottom: 4px;
+  border-radius: 6px;
+  background: var(--bg-glass);
+  border: 1px solid transparent;
+  transition: all 0.2s;
+  cursor: default;
+}
+.rank-item:hover {
+  border-color: rgba(0,212,170,0.15);
+  background: rgba(0,212,170,0.04);
+}
+.rank-num {
+  width: 22px; flex-shrink: 0;
+  font-size: 11px; font-weight: 700;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+.rank-item:nth-child(1) .rank-num { color: var(--accent-amber); }
+.rank-item:nth-child(2) .rank-num { color: var(--text-secondary); }
+.rank-item:nth-child(3) .rank-num { color: #cd7f32; }
+.rank-name {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+.rank-cat {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-left: 6px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.04);
+}
+.rank-bar-wrap {
+  width: 80px; flex-shrink: 0;
+  height: 4px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 2px;
+  margin-left: 10px;
+  overflow: hidden;
+}
+.rank-bar {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.6s cubic-bezier(0.22,1,0.36,1);
+}
+.rank-val {
+  width: 60px; flex-shrink: 0;
+  text-align: right;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+}
+
+/* ── 结构饼图 ── */
+.structure-wrap {
+  display: flex; align-items: center; gap: 16px;
+  padding: 12px 0;
+}
+.structure-svg { flex-shrink: 0; }
+.structure-legend { flex: 1; }
+.structure-legend-item {
+  display: flex; align-items: center;
+  gap: 8px; margin-bottom: 8px;
+}
+.structure-legend-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.structure-legend-label {
+  flex: 1;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.structure-legend-val {
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  text-align: right;
+}
+
+/* ── 加载动画 ── */
+.loading-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--bg-primary);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  transition: opacity 0.8s, visibility 0.8s;
+}
+.loading-overlay.hidden {
+  opacity: 0; visibility: hidden;
+  pointer-events: none;
+}
+.loading-ring {
+  width: 60px; height: 60px;
+  border: 2px solid transparent;
+  border-top: 2px solid var(--accent-cyan);
+  border-right: 2px solid var(--accent-blue);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text {
+  margin-top: 20px;
+  font-size: 13px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  letter-spacing: 2px;
+}
+.loading-bar {
+  width: 200px; height: 2px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 1px;
+  margin-top: 12px;
+  overflow: hidden;
+}
+.loading-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue));
+  border-radius: 1px;
+  transition: width 0.5s;
+}
+
+/* ── Three.js 弹窗 ── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(6,11,24,0.85);
+  backdrop-filter: blur(8px);
+  display: none; align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal-content {
+  width: 90vw; height: 90vh;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-neon);
+  border-radius: 12px;
+  box-shadow: 0 0 60px rgba(0,212,170,0.1);
+  position: relative;
+  overflow: hidden;
+}
+.modal-close {
+  position: absolute; top: 16px; right: 20px;
+  z-index: 10;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border-glass);
+  color: var(--text-secondary);
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.modal-close:hover {
+  border-color: var(--accent-red);
+  color: var(--accent-red);
+  background: rgba(239,68,68,0.1);
+}
+#three-container {
+  width: 100%; height: 100%;
+}
+
+/* ── 响应式 ── */
+@media (max-width: 900px) {
+  .app {
+    grid-template-columns: 1fr;
+    grid-template-rows: 50vh auto;
+    grid-template-areas: 'map' 'sidebar';
+  }
+  #sidebar { border-left: none; border-top: 1px solid var(--border-glass); }
+  :root { --sidebar-w: 100%; }
+}
+</style>
+</head>
+<body>
+
+<!-- 欢迎页加载 -->
+<div class="loading-overlay" id="loading-overlay">
+  <div class="loading-ring"></div>
+  <div class="loading-text" id="loading-text">INITIALIZING DIGITAL TWIN</div>
+  <div class="loading-bar"><div class="loading-bar-fill" id="loading-bar-fill"></div></div>
+</div>
+
+<!-- 背景粒子 Canvas -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- Three.js 弹窗 -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-content">
+    <button class="modal-close" id="modal-close">&#x2715;</button>
+    <div id="three-container"></div>
+  </div>
+</div>
+
+<!-- 主应用 -->
+<div class="app">
+  <div id="map-area">
+    <div id="map-chart"></div>
+    <div class="map-controls">
+      <button id="map-locate-btn" title="复位视角">◎ 复位</button>
+      <button id="map-rotate-toggle">▶ 旋转</button>
+      <button id="forest-btn">🌲 3D 柱状森林</button>
+    </div>
+  </div>
+
+  <div id="sidebar">
+    <div class="sidebar-header">
+      <h1>中国种植业 · 数字孪生</h1>
+      <div class="sub">Crop Planting Digital Twin · v2.0</div>
+    </div>
+    <div class="year-tabs" id="year-tabs">
+      <button class="year-tab active" data-year="2024">2024</button>
+      <button class="year-tab" data-year="2023">2023</button>
+    </div>
+    <div class="metric-tabs" id="metric-tabs">
+      <button class="metric-tab active" data-metric="production">产量</button>
+      <button class="metric-tab" data-metric="area">面积</button>
+    </div>
+    <div class="sidebar-scroll" id="sidebar-scroll">
+      <!-- KPI -->
+      <div class="kpi-grid" id="kpi-grid"></div>
+      <!-- 结构 -->
+      <div class="panel-title">种植结构</div>
+      <div id="structure-panel"></div>
+      <!-- 排名 -->
+      <div class="panel-title">作物排名 TOP15</div>
+      <ul class="rank-list" id="rank-list"></ul>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   数字孪生核心 — 事件驱动架构
+   ═══════════════════════════════════════════════════════════════ */
+
+// ── DataStore: 集中状态管理 + 事件总线 ──
+const DataStore = (() => {
+  const _state = {
+    year: 2024,
+    metric: 'production',
+    mapRotating: false,
+    rawData: null,
+    _loading: false,
+    _ready: false,
+  };
+  const _listeners = new Map();
+
+  return {
+    get(key) { return _state[key]; },
+    set(key, val) {
+      const old = _state[key];
+      if (old === val) return;
+      _state[key] = val;
+      this.emit('change:' + key, val, old);
+      this.emit('change', { key, val, old });
+    },
+    on(event, fn) {
+      if (!_listeners.has(event)) _listeners.set(event, new Set());
+      _listeners.get(event).add(fn);
+      return () => _listeners.get(event)?.delete(fn);
+    },
+    emit(event, ...args) {
+      _listeners.get(event)?.forEach(fn => fn(...args));
+    },
+    // 从 data 派生
+    getKPI() {
+      const d = _state.rawData;
+      if (!d) return null;
+      return d.kpi[_state.year];
+    },
+    getYoY() {
+      const d = _state.rawData;
+      if (!d) return null;
+      return d.yoy;
+    },
+    getCategories() {
+      const d = _state.rawData;
+      if (!d) return null;
+      return d.categories[_state.year];
+    },
+    getRankings() {
+      const d = _state.rawData;
+      if (!d) return null;
+      const key = _state.metric === 'production' ? 'production_by_crop' : 'area_by_crop';
+      return d[key][_state.year];
+    },
+    getProvinceData() {
+      const d = _state.rawData;
+      if (!d) return null;
+      return d.province.filter(p => p.year === _state.year && p.province !== '全国');
+    },
+    getColorMap() {
+      const d = _state.rawData;
+      if (!d) return {};
+      return d.meta?.category_colors || {};
+    },
+    async load() {
+      if (_state._loading) return;
+      _state._loading = true;
+      try {
+        const resp = await fetch('dashboard_data.json');
+        _state.rawData = await resp.json();
+        _state._ready = true;
+        this.emit('ready');
+      } catch (err) {
+        console.error('数据加载失败:', err);
+        throw err;
+      } finally {
+        _state._loading = false;
+      }
+    },
+    isReady() { return _state._ready; },
+  };
+})();
+
+// ── 工具函数 ──
+const fmtNum = (n) => {
+  if (n == null || isNaN(n)) return '--';
+  if (n >= 1e8) return (n / 1e8).toFixed(2) + '亿';
+  if (n >= 1e4) return (n / 1e4).toFixed(1) + '万';
+  return n.toLocaleString('zh-CN');
+};
+const fmtPct = (n) => (n != null ? n.toFixed(1) + '%' : '--');
+const fmtNumRaw = (n) => {
+  if (n == null || isNaN(n)) return '--';
+  return n.toLocaleString('zh-CN', { maximumFractionDigits: 1 });
+};
+
+// ── 数字动画 ──
+const _animFrames = {};
+const animateNumber = (el, target, suffix = '', duration = 800) => {
+  const key = el.dataset.animKey || (el.dataset.animKey = Math.random().toString(36).slice(2));
+  if (_animFrames[key]) { cancelAnimationFrame(_animFrames[key]); delete _animFrames[key]; }
+  const start = performance.now();
+  const from = 0;
+  const tick = (now) => {
+    const t = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - t, 3);
+    const val = from + (target - from) * eased;
+    el.textContent = fmtNum(val) + suffix;
+    if (t < 1) _animFrames[key] = requestAnimationFrame(tick);
+    else { el.textContent = fmtNum(target) + suffix; delete _animFrames[key]; }
+  };
+  _animFrames[key] = requestAnimationFrame(tick);
+};
+
+// ── 背景粒子 Canvas ──
+const initBgCanvas = () => {
+  const canvas = document.getElementById('bg-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  let w, h, particles = [];
+  const resize = () => {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  };
+  const createParticles = () => {
+    particles = [];
+    for (let i = 0; i < 60; i++) {
+      particles.push({
+        x: Math.random() * w, y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.15,
+        vy: (Math.random() - 0.5) * 0.15,
+        r: Math.random() * 1.5 + 0.5,
+        a: Math.random() * 0.3 + 0.1,
+      });
+    }
+  };
+  resize();
+  createParticles();
+  const draw = () => {
+    ctx.clearRect(0, 0, w, h);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = w; if (p.x > w) p.x = 0;
+      if (p.y < 0) p.y = h; if (p.y > h) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(0,212,170,${p.a})`;
+      ctx.fill();
+    });
+    // 连线
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 150) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(0,212,170,${0.06 * (1 - dist / 150)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  };
+  draw();
+  window.addEventListener('resize', () => { resize(); createParticles(); });
+};
+
+// ── MapModule: ECharts GL 3D 地图 ──
+const MapModule = (() => {
+  let chart = null;
+  let geoJSON = null;
+  let _updateId = 0;
+
+  const MAP_VIEW = { center: [104.5, 35.5, 0], alpha: 0, beta: 89.5 };
+  const calcDistance = () => {
+    const mw = Math.max(window.innerWidth - 380, 400);
+    return Math.min(50, Math.max(18, mw * 0.028));
+  };
+  const calcRegionHeight = () => DataStore.get('metric') === 'production' ? 1 : 0.8;
+
+  const filterValid = (data, metric) =>
+    data.filter(p => { const v = metric === 'production' ? p.production : p.area; return v != null && v > 0; });
+
+  const getMapData = () => {
+    const raw = DataStore.getProvinceData();
+    if (!raw) return [];
+    const valid = filterValid(raw, DataStore.get('metric'));
+    const metric = DataStore.get('metric');
+    return valid.map(p => ({
+      name: p.provinceFull,
+      value: metric === 'production' ? p.production : p.area,
+      province: p.province,
+    }));
+  };
+
+  const getColorRange = (metric) => {
+    if (metric === 'production') {
+      return ['rgba(0,212,170,0.08)', 'rgba(0,212,170,0.35)', 'rgba(245,158,11,0.5)', 'rgba(245,158,11,0.85)'];
+    }
+    return ['rgba(59,130,246,0.08)', 'rgba(59,130,246,0.35)', 'rgba(139,92,246,0.5)', 'rgba(139,92,246,0.85)'];
+  };
+
+  const render = async () => {
+    const id = ++_updateId;
+    const dom = document.getElementById('map-chart');
+    if (!chart) chart = echarts.init(dom);
+
+    // 加载 GeoJSON
+    if (!geoJSON) {
+      try {
+        const resp = await fetch('https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json');
+        geoJSON = await resp.json();
+        echarts.registerMap('china', geoJSON);
+      } catch (e) {
+        console.error('GeoJSON 加载失败:', e);
+        return;
+      }
+    }
+    if (id !== _updateId) return;
+
+    const mapData = getMapData();
+    if (mapData.length === 0) mapData.push({ name: '暂无数据', value: 0, province: '' });
+    const values = mapData.map(d => d.value).filter(v => v > 0);
+    const maxVal = values.length > 0 ? Math.max(...values) : 1;
+    const minVal = values.length > 0 ? Math.min(...values) : 0;
+    const metric = DataStore.get('metric');
+    const label = metric === 'production' ? '产量' : '面积';
+    const unit = metric === 'production' ? '吨' : '亩';
+
+    const option = {
+      tooltip: {
+        trigger: 'item',
+        formatter: (p) => {
+          const d = p.data || {};
+          const v = d.value || 0;
+          if (v <= 0) return `<strong>${d.name || p.name}</strong><br/>数据暂缺`;
+          return `<strong>${d.name || p.name}</strong><br/>${label}：${fmtNumRaw(v)} ${unit}`;
+        },
+        backgroundColor: 'rgba(6,11,24,0.85)',
+        borderColor: 'rgba(0,212,170,0.3)',
+        textStyle: { color: '#e8edf5', fontSize: 13 },
+      },
+      visualMap: {
+        min: minVal, max: maxVal,
+        text: ['高', '低'],
+        textStyle: { color: '#556077' },
+        inRange: { color: getColorRange(metric) },
+        calculable: true,
+        left: 'left', bottom: 40,
+        itemWidth: 12, itemHeight: 100,
+      },
+      series: [{
+        type: 'map3D',
+        map: 'china',
+        shading: 'lambert',
+        roam: true,
+        boxWidth: 120,
+        boxHeight: 8,
+        regionHeight: calcRegionHeight(),
+        environment: '#060b18',
+        groundPlane: { show: true, color: '#060b18' },
+        light: {
+          main: { intensity: 1.2, shadow: true, shadowQuality: 'high', alpha: 30, beta: 40 },
+          ambient: { intensity: 0.6 },
+        },
+        viewControl: {
+          projection: 'perspective',
+          autoRotate: DataStore.get('mapRotating'),
+          autoRotateDirection: 'right',
+          autoRotateSpeed: 2,
+          distance: calcDistance(),
+          minDistance: 15,
+          maxDistance: 150,
+          alpha: MAP_VIEW.alpha,
+          beta: MAP_VIEW.beta,
+          center: MAP_VIEW.center,
+          animationDurationUpdate: 1000,
+          animationEasingUpdate: 'cubicOut',
+          damping: 0.85,
+          rotateSensitivity: 1.0,
+          zoomSensitivity: 1.0,
+          panSensitivity: 0,
+        },
+        label: {
+          show: true,
+          color: '#e8edf5',
+          fontSize: 10,
+          fontWeight: 'normal',
+          textStyle: { textShadowColor: 'rgba(0,0,0,0.8)', textShadowBlur: 4 },
+        },
+        itemStyle: {
+          borderColor: 'rgba(0,212,170,0.25)',
+          borderWidth: 0.5,
+        },
+        emphasis: {
+          label: { color: '#fff', fontSize: 14, fontWeight: 'bold' },
+          itemStyle: { borderColor: '#00d4aa', borderWidth: 2 },
+        },
+        data: mapData,
+      }],
+    };
+
+    chart.setOption(option, true);
+
+    // 后置修正：确保视角参数最终生效
+    if (id === _updateId) {
+      setTimeout(() => {
+        if (id !== _updateId) return;
+        chart.setOption({
+          series: [{
+            viewControl: {
+              center: MAP_VIEW.center,
+              alpha: MAP_VIEW.alpha,
+              beta: MAP_VIEW.beta,
+              distance: calcDistance(),
+            }
+          }]
+        });
+      }, 150);
+    }
+  };
+
+  const init = async () => { await render(); };
+  const resize = () => {
+    if (chart) {
+      chart.setOption({
+        series: [{ viewControl: { distance: calcDistance(), center: MAP_VIEW.center } }]
+      });
+      chart.resize();
+    }
+  };
+  const locate = () => {
+    if (!chart) return;
+    chart.setOption({
+      series: [{
+        viewControl: {
+          center: MAP_VIEW.center,
+          alpha: MAP_VIEW.alpha,
+          beta: MAP_VIEW.beta,
+          distance: calcDistance(),
+          autoRotate: DataStore.get('mapRotating'),
+          animationDurationUpdate: 800,
+          animationEasingUpdate: 'cubicOut',
+        }
+      }]
+    });
+  };
+  const toggleRotate = () => {
+    const r = !DataStore.get('mapRotating');
+    DataStore.set('mapRotating', r);
+    if (chart) {
+      chart.setOption({ series: [{ viewControl: { autoRotate: r } }] });
+    }
+    return r;
+  };
+
+  return { init, resize, locate, toggleRotate, render };
+})();
+
+// ── KPIModule ──
+const KPIModule = (() => {
+  const METRICS = [
+    { key: 'total_production', label: '总产量', unit: '吨', yoyKey: 'production_change_pct' },
+    { key: 'total_area', label: '总面积', unit: '亩', yoyKey: 'area_change_pct' },
+    { key: 'food_production_pct', label: '粮食占比', unit: '%', yoyKey: 'food_production_change_pct', isPct: true },
+    { key: 'economic_production_pct', label: '经济作物占比', unit: '%', yoyKey: 'economic_production_change_pct', isPct: true },
+  ];
+
+  const render = () => {
+    const kpi = DataStore.getKPI();
+    const yoy = DataStore.getYoY();
+    if (!kpi) return;
+    const grid = document.getElementById('kpi-grid');
+    grid.innerHTML = METRICS.map(m => {
+      const val = kpi[m.key] || 0;
+      const yoyVal = yoy[m.yoyKey];
+      const yoyClass = yoyVal != null ? (yoyVal >= 0 ? 'up' : 'down') : '';
+      const yoyArrow = yoyVal != null ? (yoyVal >= 0 ? '▲' : '▼') : '';
+      const yoyText = yoyVal != null ? Math.abs(yoyVal).toFixed(1) + '%' : '--';
+      return `
+        <div class="kpi-card" data-kpi="${m.key}">
+          <div class="kpi-label">${m.label}</div>
+          <div class="kpi-value" id="kpi-val-${m.key}">--</div>
+          <div class="kpi-yoy ${yoyClass}">${yoyArrow} ${yoyText}</div>
+        </div>
+      `;
+    }).join('');
+
+    // 启动数字动画
+    METRICS.forEach(m => {
+      const el = document.getElementById('kpi-val-' + m.key);
+      const val = kpi[m.key] || 0;
+      if (m.isPct) {
+        animateNumber(el, val, '%');
+      } else {
+        animateNumber(el, val);
+      }
+    });
+  };
+
+  return { render };
+})();
+
+// ── StructureModule: SVG 环形饼图 ──
+const StructureModule = (() => {
+  const render = () => {
+    const cats = DataStore.getCategories();
+    if (!cats || cats.length === 0) return;
+    const metric = DataStore.get('metric');
+    const total = cats.reduce((s, c) => s + (metric === 'production' ? c.production : c.area), 0);
+    if (total === 0) return;
+
+    const size = 100, cx = 50, cy = 50, r = 38, ir = 24;
+    let startAngle = -Math.PI / 2;
+    const segments = cats.map(c => {
+      const val = metric === 'production' ? c.production : c.area;
+      const pct = val / total;
+      const angle = pct * Math.PI * 2;
+      const endAngle = startAngle + angle;
+      const x1 = cx + r * Math.cos(startAngle);
+      const y1 = cy + r * Math.sin(startAngle);
+      const x2 = cx + r * Math.cos(endAngle);
+      const y2 = cy + r * Math.sin(endAngle);
+      const large = angle > Math.PI ? 1 : 0;
+      const d = `M ${cx + ir * Math.cos(startAngle)} ${cy + ir * Math.sin(startAngle)} L ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} L ${cx + ir * Math.cos(endAngle)} ${cy + ir * Math.sin(endAngle)} A ${ir} ${ir} 0 ${large} 0 ${cx + ir * Math.cos(startAngle)} ${cy + ir * Math.sin(startAngle)} Z`;
+      const seg = { d, color: c.color, name: c.name, pct, val };
+      startAngle = endAngle;
+      return seg;
+    });
+
+    const label = metric === 'production' ? '产量' : '面积';
+    const unit = metric === 'production' ? '吨' : '亩';
+
+    const svg = `<svg width="${size * 2}" height="${size * 2}" viewBox="0 0 ${size * 2} ${size * 2}" class="structure-svg">
+      ${segments.map(s => `<path d="${s.d}" fill="${s.color}" stroke="#060b18" stroke-width="1.5" opacity="0.85"/>`).join('')}
+      <circle cx="${cx * 2}" cy="${cy * 2}" r="${ir * 2}" fill="none"/>
+    </svg>`;
+
+    const legend = segments.map(s => `
+      <div class="structure-legend-item">
+        <span class="structure-legend-dot" style="background:${s.color}"></span>
+        <span class="structure-legend-label">${s.name}</span>
+        <span class="structure-legend-val">${(s.pct * 100).toFixed(1)}%</span>
+      </div>
+    `).join('');
+
+    document.getElementById('structure-panel').innerHTML = `
+      <div class="structure-wrap">
+        ${svg}
+        <div class="structure-legend">${legend}</div>
+      </div>
+    `;
+  };
+  return { render };
+})();
+
+// ── RankingModule: TOP15 排名 ──
+const RankingModule = (() => {
+  const CATEGORY_COLORS = {
+    '粮食作物': '#1f7a5a',
+    '经济作物': '#e18b32',
+    '其他作物': '#6b7c93',
+  };
+
+  const render = () => {
+    const data = DataStore.getRankings();
+    if (!data || data.length === 0) {
+      document.getElementById('rank-list').innerHTML = '<li style="color:var(--text-muted);padding:16px;text-align:center">暂无数据</li>';
+      return;
+    }
+    const sorted = [...data].sort((a, b) => b.value - a.value).slice(0, 15);
+    const maxVal = sorted[0]?.value || 1;
+    const metric = DataStore.get('metric');
+    const unit = metric === 'production' ? '吨' : '亩';
+
+    const list = document.getElementById('rank-list');
+    list.innerHTML = sorted.map((item, i) => {
+      const pct = (item.value / maxVal * 100).toFixed(0);
+      const color = CATEGORY_COLORS[item.category] || '#6b7c93';
+      return `
+        <li class="rank-item">
+          <span class="rank-num">${i + 1}</span>
+          <span class="rank-name">${item.name}</span>
+          <span class="rank-cat">${item.category || ''}</span>
+          <div class="rank-bar-wrap">
+            <div class="rank-bar" style="width:${pct}%;background:${color}"></div>
+          </div>
+          <span class="rank-val">${fmtNum(item.value)}</span>
+        </li>
+      `;
+    }).join('');
+  };
+  return { render };
+})();
+
+// ── ThreeForest: Three.js 柱状森林弹窗 ──
+const ThreeForest = (() => {
+  let scene, camera, renderer, controls, container;
+  let bars = [];
+  let rafId = null;
+  let initialized = false;
+
+  const init = async () => {
+    if (initialized) return;
+    container = document.getElementById('three-container');
+    const w = container.clientWidth || window.innerWidth * 0.9;
+    const h = container.clientHeight || window.innerHeight * 0.9;
+
+    // 动态导入 Three.js + OrbitControls（ESM）
+    // 动态导入 Three.js（three.module.js 无 default export，需用命名空间导入）
+    // 动态导入 Three.js：import map 将 'three' 映射到 CDN；OrbitControls 内部裸导入 from 'three' 由 import map 解析
+    const THREE = await import('three');
+    const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
+
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x060b18);
+    camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
+    camera.position.set(25, 20, 25);
+    camera.lookAt(0, 0, 0);
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(w, h);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    container.appendChild(renderer.domElement);
+
+    controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 1.5;
+    controls.target.set(0, 2, 0);
+    controls.maxPolarAngle = Math.PI / 2.2;
+
+    const ambient = new THREE.AmbientLight(0x404060, 0.5);
+    scene.add(ambient);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
+    dirLight.position.set(10, 30, 10);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.width = 1024;
+    dirLight.shadow.mapSize.height = 1024;
+    scene.add(dirLight);
+    const fillLight = new THREE.DirectionalLight(0x00d4aa, 0.3);
+    fillLight.position.set(-10, 10, -10);
+    scene.add(fillLight);
+
+    const groundGeo = new THREE.PlaneGeometry(40, 40);
+    const groundMat = new THREE.MeshStandardMaterial({
+      color: 0x0a1228, roughness: 0.8, metalness: 0.1,
+      transparent: true, opacity: 0.8,
+    });
+    const ground = new THREE.Mesh(groundGeo, groundMat);
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -0.1;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    const gridHelper = new THREE.GridHelper(40, 20, 0x00d4aa, 0x1a2a4a);
+    gridHelper.position.y = 0;
+    gridHelper.material.transparent = true;
+    gridHelper.material.opacity = 0.3;
+    scene.add(gridHelper);
+
+    // 粒子
+    const particleGeo = new THREE.BufferGeometry();
+    const particleCount = 500;
+    const pos = new Float32Array(particleCount * 3);
+    for (let i = 0; i < particleCount * 3; i++) pos[i] = (Math.random() - 0.5) * 80;
+    particleGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    const particleMat = new THREE.PointsMaterial({ color: 0x00d4aa, size: 0.08, transparent: true, opacity: 0.4 });
+    const particles = new THREE.Points(particleGeo, particleMat);
+    particles.position.y = 5;
+    scene.add(particles);
+
+    // 柱体
+    const data = DataStore.getRankings();
+    if (data && data.length > 0) {
+      const sorted = [...data].sort((a, b) => b.value - a.value).slice(0, 30);
+      const maxVal = sorted[0]?.value || 1;
+      const cols = 6, spacing = 2.8, offsetX = (cols - 1) * spacing / 2;
+      const rows = Math.ceil(sorted.length / cols);
+      const CAT_COLORS = { '粮食作物': 0x1f7a5a, '经济作物': 0xe18b32, '其他作物': 0x6b7c93 };
+
+      sorted.forEach((item, i) => {
+        const col = i % cols, row = Math.floor(i / cols);
+        const bh = Math.max(0.3, (item.value / maxVal) * 8);
+        const geo = new THREE.BoxGeometry(1.8, bh, 1.8);
+        const color = CAT_COLORS[item.category] || 0x6b7c93;
+        const mat = new THREE.MeshStandardMaterial({
+          color, roughness: 0.3, metalness: 0.2,
+          emissive: color, emissiveIntensity: 0.08,
+          transparent: true, opacity: 0.9,
+        });
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.position.set(col * spacing - offsetX, bh / 2, row * spacing - (rows - 1) * spacing / 2);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        mesh.userData = { name: item.name, value: item.value, category: item.category };
+        scene.add(mesh);
+        bars.push(mesh);
+
+        const edgeGeo = new THREE.EdgesGeometry(geo);
+        const edgeMat = new THREE.LineBasicMaterial({ color: 0x00d4aa, transparent: true, opacity: 0.2 });
+        const edge = new THREE.LineSegments(edgeGeo, edgeMat);
+        edge.position.copy(mesh.position);
+        scene.add(edge);
+      });
+    }
+
+    initialized = true;
+    animate();
+  };
+
+  const animate = () => {
+    rafId = requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+  };
+
+  const open = async () => {
+    document.getElementById('modal-overlay').classList.add('open');
+    if (!initialized) await init();
+    else {
+      camera.position.set(25, 20, 25);
+      controls.target.set(0, 2, 0);
+      controls.update();
+    }
+  };
+
+  const close = () => {
+    document.getElementById('modal-overlay').classList.remove('open');
+  };
+
+  const resize = () => {
+    if (!initialized) return;
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  };
+
+  return { open, close, resize };
+})();
+
+// ── App: 主编排器 ──
+const App = (() => {
+  let _resizeTimer = null;
+
+  const bindUI = () => {
+    // 年份切换
+    document.querySelectorAll('.year-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.year-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        DataStore.set('year', parseInt(tab.dataset.year));
+      });
+    });
+    // 指标切换
+    document.querySelectorAll('.metric-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.metric-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        DataStore.set('metric', tab.dataset.metric);
+      });
+    });
+    // 地图复位
+    document.getElementById('map-locate-btn').addEventListener('click', () => MapModule.locate());
+    // 旋转控制
+    document.getElementById('map-rotate-toggle').addEventListener('click', () => {
+      const r = MapModule.toggleRotate();
+      document.getElementById('map-rotate-toggle').textContent = r ? '⏸ 暂停' : '▶ 旋转';
+    });
+    // 柱状森林
+    document.getElementById('forest-btn').addEventListener('click', () => ThreeForest.open());
+    document.getElementById('modal-close').addEventListener('click', () => ThreeForest.close());
+    // 弹窗背景点击关闭
+    document.getElementById('modal-overlay').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) ThreeForest.close();
+    });
+    // resize
+    window.addEventListener('resize', () => {
+      clearTimeout(_resizeTimer);
+      _resizeTimer = setTimeout(() => {
+        MapModule.resize();
+        ThreeForest.resize();
+      }, 200);
+    });
+  };
+
+  const load = async () => {
+    const barFill = document.getElementById('loading-bar-fill');
+    const setPhase = (pct, text) => {
+      barFill.style.width = pct + '%';
+      document.getElementById('loading-text').textContent = text;
+    };
+    try {
+      setPhase(10, 'LOADING DATA...');
+      await DataStore.load();
+      setPhase(40, 'INITIALIZING MAP...');
+      await MapModule.init();
+      setPhase(70, 'RENDERING PANELS...');
+      KPIModule.render();
+      StructureModule.render();
+      RankingModule.render();
+      setPhase(100, 'READY');
+      setTimeout(() => {
+        document.getElementById('loading-overlay').classList.add('hidden');
+      }, 400);
+    } catch (err) {
+      console.error('[DigitalTwin] 初始化失败:', err);
+      document.getElementById('loading-text').textContent = '⚠️ 加载失败: ' + (err.message || '未知错误');
+      document.getElementById('loading-text').style.color = '#ef4444';
+      // 出错后仍尝试隐藏加载层（用户可看到错误信息）
+      setTimeout(() => {
+        document.getElementById('loading-overlay').classList.add('hidden');
+      }, 3000);
+    }
+  };
+
+  const init = () => {
+    // 15 秒安全兜底：无论什么情况都强制隐藏加载层
+    setTimeout(() => {
+      const overlay = document.getElementById('loading-overlay');
+      if (overlay && !overlay.classList.contains('hidden')) {
+        overlay.classList.add('hidden');
+      }
+    }, 15000);
+
+    initBgCanvas();
+    bindUI();
+
+    // 订阅数据变化
+    DataStore.on('change', ({ key }) => {
+      if (key === 'year' || key === 'metric') {
+        // 重新渲染所有面板
+        MapModule.render();
+        KPIModule.render();
+        StructureModule.render();
+        RankingModule.render();
+      }
+    });
+
+    load();
+  };
+
+  return { init };
+})();
+
+// 启动
+if (document.readyState === 'complete') {
+  App.init();
+} else {
+  window.addEventListener('load', () => setTimeout(App.init, 50));
+}
+</script>
+</body>
+</html>

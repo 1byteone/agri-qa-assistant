@@ -1,0 +1,93 @@
+/* ============================================================
+   BAUHAUS — 包豪斯主义
+   核心特征: 红/黄/蓝三原色、几何形状、无装饰、粗体无衬线、功能决定形式
+   ============================================================ */
+
+[data-style="bauhaus"] {
+  --stl-radius: 0px;
+  --stl-border-width: 3px;
+  --stl-border-style: solid;
+  --stl-font-ui: "Impact", "Arial Black", sans-serif;
+  --stl-font-heading: "Impact", "Arial Black", sans-serif;
+  --stl-letter-spacing: 0.02em;
+  --stl-line-height: 1.4;
+  --stl-shadow: none;
+  --stl-chip-style: solid;
+  --stl-btn-style: solid;
+  --stl-header-border: 4px solid var(--pal-text-main);
+  --stl-decoration: geometric;
+
+  .header h1 {
+    background: var(--pal-primary);
+    color: #fff;
+    padding: 4px 12px;
+    display: inline-block;
+  }
+
+  .section-title {
+    background: var(--pal-primary);
+    color: #fff;
+    padding: 4px 8px;
+    border: none;
+  }
+
+  .btn-submit {
+    background: var(--pal-primary);
+    border: 3px solid var(--pal-text-main);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .chip.active {
+    background: var(--pal-danger);
+    border-color: var(--pal-text-main);
+  }
+
+  .btn-outline {
+    border: 3px solid var(--pal-border);
+    text-transform: uppercase;
+    &:hover { border-color: var(--pal-danger); color: var(--pal-danger); }
+  }
+
+  .btn-demo {
+    background: var(--pal-danger);
+    border: 3px solid var(--pal-text-main);
+  }
+
+  .section {
+    border: 3px solid var(--pal-border);
+  }
+
+  .header {
+    border-bottom: 4px solid var(--pal-text-main);
+  }
+
+  .stat-total {
+    border-top: 3px solid var(--pal-text-main);
+  }
+
+  .record {
+    border-bottom: 3px solid var(--pal-border);
+  }
+
+  .stat-item {
+    border-bottom: 2px solid var(--pal-border);
+  }
+
+  .form-control {
+    border: 3px solid var(--pal-border);
+  }
+
+  .avatar-trigger {
+    border: 3px solid var(--pal-border);
+  }
+  .avatar-preview { border: 3px solid var(--pal-border); }
+  .avatar-option { border: 3px solid var(--pal-border); }
+  .avatar-panel { border: 3px solid var(--pal-border); }
+
+  .palette-swatch { border: 3px solid var(--pal-border); }
+  .style-swatch { border: 3px solid var(--pal-border); }
+  .guide-banner { border: 3px solid var(--pal-primary); }
+  .toast { border: 1px solid var(--pal-border); }
+  .modal { border: 3px solid var(--pal-text-main); }
+}

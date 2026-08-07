@@ -1,0 +1,180 @@
+/* ============================================================
+   MINIMALISM — 极简主义
+   核心特征: 最大留白、细边框 1px、极淡色调、内容优先、呼吸感
+   ============================================================ */
+
+[data-style="minimalism"] {
+  --stl-radius: 0px;
+  --stl-border-width: 1px;
+  --stl-border-style: solid;
+  --stl-font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  --stl-font-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  --stl-letter-spacing: 0.05em;
+  --stl-line-height: 1.8;
+  --stl-shadow: none;
+  --stl-chip-style: outline;
+  --stl-btn-style: outline;
+  --stl-header-border: 1px solid var(--pal-text-main);
+  --stl-decoration: none;
+
+  body {
+    padding: calc(var(--grid-base) * 6);
+  }
+
+  .header {
+    border-bottom: 1px solid var(--pal-text-main);
+    box-shadow: none;
+    padding-bottom: calc(var(--grid-base) * 3);
+
+    h1 {
+      font-weight: 300;
+      letter-spacing: 0.1em;
+    }
+
+    .subtitle {
+      font-weight: 300;
+      letter-spacing: 0.05em;
+    }
+  }
+
+  .section {
+    box-shadow: none;
+    border: none;
+    padding: calc(var(--grid-base) * 3);
+    background: transparent;
+  }
+
+  .section-title {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 400;
+    border-bottom: 1px solid var(--pal-border);
+    padding-bottom: 12px;
+    margin-bottom: 24px;
+  }
+
+  .grid {
+    gap: calc(var(--grid-base) * 4);
+  }
+
+  .btn-submit {
+    border-radius: 0;
+    border: 1px solid var(--pal-text-main);
+    background: transparent;
+    color: var(--pal-text-main);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-weight: 400;
+    padding: 12px 24px;
+
+    &:hover {
+      background: var(--pal-text-main);
+      color: var(--pal-surface);
+    }
+  }
+
+  .btn-outline {
+    border: 1px solid var(--pal-border);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 400;
+    background: transparent;
+
+    &:hover {
+      border-color: var(--pal-text-main);
+    }
+  }
+
+  .btn-demo {
+    background: transparent;
+    border: 1px solid var(--pal-primary);
+    color: var(--pal-primary);
+    letter-spacing: 0.1em;
+    font-weight: 400;
+
+    &:hover {
+      background: var(--pal-primary-soft);
+    }
+  }
+
+  .chip {
+    border-radius: 0;
+    border: 1px solid var(--pal-border);
+    background: transparent;
+    padding: 4px 12px;
+    letter-spacing: 0.05em;
+    font-weight: 400;
+
+    &.active {
+      background: transparent;
+      color: var(--pal-primary);
+      border-color: var(--pal-primary);
+    }
+  }
+
+  .form-control {
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid var(--pal-border);
+    background: transparent;
+    padding: 8px 0;
+    font-weight: 300;
+
+    &:focus {
+      border-bottom-color: var(--pal-text-main);
+      box-shadow: none;
+    }
+  }
+
+  .form-group label {
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    font-size: 10px;
+    text-transform: uppercase;
+  }
+
+  .record {
+    border-bottom: 1px solid var(--pal-border);
+    padding: 12px 0;
+  }
+
+  .record-amount {
+    font-weight: 400;
+  }
+
+  .stat-item {
+    border-bottom: 1px solid var(--pal-border);
+    padding: 12px 0;
+  }
+
+  .stat-total {
+    border-top: 1px solid var(--pal-text-main);
+    font-weight: 400;
+  }
+
+  .avatar-trigger {
+    border-radius: 0;
+    border: 1px solid var(--pal-border);
+    background: transparent;
+  }
+
+  .avatar-preview { border-radius: 0; }
+  .avatar-option { border-radius: 0; }
+  .avatar-panel { border-radius: 0; box-shadow: none; }
+
+  .palette-swatch { border-radius: 0; }
+  .style-swatch { border-radius: 0; }
+
+  .guide-banner {
+    border-radius: 0;
+    border: 1px solid var(--pal-primary);
+    background: transparent;
+  }
+
+  .btn-del, .btn-edit { border-radius: 0; }
+  .status-badge { border-radius: 0; }
+  .trend-indicator { border-radius: 0; }
+  .toast { border-radius: 0; }
+  .modal { border-radius: 0; }
+}

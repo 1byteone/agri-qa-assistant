@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="data:,">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智慧农业管理系统 · 种植业数据管理</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo-dot"></span>
+      <h1>智慧农业管理系统</h1>
+      <span class="badge">SMART AGRI</span>
+    </div>
+    <div class="topbar-actions">
+      <span class="auth-status" id="auth-status" title="写接口需管理 Token">
+        <span class="auth-dot" id="auth-dot"></span><span id="auth-status-text">未登录</span>
+      </span>
+      <button id="btn-logout" class="btn ghost" style="display:none">退出</button>
+      <button id="btn-refresh" class="btn ghost" title="刷新数据">⟳ 刷新</button>
+      <a href="/docs" target="_blank" class="btn ghost">API 文档</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- 统计卡片 -->
+    <section class="stat-grid" id="stat-grid">
+      <div class="stat-card">
+        <div class="stat-head"><span class="stat-label">总记录数</span><span class="badge badge-ok">✓ 正常</span></div>
+        <div class="stat-value" id="stat-records">--</div>
+        <div class="stat-foot"><span>数据源同步</span><span>实时</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-head"><span class="stat-label">年份数</span><span class="badge badge-ok">✓ 正常</span></div>
+        <div class="stat-value" id="stat-years">--</div>
+        <div class="stat-foot"><span>时间跨度</span><span>年</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-head"><span class="stat-label">地区数</span><span class="badge badge-ok">✓ 正常</span></div>
+        <div class="stat-value" id="stat-regions">--</div>
+        <div class="stat-foot"><span>覆盖省份</span><span>省</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-head"><span class="stat-label">作物数</span><span class="badge badge-ok">✓ 正常</span></div>
+        <div class="stat-value" id="stat-crops">--</div>
+        <div class="stat-foot"><span>种植品类</span><span>种</span></div>
+      </div>
+    </section>
+
+    <!-- 筛选与操作 -->
+    <section class="panel">
+      <div class="panel-title">数据查询</div>
+      <div class="filter-bar">
+        <select id="f-year"><option value="">全部年份</option></select>
+        <select id="f-region"><option value="">全部省份</option></select>
+        <select id="f-crop"><option value="">全部作物</option></select>
+        <select id="f-indicator"><option value="">全部指标</option></select>
+        <input id="f-keyword" type="text" placeholder="模糊搜索省份/作物…">
+        <button id="btn-search" class="btn primary">查询</button>
+        <button id="btn-reset" class="btn ghost">重置</button>
+        <span class="spacer"></span>
+        <button id="btn-export" class="btn outline">导出 CSV</button>
+        <button id="btn-add" class="btn primary">+ 新增记录</button>
+      </div>
+    </section>
+
+    <!-- CSV 导入 -->
+    <section class="panel">
+      <div class="panel-title">CSV 导入 <span class="hint">支持 万吨/千公顷（自动换算为 吨/亩）或已归一化数据；按 年份×省份×作物×指标 幂等去重</span></div>
+      <div class="import-bar">
+        <input id="import-file" type="file" accept=".csv">
+        <button id="btn-import" class="btn outline">上传导入</button>
+        <div id="import-report" class="import-report"></div>
+      </div>
+    </section>
+
+    <!-- 图表（本地 ECharts） -->
+    <section class="panel" id="chart-panel" style="display:none">
+      <div class="panel-title">年度分析 <select id="chart-year" style="margin-left:8px"></select></div>
+      <div class="chart-wrap">
+        <div id="chart-bar" class="chart"></div>
+        <div id="chart-pie" class="chart"></div>
+      </div>
+    </section>
+
+    <!-- 数据表格 -->
+    <section class="panel table-panel">
+      <div class="panel-title">记录列表 <span class="hint" id="table-info"></span></div>
+      <div class="table-scroll">
+        <table id="records-table">
+          <thead>
+            <tr>
+              <th data-sort="year" class="sortable num">年份</th>
+              <th data-sort="province" class="sortable">省份</th>
+              <th data-sort="crop" class="sortable">作物</th>
+              <th>分类</th>
+              <th data-sort="indicator" class="sortable">指标</th>
+              <th data-sort="value" class="sortable num">数值</th>
+              <th>单位</th>
+              <th>来源</th>
+              <th class="num">更新时间</th>
+              <th class="th-ops">操作</th>
+            </tr>
+          </thead>
+          <tbody id="records-tbody"><tr><td colspan="10" class="empty">加载中…</td></tr></tbody>
+        </table>
+      </div>
+      <div class="pager">
+        <span class="page-info" id="page-info"></span>
+        <div class="pager-btns">
+          <button id="btn-prev" class="btn ghost">上一页</button>
+          <button id="btn-next" class="btn ghost">下一页</button>
+          <select id="page-size">
+            <option value="20">20 条/页</option>
+            <option value="50">50 条/页</option>
+            <option value="100">100 条/页</option>
+          </select>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 新增/编辑弹窗 -->
+  <div class="modal-mask" id="modal-mask" style="display:none">
+    <div class="modal">
+      <div class="modal-title" id="modal-title">新增记录</div>
+      <form id="record-form">
+        <input type="hidden" id="f-fact-id">
+        <div class="form-grid">
+          <label>年份 *<input type="number" id="form-year" min="1990" max="2099" required></label>
+          <label>省份 *<input type="text" id="f-province" list="region-list" required></label>
+          <label>作物/品类 *<input type="text" id="form-crop" required></label>
+          <label>作物分类
+            <select id="f-crop-category">
+              <option>粮食作物</option><option>经济作物</option><option>其他作物</option>
+            </select>
+          </label>
+          <label>指标 *
+            <select id="form-indicator">
+              <option value="产量">产量</option><option value="面积">面积</option>
+            </select>
+          </label>
+          <label>单位<select id="f-unit"><option value="吨">吨</option><option value="亩">亩</option></select></label>
+          <label>数值 *<input type="number" step="any" id="f-value" required></label>
+          <label>数据来源<input type="text" id="f-source" placeholder="如：国家统计局"></label>
+          <label>数据质量
+            <select id="f-quality">
+              <option value="normal">normal</option><option value="warning">warning</option><option value="error">error</option>
+            </select>
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn ghost" id="btn-cancel">取消</button>
+          <button type="submit" class="btn primary" id="btn-save">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <datalist id="region-list"></datalist>
+
+  <!-- 登录遮罩（深色科技风，样式沿用 style.css 变量） -->
+  <div class="modal-mask" id="login-mask" style="display:none">
+    <div class="modal login-modal">
+      <div class="login-head">
+        <span class="logo-dot"></span>
+        <div class="modal-title">智慧农业管理系统</div>
+        <span class="badge badge-ok">管理控制台</span>
+      </div>
+      <p class="login-tip">写操作（新增/编辑/删除/导入）需要管理 Token。<br>Token 由服务端生成，位于 <code>server/auth_token.txt</code> 或环境变量 <code>AGRI_ADMIN_TOKEN</code>。</p>
+      <form id="login-form">
+        <label class="login-label">访问令牌 *
+          <input type="password" id="login-token" placeholder="粘贴管理 Token" autocomplete="off" required>
+        </label>
+        <div class="modal-actions">
+          <button type="submit" class="btn primary" id="btn-login">登录</button>
+        </div>
+      </form>
+      <div id="login-error" class="login-error" style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- 本地 ECharts（无外网依赖） -->
+  <script src="/vendor/echarts/package/dist/echarts.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

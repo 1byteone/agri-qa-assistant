@@ -1,0 +1,21 @@
+{
+  "name": "expense-tracker-design-system",
+  "version": "4.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "audit": "tsx src/audit/run.ts"
+  },
+  "dependencies": {
+    "sass": "^1.77.0",
+    "typescript": "^5.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "tsx": "^4.16.0",
+    "vite": "^5.4.0"
+  }
+}

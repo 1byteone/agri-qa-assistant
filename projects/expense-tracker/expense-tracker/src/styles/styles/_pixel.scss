@@ -1,0 +1,121 @@
+/* ============================================================
+   PIXEL — 复古像素主义
+   核心特征: 像素边框、块状阴影、8-bit 字体、阶梯边缘、复古游戏
+   ============================================================ */
+
+[data-style="pixel"] {
+  --stl-radius: 0px;
+  --stl-border-width: 2px;
+  --stl-border-style: solid;
+  --stl-font-ui: "Courier New", "Lucida Console", monospace;
+  --stl-font-heading: "Courier New", "Lucida Console", monospace;
+  --stl-letter-spacing: 0;
+  --stl-line-height: 1.4;
+  --stl-shadow: none;
+  --stl-chip-style: solid;
+  --stl-btn-style: solid;
+  --stl-header-border: 4px solid var(--pal-text-main);
+  --stl-decoration: pixel;
+
+  .section {
+    border: 4px solid var(--pal-border);
+    image-rendering: pixelated;
+  }
+
+  .header {
+    border: 4px solid var(--pal-text-main);
+  }
+
+  .chip {
+    border: 3px solid var(--pal-border);
+
+    &.active {
+      background: var(--pal-primary);
+      border-color: var(--pal-text-main);
+    }
+  }
+
+  .btn-submit {
+    border: 3px solid var(--pal-text-main);
+    box-shadow: 4px 4px 0 var(--pal-text-main);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    background: var(--pal-primary);
+    color: #fff;
+
+    &:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 var(--pal-text-main);
+    }
+
+    &:active {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 var(--pal-text-main);
+    }
+  }
+
+  ::selection {
+    background: var(--pal-primary);
+    color: #fff;
+  }
+
+  .btn-outline {
+    border: 3px solid var(--pal-border);
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.1);
+    &:hover { border-color: var(--pal-text-main); box-shadow: 4px 4px 0 var(--pal-text-main); }
+  }
+
+  .btn-demo {
+    border: 3px solid var(--pal-text-main);
+    box-shadow: 3px 3px 0 var(--pal-text-main);
+    background: var(--pal-primary);
+  }
+
+  .form-control {
+    border: 3px solid var(--pal-border);
+  }
+
+  .section-title {
+    border-bottom: 3px solid var(--pal-text-main);
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+    letter-spacing: 0.1em;
+  }
+
+  .record {
+    border-bottom: 3px solid var(--pal-border);
+  }
+
+  .stat-item {
+    border-bottom: 2px solid var(--pal-border);
+  }
+
+  .stat-total {
+    border-top: 4px solid var(--pal-text-main);
+  }
+
+  .avatar-trigger {
+    border: 3px solid var(--pal-border);
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.1);
+  }
+
+  .avatar-preview { border: 3px solid var(--pal-border); }
+  .avatar-option { border: 3px solid var(--pal-border); }
+  .avatar-panel { border: 3px solid var(--pal-border); }
+
+  .palette-swatch { border: 3px solid var(--pal-border); }
+  .style-swatch { border: 3px solid var(--pal-border); }
+
+  .guide-banner {
+    border: 3px solid var(--pal-primary);
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-del, .btn-edit { border: 1px solid transparent; &:hover { border-color: currentColor; } }
+  .status-badge { border: 2px solid currentColor; }
+  .trend-indicator { border: 2px solid currentColor; }
+  .toast { border: 3px solid var(--pal-border); box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.2); }
+  .modal { border: 4px solid var(--pal-text-main); box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.2); }
+  .modal-overlay { background: rgba(0, 0, 0, 0.5); }
+  .insight-text { border: 2px solid var(--pal-border); }
+}

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>设计风格展示 — 20 种设计主义</title>
+<style id="styleInject"></style>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif; background: var(--bg, #f6f8fb); color: var(--text-main, #111827); padding: 24px; transition: background 0.25s, color 0.25s; }
+.container { max-width: 1200px; margin: 0 auto; }
+h1 { font-size: 24px; margin-bottom: 8px; }
+.subtitle { font-size: 14px; color: var(--text-muted, #667085); margin-bottom: 24px; }
+
+/* 风格选择器 */
+.style-picker { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 32px; }
+.style-pill { padding: 6px 14px; border: 2px solid var(--border, #cfd6e0); border-radius: 999px; cursor: pointer; font-size: 12px; transition: all 0.2s; background: var(--surface, #fff); color: var(--text-main, #111827); }
+.style-pill:hover { border-color: var(--primary, #0066ff); }
+.style-pill.active { background: var(--primary, #0066ff); color: #fff; border-color: var(--primary, #0066ff); }
+
+/* 展示网格 */
+.showcase-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
+.showcase-card { border: var(--stl-border, 1px solid var(--border, #cfd6e0)); border-radius: var(--radius, 4px); background: var(--surface, #fff); box-shadow: var(--shadow, 0 2px 8px rgba(0,0,0,0.06)); padding: 16px; transition: all 0.25s; }
+.showcase-card h3 { font-size: 14px; font-weight: 700; font-family: var(--stl-font-heading, inherit); margin-bottom: 12px; padding-bottom: 8px; border-bottom: var(--stl-border, 1px solid var(--border, #cfd6e0)); }
+.showcase-card p { font-size: 12px; color: var(--text-muted, #667085); margin-bottom: 12px; line-height: var(--stl-line-height, 1.5); }
+.showcase-card .demo-btn { display: inline-block; padding: 8px 16px; font-size: 12px; font-weight: 700; background: var(--text-main, #111827); color: #fff; border: none; border-radius: var(--radius, 4px); cursor: pointer; margin-right: 8px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+.showcase-card .demo-chip { display: inline-block; padding: 4px 10px; font-size: 11px; border: var(--stl-border, 1px solid var(--border, #cfd6e0)); border-radius: var(--radius, 4px); background: var(--surface-alt, #f8fafc); margin-right: 6px; margin-bottom: 6px; }
+.showcase-card .demo-chip.active { background: var(--primary, #0066ff); color: #fff; border-color: var(--primary, #0066ff); }
+.showcase-card .demo-stat { display: flex; justify-content: space-between; font-size: 12px; padding: 6px 0; border-bottom: 1px dashed var(--border, #cfd6e0); }
+.showcase-card .demo-input { width: 100%; padding: 8px; font-size: 12px; border: var(--stl-border, 1px solid var(--border, #cfd6e0)); border-radius: var(--radius, 4px); background: var(--surface, #fff); margin-bottom: 8px; }
+.showcase-card .demo-record { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border, #cfd6e0); font-size: 12px; }
+</style>
+  <script type="module" crossorigin src="/assets/showcase-DRk3yVDt.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/utils-Bv8uGZe7.js">
+  <link rel="stylesheet" crossorigin href="/assets/utils-pE0GAkEi.css">
+</head>
+<body>
+<div class="container">
+  <h1 id="pageTitle">设计风格展示</h1>
+  <p class="subtitle">20 种设计主义实时预览 · 点击切换全局风格</p>
+
+  <!-- 风格选择器 -->
+  <div class="style-picker" id="stylePicker"></div>
+
+  <!-- 展示卡片 -->
+  <div class="showcase-grid" id="showcaseGrid"></div>
+</div>
+
+<div class="toast" id="toast" style="position:fixed;bottom:20px;right:20px;background:var(--text-main,#111827);color:var(--surface,#fff);padding:10px 20px;border-radius:6px;z-index:9999;opacity:0;transform:translateY(20px);transition:all 0.3s;font-size:13px;pointer-events:none;"></div>
+
+</body>
+</html>

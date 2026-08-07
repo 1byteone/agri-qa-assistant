@@ -1,0 +1,33 @@
+/* ============================================================
+   TYPOGRAPHY — 排版基础
+   ============================================================ */
+
+body {
+  font-family: var(--font-ui);
+  line-height: var(--stl-line-height, 1.5);
+  letter-spacing: var(--stl-letter-spacing, 0);
+  color: var(--text-main);
+  background: var(--bg);
+  transition: background var(--transition-speed) ease,
+              color var(--transition-speed) ease;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--stl-font-heading, var(--font-ui));
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+h1 { font-size: 28px; }
+h2 { font-size: 22px; }
+h3 { font-size: 18px; }
+h4 { font-size: 16px; }
+
+code, pre {
+  font-family: 'Courier New', 'Lucida Console', monospace;
+}
+
+small {
+  font-size: 0.85em;
+  color: var(--text-muted);
+}

@@ -1,0 +1,150 @@
+/* ============================================================
+   NEUMORPHISM — 新拟物主义
+   核心特征: 外阴影+内阴影组合、同色系、软 UI、极简色、无边框
+   ============================================================ */
+
+[data-style="neumorphism"] {
+  --stl-radius: 16px;
+  --stl-border-width: 0px;
+  --stl-border-style: solid;
+  --stl-font-ui: -apple-system, sans-serif;
+  --stl-font-heading: -apple-system, sans-serif;
+  --stl-letter-spacing: 0;
+  --stl-line-height: 1.5;
+  --stl-shadow: 9px 9px 16px rgba(0,0,0,0.08), -9px -9px 16px rgba(255,255,255,0.7);
+  --stl-chip-style: neumo;
+  --stl-btn-style: neumo;
+  --stl-header-border: none;
+  --stl-decoration: none;
+
+  .header {
+    box-shadow: 9px 9px 16px rgba(0,0,0,0.06), -9px -9px 16px rgba(255,255,255,0.6);
+    border: none;
+    border-radius: 16px;
+  }
+
+  .section {
+    box-shadow: 9px 9px 16px rgba(0,0,0,0.08), -9px -9px 16px rgba(255,255,255,0.7);
+    border: none;
+    background: var(--pal-surface-alt);
+  }
+
+  .section-title {
+    border-bottom: none;
+    text-transform: none;
+    letter-spacing: 0.02em;
+    color: var(--pal-text-muted);
+  }
+
+  .btn-submit {
+    background: var(--pal-primary);
+    box-shadow: 6px 6px 12px rgba(0,0,0,0.1), -6px -6px 12px rgba(255,255,255,0.5);
+    border: none;
+    border-radius: 14px;
+    text-transform: none;
+    letter-spacing: 0.02em;
+    color: #fff;
+
+    &:hover {
+      box-shadow: 4px 4px 8px rgba(0,0,0,0.12), -4px -4px 8px rgba(255,255,255,0.4);
+    }
+
+    &:active {
+      box-shadow: inset 6px 6px 12px rgba(0,0,0,0.1), inset -6px -6px 12px rgba(255,255,255,0.3);
+    }
+  }
+
+  .btn-outline {
+    background: var(--pal-surface-alt);
+    box-shadow: 5px 5px 10px rgba(0,0,0,0.06), -5px -5px 10px rgba(255,255,255,0.6);
+    border: none;
+    border-radius: 12px;
+    text-transform: none;
+  }
+
+  .btn-demo {
+    background: var(--pal-primary);
+    box-shadow: 5px 5px 10px rgba(0,0,0,0.1), -5px -5px 10px rgba(255,255,255,0.4);
+    border: none;
+    border-radius: 12px;
+  }
+
+  .chip {
+    background: var(--pal-surface-alt);
+    box-shadow: 5px 5px 10px rgba(0,0,0,0.06), -5px -5px 10px rgba(255,255,255,0.6);
+    border: none;
+    border-radius: 12px;
+
+    &.active {
+      background: var(--pal-primary);
+      color: #fff;
+      box-shadow: inset 3px 3px 6px rgba(0,0,0,0.1), inset -3px -3px 6px rgba(255,255,255,0.2);
+    }
+  }
+
+  .form-control {
+    background: var(--pal-surface-alt);
+    box-shadow: inset 5px 5px 10px rgba(0,0,0,0.06), inset -5px -5px 10px rgba(255,255,255,0.6);
+    border: none;
+    border-radius: 12px;
+  }
+
+  .record {
+    border-bottom: none;
+  }
+
+  .stat-item {
+    border-bottom: none;
+  }
+
+  .stat-total {
+    border-top: none;
+  }
+
+  .avatar-trigger {
+    background: var(--pal-surface-alt);
+    box-shadow: 5px 5px 10px rgba(0,0,0,0.06), -5px -5px 10px rgba(255,255,255,0.6);
+    border: none;
+    border-radius: 14px;
+  }
+
+  .avatar-preview {
+    border: none;
+    border-radius: 12px;
+  }
+
+  .avatar-option {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 3px 3px 6px rgba(0,0,0,0.04), -3px -3px 6px rgba(255,255,255,0.5);
+  }
+
+  .avatar-panel {
+    box-shadow: 9px 9px 16px rgba(0,0,0,0.08), -9px -9px 16px rgba(255,255,255,0.7);
+    border: none;
+  }
+
+  .palette-swatch {
+    box-shadow: 3px 3px 6px rgba(0,0,0,0.06), -3px -3px 6px rgba(255,255,255,0.5);
+    border: none;
+  }
+
+  .style-swatch {
+    border: none;
+    box-shadow: 3px 3px 6px rgba(0,0,0,0.06), -3px -3px 6px rgba(255,255,255,0.5);
+  }
+
+  .guide-banner {
+    border: none;
+    box-shadow: 5px 5px 10px rgba(0,0,0,0.06), -5px -5px 10px rgba(255,255,255,0.5);
+  }
+
+  .toast {
+    box-shadow: 6px 6px 12px rgba(0,0,0,0.1), -6px -6px 12px rgba(255,255,255,0.3);
+  }
+
+  .modal {
+    box-shadow: 12px 12px 24px rgba(0,0,0,0.1), -12px -12px 24px rgba(255,255,255,0.6);
+    border: none;
+  }
+}

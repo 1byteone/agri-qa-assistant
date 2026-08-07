@@ -1,0 +1,94 @@
+/* ============================================================
+   双主题 CSS 变量：:root 浅色企业风 / .dark 深色科技风
+   Element Plus 深色通过 html.dark 生效（main.js 已引入 dark css-vars）
+   ============================================================ */
+
+:root {
+  --bg-page: #f0f2f5;
+  --bg-card: #ffffff;
+  --bg-sidebar: #001529;
+  --bg-header: #ffffff;
+  --text-main: #1f2d3d;
+  --text-sub: #5a6b7d;
+  --border-color: #e4e7ed;
+  --primary: #2f7cf6;
+  --primary-grad: linear-gradient(135deg, #2f7cf6, #6a9ff8);
+  --success: #22b07d;
+  --warning: #f0a020;
+  --danger: #e5534b;
+  --chart-grid: #e8ecf1;
+  --shadow-card: 0 2px 12px rgba(0, 21, 41, 0.08);
+  --radius: 10px;
+}
+
+html.dark {
+  --bg-page: #0d1526;
+  --bg-card: #16233b;
+  --bg-sidebar: #0a1122;
+  --bg-header: #16233b;
+  --text-main: #e6edf7;
+  --text-sub: #8fa3bd;
+  --border-color: #24344d;
+  --primary: #4f9dff;
+  --primary-grad: linear-gradient(135deg, #1d6fe0, #4f9dff);
+  --success: #34d399;
+  --warning: #fbbf24;
+  --danger: #f87171;
+  --chart-grid: #22334d;
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.35);
+  --radius: 10px;
+}
+
+* { box-sizing: border-box; }
+html, body, #app { height: 100%; margin: 0; }
+body {
+  font-family: 'Segoe UI', 'Microsoft YaHei', -apple-system, sans-serif;
+  background: var(--bg-page);
+  color: var(--text-main);
+  transition: background 0.3s, color 0.3s;
+}
+
+/* 通用卡片 */
+.v2-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  padding: 16px;
+  transition: background 0.3s;
+}
+
+/* 页面容器 */
+.v2-page { padding: 16px; }
+
+/* KPI 卡片 */
+.kpi-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius);
+  color: #fff;
+  padding: 18px 20px;
+  box-shadow: var(--shadow-card);
+}
+.kpi-card .kpi-label { font-size: 13px; opacity: 0.9; }
+.kpi-card .kpi-value { font-size: 26px; font-weight: 700; margin-top: 8px; }
+.kpi-card .kpi-sub { font-size: 12px; opacity: 0.85; margin-top: 6px; }
+
+.kpi-grad-blue { background: linear-gradient(135deg, #2f7cf6, #6a9ff8); }
+.kpi-grad-green { background: linear-gradient(135deg, #22b07d, #57d3a8); }
+.kpi-grad-orange { background: linear-gradient(135deg, #f0a020, #f7c35c); }
+.kpi-grad-purple { background: linear-gradient(135deg, #8b5cf6, #b794f6); }
+.kpi-grad-cyan { background: linear-gradient(135deg, #0ea5e9, #5cc8f0); }
+.kpi-grad-red { background: linear-gradient(135deg, #e5534b, #f08a83); }
+
+/* 状态徽章 */
+.badge-online { color: var(--success); }
+.badge-offline { color: var(--text-sub); }
+.badge-fault { color: var(--danger); }
+.el-tag.badge-dot { border-radius: 12px; }
+
+/* 图表容器 */
+.chart-box { width: 100%; height: 320px; }
+
+/* 滚动条 */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: rgba(128, 148, 175, 0.4); border-radius: 4px; }

@@ -1,0 +1,171 @@
+/* ============================================================
+   ACID — 酸性视觉主义
+   核心特征: 荧绿/紫配色、黑色背景、故障效果、高饱和对比、迷幻
+   ============================================================ */
+
+[data-style="acid"] {
+  --stl-radius: 0px;
+  --stl-border-width: 2px;
+  --stl-border-style: solid;
+  --stl-font-ui: "Impact", "Arial Black", sans-serif;
+  --stl-font-heading: "Impact", "Arial Black", sans-serif;
+  --stl-letter-spacing: 0.1em;
+  --stl-line-height: 1.3;
+  --stl-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+  --stl-chip-style: solid;
+  --stl-btn-style: solid;
+  --stl-header-border: 2px solid #00FF41;
+  --stl-decoration: glitch;
+
+  body {
+    background: #0a0a0a !important;
+  }
+
+  .section {
+    background: #111 !important;
+    border: 2px solid #00FF41;
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+  }
+
+  .header {
+    background: #111 !important;
+    border-color: #00FF41;
+  }
+
+  .header h1 {
+    color: #00FF41 !important;
+    text-shadow: 0 0 10px #00FF41;
+  }
+
+  .section-title {
+    color: #FF00FF !important;
+    border-bottom: 2px solid #FF00FF;
+  }
+
+  .chip {
+    border: 2px solid #FF00FF;
+    color: #FF00FF !important;
+    background: transparent !important;
+
+    &.active {
+      background: #FF00FF !important;
+      color: #000 !important;
+    }
+  }
+
+  .btn-submit {
+    background: linear-gradient(90deg, #FF00FF, #00FF41);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: #000;
+  }
+
+  .btn-outline {
+    border: 2px solid #00FF41;
+    color: #00FF41;
+    &:hover { background: rgba(0, 255, 65, 0.15); }
+  }
+
+  .btn-demo {
+    background: linear-gradient(90deg, #00FF41, #FF00FF);
+    border: 2px solid #FF00FF;
+  }
+
+  .stat-value {
+    color: #FF00FF !important;
+  }
+
+  .stat-label {
+    color: #00FF41;
+  }
+
+  .stat-item {
+    border-bottom: 1px solid rgba(0, 255, 65, 0.3);
+  }
+
+  .stat-total {
+    border-top: 2px solid #FF00FF;
+  }
+
+  .record {
+    border-bottom: 1px solid rgba(0, 255, 65, 0.3);
+    &:hover { background: rgba(255, 0, 255, 0.1); }
+  }
+
+  .record-cat, .record-amount { color: #00FF41; }
+  .record-meta { color: #FF00FF; }
+  .record-note { color: #888; }
+
+  .form-control {
+    background: #111;
+    border: 2px solid #00FF41;
+    color: #00FF41;
+    &:focus { border-color: #FF00FF; box-shadow: 0 0 10px rgba(255, 0, 255, 0.3); }
+  }
+
+  .form-group label { color: #FF00FF; }
+
+  .avatar-trigger {
+    border: 2px solid #00FF41;
+    background: #111;
+    color: #00FF41;
+  }
+
+  .avatar-preview { border: 2px solid #FF00FF; }
+  .avatar-option { border: 2px solid #00FF41; background: #111; }
+  .avatar-panel { border: 2px solid #00FF41; background: #111; }
+
+  .palette-label, .style-label { color: #00FF41; }
+  .palette-swatch { border: 2px solid #00FF41; }
+  .style-swatch { border: 2px solid #FF00FF; }
+
+  .guide-banner {
+    border: 2px solid #00FF41;
+    background: #111 !important;
+    p { color: #00FF41; }
+    ul { color: #FF00FF; }
+  }
+
+  .guide-dismiss { color: #FF00FF; }
+
+  .toast {
+    background: #111;
+    border: 1px solid #00FF41;
+    color: #00FF41;
+  }
+
+  .modal {
+    background: #111;
+    border: 2px solid #00FF41;
+  }
+
+  .modal-overlay { background: rgba(0, 0, 0, 0.8); }
+
+  .insight-text {
+    background: #111;
+    color: #00FF41;
+    border: 1px solid rgba(0, 255, 65, 0.3);
+  }
+
+  .month-filter { color: #00FF41; }
+  .month-filter input {
+    background: #111;
+    border: 1px solid #00FF41;
+    color: #00FF41;
+  }
+
+  .status-badge {
+    background: rgba(0, 255, 65, 0.15);
+    color: #00FF41;
+  }
+
+  .trend-indicator {
+    background: rgba(255, 0, 255, 0.15);
+  }
+  .trend-up { color: #00FF41; }
+  .trend-down { color: #FF00FF; }
+
+  .header .subtitle { color: #FF00FF; }
+  .palette-name-display, .style-name-display { color: #00FF41; }
+  .empty, .empty-text { color: rgba(0, 255, 65, 0.5); }
+}

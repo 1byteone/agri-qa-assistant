@@ -1,0 +1,148 @@
+/* ============================================================
+   MATERIAL — 材料设计主义
+   核心特征: 海拔阴影系统、涟漪动效、FAB 风格按钮、Z 轴层次
+   ============================================================ */
+
+[data-style="material"] {
+  --stl-radius: 4px;
+  --stl-border-width: 0px;
+  --stl-border-style: solid;
+  --stl-font-ui: Roboto, "Segoe UI", sans-serif;
+  --stl-font-heading: Roboto, "Segoe UI", sans-serif;
+  --stl-letter-spacing: 0.01em;
+  --stl-line-height: 1.5;
+  --stl-shadow: 0 2px 4px rgba(0,0,0,0.14), 0 3px 8px rgba(0,0,0,0.12);
+  --stl-chip-style: solid;
+  --stl-btn-style: raised;
+  --stl-header-border: none;
+  --stl-decoration: elevation;
+
+  .section {
+    box-shadow: 0 2px 4px -1px rgba(0,0,0,0.2), 0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12);
+  }
+
+  .header {
+    box-shadow: 0 2px 4px -1px rgba(0,0,0,0.2), 0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12);
+    border: none;
+  }
+
+  .btn-submit {
+    box-shadow: 0 2px 4px -1px rgba(0,0,0,0.2), 0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12);
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 500;
+    position: relative;
+    overflow: hidden;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(255,255,255,0.3) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    &:hover::after {
+      opacity: 1;
+    }
+
+    &:active {
+      box-shadow: 0 2px 4px -1px rgba(0,0,0,0.2), 0 2px 3px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12);
+      transform: scale(0.98);
+    }
+  }
+
+  .btn-outline {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 500;
+  }
+
+  .btn-demo {
+    box-shadow: 0 2px 4px -1px rgba(0,0,0,0.2), 0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .chip {
+    border-radius: 16px;
+    padding: 6px 16px;
+    font-weight: 500;
+
+    &.active {
+      transition: box-shadow 0.2s;
+    }
+
+    &:active {
+      transform: scale(0.96);
+    }
+  }
+
+  .form-control {
+    border-radius: 4px;
+    border: none;
+    border-bottom: 2px solid var(--pal-border);
+    background: transparent;
+    padding: 8px 4px;
+
+    &:focus {
+      border-bottom-color: var(--pal-primary);
+      box-shadow: 0 1px 0 0 var(--pal-primary);
+    }
+  }
+
+  .form-group label {
+    font-weight: 500;
+    color: var(--pal-text-muted);
+    font-size: 12px;
+  }
+
+  .section-title {
+    border-bottom: none;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .record {
+    border-bottom: 1px solid var(--pal-border);
+  }
+
+  .stat-item {
+    border-bottom: 1px solid var(--pal-border);
+  }
+
+  .stat-total {
+    border-top: 2px solid var(--pal-text-main);
+  }
+
+  .avatar-trigger {
+    border-radius: 24px;
+    border: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08);
+  }
+
+  .avatar-preview { border-radius: 50%; }
+  .avatar-option { border-radius: 50%; }
+  .avatar-panel { border-radius: 4px; }
+
+  .palette-swatch { border-radius: 50%; }
+  .style-swatch { border-radius: 4px; }
+
+  .toast {
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  .modal {
+    border-radius: 4px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  }
+
+  .guide-banner {
+    border-radius: 4px;
+    border: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  }
+}

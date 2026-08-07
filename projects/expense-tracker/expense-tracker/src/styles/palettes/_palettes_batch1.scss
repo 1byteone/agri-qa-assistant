@@ -1,0 +1,70 @@
+/* 调色板: 暗夜 */
+[data-palette="midnight"] {
+  --pal-primary: #818cf8; --pal-primary-soft: #1e1b4b; --pal-bg: #0f172a;
+  --pal-surface: #1e293b; --pal-surface-alt: #334155; --pal-text-main: #f1f5f9;
+  --pal-text-muted: #94a3b8; --pal-border: #334155;
+  --pal-success: #138a63; --pal-warning: #b7791f; --pal-danger: #dc2626;
+}
+/* 调色板: 暖米 */
+[data-palette="warm"] {
+  --pal-primary: #d97706; --pal-primary-soft: #fef3cd; --pal-bg: #fef9f3;
+  --pal-surface: #fff8f0; --pal-surface-alt: #fdf0e0; --pal-text-main: #451a03;
+  --pal-text-muted: #92400e; --pal-border: #e5d5c8;
+  --pal-success: #138a63; --pal-warning: #b7791f; --pal-danger: #dc2626;
+}
+/* 调色板: 薄荷 */
+[data-palette="mint"] {
+  --pal-primary: #059669; --pal-primary-soft: #d1fae5; --pal-bg: #ecfdf5;
+  --pal-surface: #fff; --pal-surface-alt: #f0fdf4; --pal-text-main: #064e3b;
+  --pal-text-muted: #047857; --pal-border: #a7f3d0;
+  --pal-success: #138a63; --pal-warning: #b7791f; --pal-danger: #dc2626;
+}
+/* 调色板: 玫瑰 */
+[data-palette="rose"] {
+  --pal-primary: #be185d; --pal-primary-soft: #ffe4e6; --pal-bg: #fff1f2;
+  --pal-surface: #fff; --pal-surface-alt: #fff5f7; --pal-text-main: #831843;
+  --pal-text-muted: #be185d; --pal-border: #fda4af;
+  --pal-success: #138a63; --pal-warning: #b7791f; --pal-danger: #dc2626;
+}
+/* 调色板: 薰衣草 */
+[data-palette="lavender"] {
+  --pal-primary: #7c3aed; --pal-primary-soft: #ede9fe; --pal-bg: #f5f3ff;
+  --pal-surface: #fff; --pal-surface-alt: #faf5ff; --pal-text-main: #2e1065;
+  --pal-text-muted: #6d28d9; --pal-border: #c4b5fd;
+  --pal-success: #138a63; --pal-warning: #b7791f; --pal-danger: #dc2626;
+}
+/* 调色板: 森林 */
+[data-palette="forest"] {
+  --pal-primary: #15803d; --pal-primary-soft: #dcfce7; --pal-bg: #f0fdf4;
+  --pal-surface: #fff; --pal-surface-alt: #f0fdf4; --pal-text-main: #14532d;
+  --pal-text-muted: #166534; --pal-border: #bbf7d0;
+  --pal-success: #138a63; --pal-warning: #b7791f; --pal-danger: #dc2626;
+}
+/* 调色板: 樱桃 */
+[data-palette="cherry"] {
+  --pal-primary: #be123c; --pal-primary-soft: #ffe4e6; --pal-bg: #fff5f5;
+  --pal-surface: #fff; --pal-surface-alt: #fff8f8; --pal-text-main: #7f1d1d;
+  --pal-text-muted: #b91c1c; --pal-border: #fecaca;
+  --pal-success: #138a63; --pal-warning: #b7791f; --pal-danger: #dc2626;
+}
+/* 调色板: 琥珀 */
+[data-palette="gold"] {
+  --pal-primary: #a16207; --pal-primary-soft: #fef9c3; --pal-bg: #fefce8;
+  --pal-surface: #fffbeb; --pal-surface-alt: #fff7ed; --pal-text-main: #451a03;
+  --pal-text-muted: #a16207; --pal-border: #fde68a;
+  --pal-success: #138a63; --pal-warning: #b7791f; --pal-danger: #dc2626;
+}
+/* 调色板: 珊瑚 */
+[data-palette="coral"] {
+  --pal-primary: #e8590c; --pal-primary-soft: #fff0e0; --pal-bg: #fff7ed;
+  --pal-surface: #fff; --pal-surface-alt: #fff5ee; --pal-text-main: #431407;
+  --pal-text-muted: #c2410c; --pal-border: #fed7aa;
+  --pal-success: #138a63; --pal-warning: #b7791f; --pal-danger: #dc2626;
+}
+/* 调色板: 鼠尾草 */
+[data-palette="sage"] {
+  --pal-primary: #5a675a; --pal-primary-soft: #e8ebe8; --pal-bg: #f5f7f5;
+  --pal-surface: #fff; --pal-surface-alt: #f0f2f0; --pal-text-main: #2c332c;
+  --pal-text-muted: #6b7c6b; --pal-border: #c4cec4;
+  --pal-success: #138a63; --pal-warning: #b7791f; --pal-danger: #dc2626;
+}

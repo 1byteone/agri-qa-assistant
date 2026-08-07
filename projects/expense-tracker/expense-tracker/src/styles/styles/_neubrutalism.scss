@@ -1,0 +1,192 @@
+/* ============================================================
+   NEUBRUTALISM — 新丑主义
+   核心特征: 粗边框 3px+、黑色投影 8px、Arial Black 字体、高对比、大胆
+   ============================================================ */
+
+[data-style="neubrutalism"] {
+  --stl-radius: 0px;
+  --stl-border-width: 3px;
+  --stl-border-style: solid;
+  --stl-font-ui: "Arial Black", "Impact", sans-serif;
+  --stl-font-heading: "Arial Black", "Impact", sans-serif;
+  --stl-letter-spacing: 0;
+  --stl-line-height: 1.3;
+  --stl-shadow: 8px 8px 0px rgba(0, 0, 0, 0.3);
+  --stl-chip-style: solid;
+  --stl-btn-style: solid;
+  --stl-header-border: 4px solid var(--pal-text-main);
+  --stl-decoration: none;
+
+  .header {
+    border-bottom: 4px solid var(--pal-text-main);
+    box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.2);
+    padding-bottom: 16px;
+
+    h1 {
+      font-size: 24px;
+      letter-spacing: -0.01em;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      font-weight: 400;
+    }
+  }
+
+  .section {
+    box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.25);
+    border: 3px solid var(--pal-border);
+    border-radius: 0;
+    padding: 16px;
+  }
+
+  .section-title {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 3px solid var(--pal-text-main);
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+  }
+
+  .btn-submit {
+    border-radius: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 900;
+    border: 3px solid var(--pal-text-main);
+    background: var(--pal-primary);
+    color: #fff;
+    box-shadow: 4px 4px 0px var(--pal-text-main);
+
+    &:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0px var(--pal-text-main);
+      opacity: 1;
+    }
+
+    &:active {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0px var(--pal-text-main);
+    }
+  }
+
+  .btn-outline {
+    border-radius: 0;
+    border: 3px solid var(--pal-border);
+    font-weight: 700;
+    box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.15);
+
+    &:hover {
+      border-color: var(--pal-text-main);
+      box-shadow: 4px 4px 0px var(--pal-text-main);
+    }
+  }
+
+  .btn-demo {
+    border-radius: 0;
+    border: 3px solid var(--pal-text-main);
+    background: var(--pal-primary);
+    box-shadow: 4px 4px 0px var(--pal-text-main);
+    font-weight: 700;
+  }
+
+  .chip {
+    border-radius: 0;
+    border: 3px solid var(--pal-border);
+    font-weight: 700;
+    padding: 6px 14px;
+
+    &.active {
+      background: var(--pal-primary);
+      border-color: var(--pal-text-main);
+      box-shadow: 3px 3px 0px var(--pal-text-main);
+    }
+  }
+
+  .form-control {
+    border-radius: 0;
+    border: 3px solid var(--pal-border);
+    font-weight: 600;
+  }
+
+  .record {
+    border-bottom: 3px solid var(--pal-border);
+  }
+
+  .record-amount {
+    font-weight: 900;
+  }
+
+  .stat-item {
+    border-bottom: 2px solid var(--pal-border);
+  }
+
+  .stat-total {
+    border-top: 3px solid var(--pal-text-main);
+    font-size: 18px;
+  }
+
+  .avatar-trigger {
+    border-radius: 0;
+    border: 3px solid var(--pal-border);
+    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.15);
+  }
+
+  .avatar-preview {
+    border-radius: 0;
+  }
+
+  .avatar-option {
+    border-radius: 0;
+  }
+
+  .avatar-panel {
+    border-radius: 0;
+    box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.2);
+  }
+
+  .palette-swatch {
+    border-radius: 0;
+    border-width: 3px;
+  }
+
+  .style-swatch {
+    border-radius: 0;
+    border-width: 3px;
+  }
+
+  .guide-banner {
+    border-radius: 0;
+    border: 3px solid var(--pal-primary);
+    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.15);
+  }
+
+  .btn-del,
+  .btn-edit {
+    border-radius: 0;
+  }
+
+  .status-badge {
+    border-radius: 0;
+  }
+
+  .trend-indicator {
+    border-radius: 0;
+  }
+
+  .toast {
+    border-radius: 0;
+    box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.3);
+  }
+
+  .modal {
+    border-radius: 0;
+    border: 3px solid var(--pal-text-main);
+    box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.3);
+  }
+
+  .modal-overlay {
+    background: rgba(0, 0, 0, 0.5);
+  }
+}

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日常开销记账簿</title>
+<style id="styleInject"></style>
+</head>
+<body>
+<div class="container">
+  <!-- HEADER -->
+  <div class="header section">
+    <h1>日常开销记账簿</h1>
+    <div class="subtitle">简洁实用的日常开销管理工具 v5.0</div>
+
+    <!-- Avatar picker -->
+    <div class="profile-bar">
+      <button class="avatar-trigger" id="avatarTrigger" type="button" aria-expanded="false" aria-controls="avatarPanel">
+        <span class="avatar-preview" id="avatarPreview" aria-hidden="true"></span>
+        <span class="avatar-copy"><strong id="profileName">我的账本</strong><small>选择一个可爱的本地头像</small></span>
+        <svg class="avatar-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      </button>
+      <div class="avatar-panel" id="avatarPanel" hidden>
+        <div class="avatar-panel-head"><span>头像库</span><button class="avatar-close" id="avatarClose" type="button">关闭</button></div>
+        <div class="avatar-grid" id="avatarGrid" role="listbox" aria-label="选择头像"></div>
+        <p class="avatar-license">头像为本地内嵌 SVG · 无网络请求 · 数据只保存在当前浏览器</p>
+      </div>
+    </div>
+
+    <!-- Palette bar -->
+    <div class="palette-bar">
+      <span class="palette-label">调色板</span>
+      <div id="paletteSwatches" role="radiogroup" aria-label="选择调色板"></div>
+      <span class="palette-name-display" id="paletteNameDisplay"></span>
+    </div>
+
+    <!-- Style bar -->
+    <div class="style-bar">
+      <span class="style-label">风格</span>
+      <div id="styleSwatches" role="listbox" aria-label="选择设计风格"></div>
+      <span class="style-name-display" id="styleNameDisplay"></span>
+    </div>
+
+    <div class="status-badge" id="statusBadge">就绪</div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="grid">
+    <!-- LEFT: New Entry form -->
+    <div class="section">
+      <div class="section-title">新增记录</div>
+      <form id="entryForm">
+        <div class="type-toggle" id="typeToggle">
+          <button type="button" class="type-btn active" data-type="expense">支出</button>
+          <button type="button" class="type-btn" data-type="income">收入</button>
+        </div>
+        <div class="form-group"><label for="amount">金额（元）</label><input type="number" step="0.01" min="0.01" class="form-control" id="amount" required placeholder="0.00" autofocus></div>
+        <div class="form-group"><label>分类</label>
+          <div class="form-row">
+            <select class="form-control" id="catSelect" style="flex:1">
+              <option value="餐饮">餐饮</option>
+              <option value="交通">交通</option>
+              <option value="购物">购物</option>
+              <option value="娱乐">娱乐</option>
+              <option value="医疗">医疗</option>
+              <option value="固定账单">固定账单</option>
+              <option value="其他">其他</option>
+            </select>
+            <select class="form-control" id="subCatSelect" style="flex:1;margin-left:8px;">
+              <option value="">子分类</option>
+            </select>
+          </div>
+        </div>
+        <!-- 标签输入 -->
+        <div class="form-group">
+          <label for="tagInput">标签</label>
+          <div class="tag-input-wrap" id="tagInputWrap">
+            <div class="tag-list" id="tagList"></div>
+            <input type="text" class="form-control tag-input" id="tagInput" placeholder="输入标签后按回车" autocomplete="off">
+            <div class="tag-suggestions" id="tagSuggestions" hidden></div>
+          </div>
+        </div>
+        <div class="form-group"><label for="date">日期</label><input type="date" class="form-control" id="date" required></div>
+        <div class="form-group"><label for="note">备注</label><input type="text" class="form-control" id="note" placeholder="可选，例如：周末早餐"></div>
+        <button type="submit" class="btn-submit">保存记录</button>
+      </form>
+    </div>
+
+    <!-- RIGHT: Statistics -->
+    <div class="section">
+      <div class="section-title stats-heading"><span>统计概览</span><label class="month-filter" for="monthFilter">月份 <input type="month" id="monthFilter"></label></div>
+      <div id="statsContent">
+        <div class="stat-item"><span class="stat-label">本月收入</span><span class="stat-value stat-income" id="monthIncome">0.00</span></div>
+        <div class="stat-item"><span class="stat-label">本月支出</span><span class="stat-value" id="monthTotal"><span id="monthTotalVal">0.00</span> <span id="monthTrend"></span></span></div>
+        <div class="stat-item stat-total"><span class="stat-label">本月结余</span><span class="stat-value" id="monthBalance">0.00</span></div>
+        <div class="stat-item"><span class="stat-label">今日支出</span><span class="stat-value" id="todayTotal">0.00</span></div>
+        <div class="stat-item"><span class="stat-label">日均支出</span><span class="stat-value" id="avgDaily">0.00</span></div>
+        <div class="stat-item"><span class="stat-label">记录数量</span><span class="stat-value" id="recordCount">0</span></div>
+      </div>
+      <div style="margin-top:20px;">
+        <div class="section-title" style="font-size:12px;margin-top:0;">月度趋势</div>
+        <div class="chart-container" id="trendChart"><canvas id="trendCanvas"></canvas></div>
+      </div>
+      <div style="margin-top:20px;">
+        <div class="section-title" style="font-size:12px;margin-top:0;">分类统计</div>
+        <div id="catStats"></div>
+      </div>
+      <div style="margin-top:20px;">
+        <div class="section-title" style="font-size:12px;margin-top:0;">预算管理 <span class="budget-toggle" id="budgetToggle" title="设置预算">设置</span></div>
+        <div id="budgetStats"></div>
+      </div>
+      <div style="margin-top:16px;">
+        <div class="section-title" style="font-size:12px;margin-top:0;">消费洞察</div>
+        <div id="insightText" class="insight-text">添加记录后生成消费洞察</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 筛选栏 -->
+  <div class="section filter-section" id="filterSection">
+    <div class="section-title">筛选 <span class="filter-clear" id="filterClear" hidden>清除筛选</span></div>
+    <div class="filter-row">
+      <div class="filter-group" style="flex:2;">
+        <input type="text" class="form-control" id="filterKeyword" placeholder="搜索备注、标签、子分类…">
+      </div>
+      <div class="filter-group" style="flex:1;">
+        <select class="form-control" id="filterCategory">
+          <option value="">全部分类</option>
+          <option value="餐饮">餐饮</option>
+          <option value="交通">交通</option>
+          <option value="购物">购物</option>
+          <option value="娱乐">娱乐</option>
+          <option value="医疗">医疗</option>
+          <option value="固定账单">固定账单</option>
+          <option value="其他">其他</option>
+        </select>
+      </div>
+      <div class="filter-group" style="flex:1;">
+        <select class="form-control" id="filterType">
+          <option value="">全部类型</option>
+          <option value="expense">仅支出</option>
+          <option value="income">仅收入</option>
+        </select>
+      </div>
+    </div>
+    <div class="filter-row">
+      <div class="filter-group" style="flex:1;">
+        <input type="number" class="form-control" id="filterMinAmount" placeholder="最低金额" min="0" step="0.01">
+      </div>
+      <span class="filter-sep">~</span>
+      <div class="filter-group" style="flex:1;">
+        <input type="number" class="form-control" id="filterMaxAmount" placeholder="最高金额" min="0" step="0.01">
+      </div>
+      <div class="filter-group" style="flex:1;">
+        <select class="form-control" id="filterTag">
+          <option value="">全部标签</option>
+        </select>
+      </div>
+      <button class="btn-outline" id="filterApplyBtn" style="padding:6px 16px;font-size:12px;">筛选</button>
+    </div>
+  </div>
+
+  <!-- BOTTOM: Record list + actions -->
+  <div class="section">
+    <div class="section-title" style="display:flex;justify-content:space-between;align-items:center;">
+      <span>消费记录</span>
+      <span class="record-count-badge" id="recordCountBadge"></span>
+    </div>
+    <ul class="record-list" id="recordList"></ul>
+    <div class="footer-actions">
+      <button class="btn-demo" id="demoBtn" title="添加模拟数据体验完整界面">示例数据</button>
+      <button class="btn-outline" id="exportBtn">导出数据</button>
+      <button class="btn-outline" id="importBtn">导入数据</button>
+      <input type="file" id="importFile" accept=".json" style="display:none">
+      <button class="btn-outline" id="annualReportBtn">年度报告</button>
+      <button class="btn-outline" id="clearBtn">清空记录</button>
+    </div>
+  </div>
+</div>
+
+<!-- Budget Modal -->
+<div class="modal-overlay" id="budgetModalOverlay" hidden>
+  <div class="modal" id="budgetModal">
+    <div class="modal-header"><span class="section-title">设置预算</span><button class="modal-close" id="budgetModalClose">&times;</button></div>
+    <div class="modal-body" id="budgetForm"></div>
+    <div class="modal-footer"><button class="btn-submit" id="budgetSaveBtn">保存预算</button></div>
+  </div>
+</div>
+
+<!-- Annual Report Modal -->
+<div class="modal-overlay" id="annualReportOverlay" hidden>
+  <div class="modal annual-report-modal" id="annualReportModal">
+    <div class="modal-header">
+      <span class="section-title" id="annualReportTitle">年度报告</span>
+      <select id="annualReportYear" class="form-control" style="width:auto;padding:4px 8px;font-size:13px;"></select>
+      <button class="modal-close" id="annualReportClose">&times;</button>
+    </div>
+    <div class="modal-body" id="annualReportBody">
+      <div class="ar-summary" id="arSummary"></div>
+      <div class="ar-section"><div class="ar-section-title">月度收支趋势</div><div class="chart-container ar-chart" id="arTrendChart"><canvas id="arTrendCanvas"></canvas></div></div>
+      <div class="ar-section"><div class="ar-section-title">分类排名</div><div class="ar-ranking" id="arCategoryRanking"></div></div>
+      <div class="ar-section"><div class="ar-section-title">TOP 10 单笔支出</div><div class="ar-top-list" id="arTopList"></div></div>
+      <div class="ar-section"><div class="ar-section-title">预算完成率</div><div class="ar-budget" id="arBudget"></div></div>
+      <div class="ar-section"><div class="ar-section-title">标签云</div><div class="ar-tag-cloud" id="arTagCloud"></div></div>
+      <div class="ar-section"><div class="ar-section-title">消费习惯</div><div class="ar-insights" id="arInsights"></div></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-outline" id="arExportCsvBtn">导出 CSV</button>
+      <button class="btn-outline" id="arExportXlsxBtn">导出 XLSX</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>

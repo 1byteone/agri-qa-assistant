@@ -1,0 +1,109 @@
+/* ============================================================
+   按钮体系 — 多态按钮 + 交互状态
+   ============================================================ */
+
+.btn-submit {
+  width: 100%;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  background: var(--text-main);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius);
+  transition: all 0.2s ease;
+
+  &:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.btn-outline {
+  background: transparent;
+  border: var(--stl-border);
+  color: var(--text-muted);
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+  border-radius: var(--radius);
+
+  &:hover {
+    border-color: var(--text-main);
+    color: var(--text-main);
+    background: var(--surface);
+  }
+}
+
+.btn-demo {
+  background: var(--primary);
+  border: none;
+  color: #fff;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+  border-radius: var(--radius);
+
+  &:hover {
+    opacity: 0.85;
+  }
+}
+
+.btn-del {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px;
+  transition: color 0.2s, background 0.2s;
+  border-radius: 4px;
+
+  &:hover {
+    color: var(--danger);
+    background: rgba(220, 38, 38, 0.08);
+    transform: scale(1.1);
+  }
+}
+
+.btn-edit {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 4px;
+  transition: color 0.2s, background 0.2s;
+
+  &:hover {
+    color: var(--primary);
+    background: var(--primary-soft);
+  }
+}
+
+.btn-del svg,
+.btn-edit svg {
+  width: 15px;
+  height: 15px;
+  display: block;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}

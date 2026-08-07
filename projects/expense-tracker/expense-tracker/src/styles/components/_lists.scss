@@ -1,0 +1,98 @@
+/* ============================================================
+   记录列表 — 消费明细行
+   ============================================================ */
+
+.record-list {
+  list-style: none;
+  max-height: 350px;
+  overflow-y: auto;
+  font-size: 13px;
+}
+
+.record {
+  display: grid;
+  grid-template-columns: 36px 1fr 80px 56px;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: var(--stl-border);
+  align-items: center;
+  opacity: 0;
+  transform: translateX(20px);
+  animation: slideInRight 0.4s ease-out forwards;
+  transition: all 0.2s;
+
+  &:first-child {
+    border-top: var(--stl-border);
+  }
+
+  &:hover {
+    background: var(--surface-alt);
+    transform: translateX(2px);
+  }
+}
+
+.record-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 24px;
+    height: 24px;
+    stroke: var(--text-muted);
+    stroke-width: 1.5;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}
+
+.record-cat {
+  font-weight: 600;
+}
+
+.record-note {
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.record-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.record-amount {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.record-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.empty {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 12px;
+  padding: calc(var(--grid-base) * 6) 0;
+  animation: fadeIn 0.6s ease-out;
+
+  svg {
+    display: block;
+    margin: 0 auto 16px;
+    opacity: 0.5;
+    animation: pulse 2s infinite;
+  }
+}
+
+.empty-text {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-top: 8px;
+  font-weight: 500;
+}

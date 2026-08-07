@@ -1,0 +1,168 @@
+/* ============================================================
+   VAPORWAVE — 蒸汽波主义
+   核心特征: 霓虹紫/粉/蓝配色、网格线背景、罗马雕塑剪影、发光文字
+   ============================================================ */
+
+[data-style="vaporwave"] {
+  --stl-radius: 0px;
+  --stl-border-width: 2px;
+  --stl-border-style: solid;
+  --stl-font-ui: "Courier New", monospace;
+  --stl-font-heading: "Courier New", monospace;
+  --stl-letter-spacing: 0.1em;
+  --stl-line-height: 1.5;
+  --stl-shadow: 0 0 10px rgba(255, 113, 206, 0.3);
+  --stl-chip-style: solid;
+  --stl-btn-style: solid;
+  --stl-header-border: 2px solid #FF71CE;
+  --stl-decoration: grid;
+
+  body {
+    background: linear-gradient(180deg, #0a0a2e 0%, #1a0a3e 30%, #2a1a4e 60%, #ff71ce 100%) !important;
+  }
+
+  .section, .header {
+    background: rgba(10, 10, 46, 0.85) !important;
+    border: 2px solid #FF71CE;
+  }
+
+  .section-title {
+    border-bottom-color: #FF71CE;
+  }
+
+  .record {
+    border-bottom-color: #FF71CE;
+  }
+
+  .header h1 {
+    text-shadow: 0 0 10px #FF71CE, 0 0 20px #00DCFF;
+  }
+
+  .header {
+    border-bottom: 2px solid #FF71CE;
+  }
+
+  .grid {
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 40px,
+      rgba(255, 113, 206, 0.05) 40px, rgba(255, 113, 206, 0.05) 41px
+    );
+  }
+
+  .btn-submit {
+    background: linear-gradient(90deg, #FF71CE, #00DCFF);
+    border: 2px solid #FF71CE;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  }
+
+  .btn-outline {
+    border: 2px solid #FF71CE;
+    color: #FF71CE;
+    &:hover { background: rgba(255, 113, 206, 0.2); color: #fff; }
+  }
+
+  .btn-demo {
+    background: linear-gradient(90deg, #00DCFF, #FF71CE);
+    border: 2px solid #FF71CE;
+  }
+
+  .chip {
+    border: 2px solid #FF71CE;
+    color: #FF71CE;
+    background: transparent;
+
+    &.active {
+      background: #FF71CE;
+      color: #0a0a2e;
+    }
+  }
+
+  .form-control {
+    background: rgba(10, 10, 46, 0.6);
+    border: 2px solid #FF71CE;
+    color: #FF71CE;
+    &:focus { border-color: #00DCFF; box-shadow: 0 0 10px rgba(0, 220, 255, 0.3); }
+  }
+
+  .form-group label { color: #FF71CE; }
+
+  .stat-value, .stat-label, .record-amount, .record-cat, .record-meta {
+    color: #FF71CE;
+    text-shadow: 0 0 5px rgba(255, 113, 206, 0.3);
+  }
+
+  .stat-item { border-bottom-color: rgba(255, 113, 206, 0.3); }
+  .stat-total { border-top-color: #FF71CE; }
+
+  .section-title {
+    color: #00DCFF;
+    text-shadow: 0 0 10px rgba(0, 220, 255, 0.5);
+  }
+
+  .header h1 { color: #FF71CE; }
+  .header .subtitle { color: #00DCFF; }
+
+  .avatar-trigger {
+    border: 2px solid #FF71CE;
+    background: rgba(10, 10, 46, 0.6);
+    color: #FF71CE;
+  }
+
+  .avatar-preview { border: 2px solid #FF71CE; }
+  .avatar-option { border: 2px solid #FF71CE; }
+  .avatar-panel {
+    border: 2px solid #FF71CE;
+    background: rgba(10, 10, 46, 0.9);
+  }
+
+  .palette-label, .style-label { color: #FF71CE; }
+  .palette-swatch { border: 2px solid #FF71CE; }
+  .style-swatch { border: 2px solid #FF71CE; }
+
+  .guide-banner {
+    border: 2px solid #FF71CE;
+    background: rgba(10, 10, 46, 0.7) !important;
+    p { color: #FF71CE; }
+    ul { color: #00DCFF; }
+  }
+
+  .guide-dismiss { color: #00DCFF; }
+
+  .toast {
+    background: rgba(10, 10, 46, 0.9);
+    border: 1px solid #FF71CE;
+    color: #FF71CE;
+  }
+
+  .modal {
+    background: rgba(10, 10, 46, 0.95);
+    border: 2px solid #FF71CE;
+  }
+
+  .modal-overlay { background: rgba(0, 0, 0, 0.7); }
+
+  .insight-text {
+    background: rgba(10, 10, 46, 0.6);
+    color: #FF71CE;
+  }
+
+  .month-filter { color: #00DCFF; }
+  .month-filter input {
+    background: rgba(10, 10, 46, 0.6);
+    border: 1px solid #FF71CE;
+    color: #FF71CE;
+  }
+
+  .status-badge {
+    background: rgba(255, 113, 206, 0.2);
+    color: #FF71CE;
+  }
+
+  .trend-indicator {
+    background: rgba(0, 220, 255, 0.15);
+  }
+  .trend-up { color: #00DCFF; }
+  .trend-down { color: #FF71CE; }
+}

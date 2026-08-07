@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2023年种植业数据分析报告</title>
+<style>
+:root { --ink:#1f2937; --muted:#64748b; --line:#e2e8f0; --bg:#f5f7fb; --brand:#155e75; }
+* { box-sizing:border-box; } body { margin:0; background:var(--bg); color:var(--ink); font-family:"Microsoft YaHei",system-ui,sans-serif; line-height:1.7; }
+main { max-width:1240px; margin:0 auto; padding:28px 18px 56px; } header { padding:36px; color:#fff; border-radius:18px; background:linear-gradient(120deg,#155e75,#0f766e); box-shadow:0 12px 30px #0f172a22; }
+h1 { margin:0 0 8px; font-size:clamp(26px,4vw,42px); } header p { margin:0; opacity:.9; } section { background:#fff; border-radius:16px; padding:26px; margin-top:22px; box-shadow:0 5px 18px #0f172a0c; } h2 { margin:0 0 18px; color:var(--brand); } h3 { color:#334155; margin:22px 0 10px; }
+.cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; } .card { padding:18px; border:1px solid var(--line); border-radius:12px; background:#f8fafc; } .card strong { display:block; font-size:25px; color:var(--brand); } .card small { color:var(--muted); }
+.charts { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:18px; } .chart { border:1px solid var(--line); border-radius:14px; padding:16px; } .pie-wrap { display:flex; align-items:center; justify-content:center; gap:12px; min-height:330px; } .pie { width:min(56%,340px); min-width:220px; } .legend { list-style:none; padding:0; margin:0; color:#475569; } .legend li { margin:8px 0; white-space:nowrap; } .legend-color { display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:7px; }
+table { width:100%; border-collapse:collapse; margin:10px 0; font-size:14px; } th,td { border-bottom:1px solid var(--line); padding:10px 8px; text-align:left; } th { color:#475569; background:#f8fafc; } .note { border-left:4px solid #e18b32; background:#fff7ed; padding:14px 16px; color:#7c2d12; } .muted { color:var(--muted); font-size:14px; } footer { text-align:center; color:var(--muted); margin-top:24px; font-size:13px; }
+@media (max-width:700px) { section,header { padding:20px; } .pie-wrap { flex-direction:column; } .pie { width:90%; } table { display:block; overflow-x:auto; white-space:nowrap; } }
+</style>
+</head>
+<body><main>
+<header><h1>2023年种植业数据分析报告</h1><p>独立年度分析 · 数据清洗 · 农作物结构 · 统计口径说明</p></header>
+<section><h2>一、执行摘要</h2><div class="cards">
+<div class="card"><small>原始记录</small><strong>1,774</strong><small>行</small></div>
+<div class="card"><small>清洗后记录</small><strong>1,676</strong><small>行</small></div>
+<div class="card"><small>产量总量</small><strong>4,415,917,682</strong><small>吨</small></div>
+<div class="card"><small>面积总量</small><strong>8,887,454,700</strong><small>亩</small></div>
+</div><p>本年度结构中，粮食作物产量占比69.56%，粮食作物种植面积占比86.23%。从“产量占比−面积占比”观察，经济作物的单位面积产出相对更有优势；该结论仅反映统计口径下的结构效率，不等同于经济收益率，因为数据未包含价格、成本和质量信息。</p></section>
+<section><h2>二、数据清洗与统计口径</h2>
+<table><thead><tr><th>处理项目</th><th>结果</th></tr></thead><tbody>
+<tr><td>删除数值为 0</td><td>24 行</td></tr>
+<tr><td>删除“人均”品类</td><td>74 行</td></tr>
+<tr><td>无效数值</td><td>0 行</td></tr>
+<tr><td>产量：万吨 → 吨</td><td>726 行，乘以 10,000</td></tr>
+<tr><td>面积：千公顷 → 亩</td><td>819 行，乘以 15,000</td></tr>
+<tr><td>指标名称</td><td>播种面积、播种面积/种植面积统一为种植面积</td></tr>
+</tbody></table>
+<div class="note">统计防重规则：同一品类和指标存在“全国”记录时，只采用全国汇总；没有全国记录时，才对省份记录加总。本年度采用全国汇总 68 组，省份加总 20 组，避免全国与省份重复计算。</div>
+</section>
+<section><h2>三、农作物结构饼图</h2><div class="charts">
+<div class="chart"><h3>产量结构</h3><div class="pie-wrap"><svg class="pie" viewBox="0 0 360 360" role="img" aria-label="production结构饼图"><path d="M 180 180 L 180.00 35.00 A 145 145 0 1 1 43.39 228.62 Z" fill="#1f7a5a"  stroke="#ffffff" stroke-width="2"><title>粮食作物：3,071,616,200.00 吨（69.56%）</title></path><path d="M 180 180 L 43.39 228.62 A 145 145 0 0 1 180.00 35.00 Z" fill="#e18b32"  stroke="#ffffff" stroke-width="2"><title>经济作物：1,344,301,481.77 吨（30.44%）</title></path></svg><ul class="legend"><li><span class="legend-color" style="background:#1f7a5a"></span>粮食作物：3,071,616,200.00 吨（69.56%）</li><li><span class="legend-color" style="background:#e18b32"></span>经济作物：1,344,301,481.77 吨（30.44%）</li><li><span class="legend-color" style="background:#6b7c93"></span>其他作物：0.00 吨（0.00%）</li></ul></div></div>
+<div class="chart"><h3>种植面积结构</h3><div class="pie-wrap"><svg class="pie" viewBox="0 0 360 360" role="img" aria-label="area结构饼图"><path d="M 180 180 L 180.00 35.00 A 145 145 0 1 1 69.65 85.94 Z" fill="#1f7a5a"  stroke="#ffffff" stroke-width="2"><title>粮食作物：7,664,018,700.00 亩（86.23%）</title></path><path d="M 180 180 L 69.65 85.94 A 145 145 0 0 1 180.00 35.00 Z" fill="#e18b32"  stroke="#ffffff" stroke-width="2"><title>经济作物：1,223,436,000.00 亩（13.77%）</title></path></svg><ul class="legend"><li><span class="legend-color" style="background:#1f7a5a"></span>粮食作物：7,664,018,700.00 亩（86.23%）</li><li><span class="legend-color" style="background:#e18b32"></span>经济作物：1,223,436,000.00 亩（13.77%）</li><li><span class="legend-color" style="background:#6b7c93"></span>其他作物：0.00 亩（0.00%）</li></ul></div></div>
+</div></section>
+<section><h2>四、类别汇总</h2><table><thead><tr><th>作物类别</th><th>产量</th><th>产量占比</th><th>种植面积</th><th>面积占比</th></tr></thead><tbody><tr><td>粮食作物</td><td>3,071,616,200.00 吨</td><td>69.56%</td><td>7,664,018,700.00 亩</td><td>86.23%</td></tr><tr><td>经济作物</td><td>1,344,301,481.77 吨</td><td>30.44%</td><td>1,223,436,000.00 亩</td><td>13.77%</td></tr><tr><td>其他作物</td><td>0.00 吨</td><td>0.00%</td><td>0.00 亩</td><td>0.00%</td></tr></tbody></table></section>
+<section><h2>五、品类排名与报告解读</h2><h3>产量排名前 10</h3><table><thead><tr><th>排名</th><th>作物类别</th><th>品类</th><th>产量</th><th>占全部产量</th></tr></thead><tbody><tr><td>1</td><td>经济作物</td><td>蔬菜</td><td>828,681,100.00 吨</td><td>18.77%</td></tr><tr><td>2</td><td>粮食作物</td><td>粮食</td><td>695,409,900.00 吨</td><td>15.75%</td></tr><tr><td>3</td><td>粮食作物</td><td>谷物</td><td>641,430,100.00 吨</td><td>14.53%</td></tr><tr><td>4</td><td>粮食作物</td><td>秋粮</td><td>520,920,000.00 吨</td><td>11.80%</td></tr><tr><td>5</td><td>粮食作物</td><td>玉米</td><td>288,842,300.00 吨</td><td>6.54%</td></tr><tr><td>6</td><td>粮食作物</td><td>稻谷</td><td>206,603,200.00 吨</td><td>4.68%</td></tr><tr><td>7</td><td>粮食作物</td><td>中稻和一季晚稻</td><td>146,712,000.00 吨</td><td>3.32%</td></tr><tr><td>8</td><td>粮食作物</td><td>夏粮</td><td>146,152,000.00 吨</td><td>3.31%</td></tr><tr><td>9</td><td>粮食作物</td><td>小麦</td><td>136,580,100.00 吨</td><td>3.09%</td></tr><tr><td>10</td><td>粮食作物</td><td>冬小麦</td><td>131,728,000.00 吨</td><td>2.98%</td></tr></tbody></table>
+<h3>种植面积排名前 10</h3><table><thead><tr><th>排名</th><th>作物类别</th><th>品类</th><th>种植面积</th><th>占全部面积</th></tr></thead><tbody><tr><td>1</td><td>粮食作物</td><td>粮食</td><td>1,784,528,100.00 亩</td><td>20.08%</td></tr><tr><td>2</td><td>粮食作物</td><td>谷物</td><td>1,498,895,400.00 亩</td><td>16.87%</td></tr><tr><td>3</td><td>粮食作物</td><td>秋粮</td><td>1,314,402,000.00 亩</td><td>14.79%</td></tr><tr><td>4</td><td>粮食作物</td><td>玉米</td><td>663,284,100.00 亩</td><td>7.46%</td></tr><tr><td>5</td><td>粮食作物</td><td>稻谷</td><td>434,235,900.00 亩</td><td>4.89%</td></tr><tr><td>6</td><td>粮食作物</td><td>夏粮</td><td>399,129,000.00 亩</td><td>4.49%</td></tr><tr><td>7</td><td>粮食作物</td><td>小麦</td><td>354,408,750.00 亩</td><td>3.99%</td></tr><tr><td>8</td><td>经济作物</td><td>蔬菜</td><td>343,101,900.00 亩</td><td>3.86%</td></tr><tr><td>9</td><td>粮食作物</td><td>冬小麦</td><td>323,490,000.00 亩</td><td>3.64%</td></tr><tr><td>10</td><td>粮食作物</td><td>中稻和一季晚稻</td><td>259,347,000.00 亩</td><td>2.92%</td></tr></tbody></table>
+<div class="note"><strong>解读：</strong>本年度结构中，粮食作物产量占比69.56%，粮食作物种植面积占比86.23%。从“产量占比−面积占比”观察，经济作物的单位面积产出相对更有优势；该结论仅反映统计口径下的结构效率，不等同于经济收益率，因为数据未包含价格、成本和质量信息。 建议在保持粮食作物安全底盘的同时，结合区域水土资源、市场价格和加工能力，发展具有比较优势的经济作物；后续若要评价经济效益，还应补充成本、价格、亩均收益和灌溉等数据。</div></section>
+<footer>数据来源：2024年种植业数据.csv · 本报告由 analysis.py 生成 · 图表为内嵌 SVG，无外部网络依赖</footer>
+</main></body></html>

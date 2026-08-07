@@ -1,0 +1,105 @@
+/* ============================================================
+   WEB BRUTALISM — 野兽主义
+   核心特征: Times New Roman 衬线体、蓝色链接、原始感、无装饰
+   ============================================================ */
+
+[data-style="webbrutalism"] {
+  --stl-radius: 0px;
+  --stl-border-width: 2px;
+  --stl-border-style: solid;
+  --stl-font-ui: "Times New Roman", Times, Georgia, serif;
+  --stl-font-heading: "Times New Roman", Times, Georgia, serif;
+  --stl-letter-spacing: 0;
+  --stl-line-height: 1.4;
+  --stl-shadow: none;
+  --stl-chip-style: solid;
+  --stl-btn-style: solid;
+  --stl-header-border: 3px solid #00f;
+  --stl-decoration: none;
+
+  .header {
+    border-bottom: 3px solid #00f;
+    box-shadow: none;
+
+    h1 { font-family: "Times New Roman", Times, serif; }
+  }
+
+  a, .link { color: #00f; text-decoration: underline; }
+
+  .section {
+    box-shadow: none;
+    border: 2px solid #000;
+    border-radius: 0;
+  }
+
+  .section-title {
+    font-size: 14px;
+    text-transform: none;
+    letter-spacing: 0;
+    border-bottom: 1px solid #000;
+    font-weight: 700;
+  }
+
+  .btn-submit {
+    border-radius: 0;
+    background: #00f;
+    color: #fff;
+    border: 2px solid #000;
+    font-family: "Times New Roman", Times, serif;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 700;
+    font-size: 16px;
+
+    &:hover { background: #000; }
+  }
+
+  .btn-outline {
+    border-radius: 0;
+    border: 2px solid #000;
+    font-family: "Times New Roman", Times, serif;
+    text-transform: none;
+    color: #000;
+  }
+
+  .btn-demo {
+    border-radius: 0;
+    background: #00f;
+    border: 2px solid #000;
+    font-family: "Times New Roman", Times, serif;
+  }
+
+  .chip {
+    border-radius: 0;
+    border: 2px solid #000;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 14px;
+
+    &.active { background: #000; color: #fff; }
+  }
+
+  .form-control {
+    border-radius: 0;
+    border: 2px solid #000;
+    font-family: "Times New Roman", Times, serif;
+  }
+
+  .record { border-bottom: 1px solid #000; }
+  .record-amount { font-weight: 700; }
+  .stat-item { border-bottom: 1px solid #000; }
+  .stat-total { border-top: 2px solid #000; }
+
+  .avatar-trigger, .avatar-preview, .avatar-option, .avatar-panel {
+    border-radius: 0;
+    border: 2px solid #000;
+  }
+
+  .palette-swatch { border-radius: 0; }
+  .style-swatch { border-radius: 0; }
+  .guide-banner { border-radius: 0; border: 2px solid #000; }
+  .btn-del, .btn-edit { border-radius: 0; }
+  .status-badge { border-radius: 0; }
+  .trend-indicator { border-radius: 0; }
+  .toast { border-radius: 0; }
+  .modal { border-radius: 0; border: 2px solid #000; }
+}

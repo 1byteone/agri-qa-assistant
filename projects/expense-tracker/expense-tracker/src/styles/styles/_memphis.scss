@@ -1,0 +1,107 @@
+/* ============================================================
+   MEMPHIS — 孟菲斯主义
+   核心特征: 波点/之字形背景、鲜艳色彩、随机几何装饰元素、俏皮
+   ============================================================ */
+
+[data-style="memphis"] {
+  --stl-radius: 4px;
+  --stl-border-width: 2px;
+  --stl-border-style: dotted;
+  --stl-font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  --stl-font-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  --stl-letter-spacing: 0;
+  --stl-line-height: 1.5;
+  --stl-shadow: 4px 4px 0 rgba(0, 0, 0, 0.1);
+  --stl-chip-style: solid;
+  --stl-btn-style: solid;
+  --stl-header-border: 2px dotted var(--pal-text-main);
+  --stl-decoration: polka;
+
+  .section {
+    background: var(--pal-surface);
+    border: 2px dotted var(--pal-border);
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 12px;
+      height: 12px;
+      background: var(--pal-primary);
+      border-radius: 50%;
+      opacity: 0.3;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      width: 8px;
+      height: 8px;
+      background: var(--pal-danger);
+      transform: rotate(45deg);
+      opacity: 0.3;
+    }
+  }
+
+  .chip {
+    border-style: dotted;
+  }
+
+  .header {
+    border-bottom: 2px dotted var(--pal-text-main);
+  }
+
+  .section-title {
+    border-bottom: 2px dotted var(--pal-border);
+  }
+
+  .btn-submit {
+    border: 2px dotted var(--pal-text-main);
+    background: var(--pal-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .btn-outline {
+    border: 2px dotted var(--pal-border);
+    &:hover { border-color: var(--pal-primary); }
+  }
+
+  .btn-demo {
+    border: 2px dotted var(--pal-text-main);
+    background: var(--pal-primary);
+  }
+
+  .form-control {
+    border: 2px dotted var(--pal-border);
+  }
+
+  .record {
+    border-bottom: 2px dotted var(--pal-border);
+  }
+
+  .stat-item {
+    border-bottom: 2px dotted var(--pal-border);
+  }
+
+  .stat-total {
+    border-top: 2px dotted var(--pal-text-main);
+  }
+
+  .avatar-trigger {
+    border: 2px dotted var(--pal-border);
+  }
+  .avatar-preview { border: 2px dotted var(--pal-border); }
+  .avatar-option { border: 2px dotted var(--pal-border); }
+  .avatar-panel { border: 2px dotted var(--pal-border); }
+
+  .palette-swatch { border: 2px dotted var(--pal-border); }
+  .style-swatch { border: 2px dotted var(--pal-border); }
+  .guide-banner { border: 2px dotted var(--pal-primary); }
+  .toast { border: 1px dotted var(--pal-border); }
+  .modal { border: 2px dotted var(--pal-text-main); }
+}

@@ -1,0 +1,54 @@
+/* ============================================================
+   CSS VARIABLES — 映射 SCSS 令牌到 CSS 自定义属性
+   ============================================================ */
+
+:root {
+  // ---- Palette 颜色变量 (由 data-palette 覆盖) ----
+  --pal-primary: #0066ff;
+  --pal-primary-soft: #eaf2ff;
+  --pal-bg: #f6f8fb;
+  --pal-surface: #fff;
+  --pal-surface-alt: #f8fafc;
+  --pal-text-main: #111827;
+  --pal-text-muted: #667085;
+  --pal-border: #cfd6e0;
+  --pal-success: #138a63;
+  --pal-warning: #b7791f;
+  --pal-danger: #dc2626;
+
+  // ---- Style 变量 (由 data-style 覆盖) ----
+  --stl-radius: 4px;
+  --stl-border-width: 1px;
+  --stl-border-style: solid;
+  --stl-shadow: 0 10px 28px rgba(17,24,39,0.06);
+  --stl-font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+  --stl-font-heading: var(--stl-font-ui);
+  --stl-letter-spacing: 0;
+  --stl-line-height: 1.5;
+  --stl-transition-speed: 0.25s;
+  --stl-chip-style: solid;
+  --stl-btn-style: solid;
+  --stl-header-border: 2px solid var(--pal-text-main);
+  --stl-decoration: none;
+  --stl-border-color: var(--pal-border);
+  --stl-border: var(--stl-border-width) var(--stl-border-style) var(--pal-border);
+
+  // ---- 兼容层 (旧变量名映射到新变量) ----
+  --grid-base: 8px;
+  --primary: var(--pal-primary);
+  --primary-soft: var(--pal-primary-soft);
+  --bg: var(--pal-bg);
+  --surface: var(--pal-surface);
+  --surface-alt: var(--pal-surface-alt);
+  --text-main: var(--pal-text-main);
+  --text-muted: var(--pal-text-muted);
+  --border: var(--pal-border);
+  --success: var(--pal-success);
+  --warning: var(--pal-warning);
+  --danger: var(--pal-danger);
+  --success-soft: #e6f7f0;
+  --radius: var(--stl-radius);
+  --shadow: var(--stl-shadow);
+  --font-ui: var(--stl-font-ui);
+  --transition-speed: var(--stl-transition-speed);
+}

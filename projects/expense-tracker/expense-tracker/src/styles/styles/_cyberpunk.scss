@@ -1,0 +1,167 @@
+/* ============================================================
+   CYBERPUNK — 赛博朋克主义
+   核心特征: 霓虹边框、故障文字动效、扫描线、深色背景+高亮色
+   ============================================================ */
+
+[data-style="cyberpunk"] {
+  --stl-radius: 0px;
+  --stl-border-width: 2px;
+  --stl-border-style: solid;
+  --stl-font-ui: "Courier New", monospace;
+  --stl-font-heading: "Courier New", monospace;
+  --stl-letter-spacing: 0.05em;
+  --stl-line-height: 1.4;
+  --stl-shadow: 0 0 15px rgba(255, 0, 110, 0.3);
+  --stl-chip-style: solid;
+  --stl-btn-style: solid;
+  --stl-header-border: 2px solid #FF006E;
+  --stl-decoration: hud;
+
+  body {
+    background: #0a0e1a !important;
+  }
+
+  .section {
+    background: #0d1321 !important;
+    border: 2px solid #FF006E;
+    box-shadow: 0 0 10px rgba(255, 0, 110, 0.2), inset 0 0 10px rgba(0, 245, 255, 0.05);
+  }
+
+  .header {
+    background: #0d1321 !important;
+    border-color: #FF006E;
+  }
+
+  .header h1 {
+    color: #00F5FF !important;
+    text-shadow: 0 0 10px #00F5FF, 0 0 20px #00F5FF;
+  }
+
+  .section-title {
+    color: #FF006E !important;
+    border-bottom: 2px solid #FF006E;
+  }
+
+  .chip {
+    border: 2px solid #00F5FF;
+    color: #00F5FF !important;
+    background: transparent !important;
+
+    &.active {
+      background: #FF006E !important;
+      border-color: #FF006E;
+      color: #fff !important;
+    }
+  }
+
+  .stat-value {
+    color: #00F5FF !important;
+  }
+
+  .record {
+    border-bottom-color: #FF006E;
+
+    &:hover {
+      animation: glitch 0.3s ease-in-out;
+    }
+  }
+
+  .btn-submit {
+    background: linear-gradient(90deg, #FF006E, #00F5FF);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: #fff;
+  }
+
+  .btn-outline {
+    border: 2px solid #00F5FF;
+    color: #00F5FF;
+    &:hover { background: rgba(0, 245, 255, 0.1); }
+  }
+
+  .btn-demo {
+    background: linear-gradient(90deg, #00F5FF, #FF006E);
+    border: 2px solid #FF006E;
+  }
+
+  .form-control {
+    background: #0d1321;
+    border: 2px solid #00F5FF;
+    color: #00F5FF;
+    &:focus { border-color: #FF006E; box-shadow: 0 0 10px rgba(255, 0, 110, 0.3); }
+  }
+
+  .form-group label { color: #FF006E; }
+
+  .stat-label { color: #FF006E; }
+  .stat-item { border-bottom-color: rgba(255, 0, 110, 0.3); }
+  .stat-total { border-top-color: #00F5FF; }
+
+  .record-cat, .record-amount { color: #00F5FF; }
+  .record-meta { color: #FF006E; }
+  .record-note { color: #888; }
+
+  .avatar-trigger {
+    border: 2px solid #00F5FF;
+    background: #0d1321;
+    color: #00F5FF;
+  }
+
+  .avatar-preview { border: 2px solid #FF006E; }
+  .avatar-option { border: 2px solid #00F5FF; background: #0d1321; }
+  .avatar-panel { border: 2px solid #00F5FF; background: #0d1321; }
+
+  .palette-label, .style-label { color: #00F5FF; }
+  .palette-swatch { border: 2px solid #FF006E; }
+  .style-swatch { border: 2px solid #00F5FF; }
+
+  .guide-banner {
+    border: 2px solid #FF006E;
+    background: #0d1321 !important;
+    p { color: #00F5FF; }
+    ul { color: #FF006E; }
+  }
+
+  .guide-dismiss { color: #00F5FF; }
+
+  .toast {
+    background: #0d1321;
+    border: 1px solid #FF006E;
+    color: #00F5FF;
+  }
+
+  .modal {
+    background: #0d1321;
+    border: 2px solid #FF006E;
+  }
+
+  .modal-overlay { background: rgba(0, 0, 0, 0.7); }
+
+  .insight-text {
+    background: #0d1321;
+    color: #00F5FF;
+    border: 1px solid rgba(0, 245, 255, 0.3);
+  }
+
+  .month-filter { color: #FF006E; }
+  .month-filter input {
+    background: #0d1321;
+    border: 1px solid #FF006E;
+    color: #00F5FF;
+  }
+
+  .status-badge {
+    background: rgba(255, 0, 110, 0.15);
+    color: #FF006E;
+  }
+
+  .trend-indicator {
+    background: rgba(0, 245, 255, 0.15);
+  }
+  .trend-up { color: #00F5FF; }
+  .trend-down { color: #FF006E; }
+
+  .header .subtitle { color: #FF006E; }
+  .palette-name-display, .style-name-display { color: #00F5FF; }
+  .empty, .empty-text { color: rgba(0, 245, 255, 0.4); }
+}

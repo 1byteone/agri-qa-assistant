@@ -1,0 +1,505 @@
+/* ============================================================
+   Y2K — Y2K 千禧风 (v5 专业重制版)
+
+   Design Reference: Mac OS X Aqua / iMac G3 半透明塑料
+   ============================================================
+   设计原则:
+     1. 克制的装饰 — 彩虹/镀铬仅用于标题和按钮，不做视觉轰炸
+     2. 层次分明的圆角 — 按钮 pill(999px), 卡片 12px, 输入框 8px
+     3. 统一的珠光白金属基底 — 去掉网格/极光/星点，clean
+     4. 半透明塑料质感 — 柔和的 backdrop-filter 分层
+     5. 可读性优先 — 背景不透明度 > 0.75，文字对比度 > 4.5:1
+   ============================================================ */
+
+/* ===== 关键帧 (仅保留 3 个必要动画) ===== */
+
+// 珠光微动 — 背景光晕缓慢漂移
+@keyframes y2k-shift {
+  0%   { background-position: 0% 50%, 0% 50%; }
+  50%  { background-position: 100% 50%, 100% 50%; }
+  100% { background-position: 0% 50%, 0% 50%; }
+}
+
+// 高光扫过 (按钮 hover)
+@keyframes y2k-shimmer {
+  0%   { transform: translateX(-120%) skewX(-25deg); }
+  100% { transform: translateX(220%)  skewX(-25deg); }
+}
+
+// 脉冲发光 (chip active)
+@keyframes y2k-glow-pulse {
+  0%, 100% { box-shadow: 0 0 4px rgba(0,153,204,0.25); }
+  50%      { box-shadow: 0 0 14px rgba(0,153,204,0.45); }
+}
+
+[data-style="y2k"] {
+  /* ============================================================
+     CSS 变量
+     ============================================================ */
+  --stl-radius: 12px;
+  --stl-border-width: 1px;
+  --stl-border-style: solid;
+  --stl-font-ui: "Trebuchet MS", "Tahoma", "Verdana", "Arial", sans-serif;
+  --stl-font-heading: "Trebuchet MS", "Tahoma", "Verdana", "Arial", sans-serif;
+  --stl-letter-spacing: 0.02em;
+  --stl-line-height: 1.55;
+  --stl-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+  --stl-chip-style: solid;
+  --stl-btn-style: solid;
+  --stl-header-border: none;
+  --stl-decoration: chrome;
+
+  /* Y2K 调色板 — 降低饱和度, 提升质感 */
+  --y2k-blue:   #0099CC;
+  --y2k-blue-dark: #007099;
+  --y2k-pink:   #FF6699;
+  --y2k-purple: #9966FF;
+  --y2k-glow:   rgba(0, 153, 204, 0.2);
+
+  /* ============================================================
+     1. 背景 — 珠光白金属渐变 (仅 2 层, 去掉网格/极光/星点)
+     ============================================================ */
+
+  body {
+    background:
+      // 径向光晕 — 右上到左下
+      radial-gradient(ellipse at 20% 20%, rgba(0,153,204,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 80%, rgba(255,102,153,0.04) 0%, transparent 60%),
+      // 珠光白金属基底
+      linear-gradient(165deg,
+        #f2f6fc 0%,
+        #e8eef8 25%,
+        #f4f8fc 50%,
+        #eef2fa 75%,
+        #f0f4fb 100%
+      );
+    background-size: 100% 100%, 100% 100%, 200% 200%;
+    animation: y2k-shift 30s ease-in-out infinite;
+  }
+
+  /* ============================================================
+     2. 区块/卡片 — 半透明塑料面板
+     ============================================================ */
+
+  .section, .header {
+    background: rgba(255, 255, 255, 0.78);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 12px;
+    box-shadow:
+      0 2px 12px rgba(0, 0, 0, 0.05),
+      inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .section-title {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+    color: var(--y2k-blue);
+    border-bottom: 1px solid rgba(0, 153, 204, 0.15);
+  }
+
+  /* ============================================================
+     3. 头部 — 镀铬/彩虹渐变标题 (唯一的高调装饰)
+     ============================================================ */
+
+  .header {
+    border-bottom: none;
+
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      background: linear-gradient(
+        135deg,
+        var(--y2k-blue) 0%,
+        var(--y2k-pink) 40%,
+        var(--y2k-purple) 70%,
+        var(--y2k-blue) 100%
+      );
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: var(--y2k-blue);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+    }
+  }
+
+  /* ============================================================
+     4. 按钮 — Aqua 风格胶囊按钮
+     ============================================================ */
+
+  .btn-submit, .btn-demo {
+    position: relative;
+    overflow: hidden;
+    border-radius: 999px;
+    border: none;
+    color: #fff;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    padding: 10px 24px;
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--y2k-blue), white 15%) 0%,
+      var(--y2k-blue) 50%,
+      var(--y2k-blue-dark) 100%
+    );
+    box-shadow:
+      0 3px 10px var(--y2k-glow),
+      inset 0 2px 0 rgba(255, 255, 255, 0.3),
+      inset 0 -2px 0 rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.2s, transform 0.2s;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow:
+        0 6px 18px var(--y2k-glow),
+        inset 0 2px 0 rgba(255, 255, 255, 0.3),
+        inset 0 -2px 0 rgba(0, 0, 0, 0.08);
+    }
+
+    &:active {
+      transform: translateY(0) scale(0.98);
+      box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    // 光泽扫过 — hover 时触发
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 50%; height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.12) 40%,
+        rgba(255, 255, 255, 0.22) 50%,
+        rgba(255, 255, 255, 0.12) 60%,
+        transparent 100%
+      );
+      transform: translateX(-120%) skewX(-25deg);
+      pointer-events: none;
+    }
+
+    &:hover::after {
+      animation: y2k-shimmer 0.7s ease-in-out;
+    }
+  }
+
+  .btn-outline {
+    border-radius: 999px;
+    border: 1.5px solid var(--y2k-blue);
+    background: transparent;
+    color: var(--y2k-blue);
+    font-weight: 600;
+    transition: all 0.2s;
+
+    &:hover {
+      background: var(--y2k-blue);
+      color: #fff;
+      box-shadow: 0 3px 10px var(--y2k-glow);
+    }
+  }
+
+  .btn-del, .btn-edit {
+    border-radius: 50%;
+    padding: 6px;
+    transition: transform 0.2s, background 0.2s;
+
+    &:hover {
+      transform: scale(1.12);
+      background: rgba(0, 153, 204, 0.06);
+    }
+  }
+
+  /* ============================================================
+     5. Chip — 胶囊标签
+     ============================================================ */
+
+  .chip {
+    border-radius: 999px;
+    padding: 6px 16px;
+    border: 1.5px solid var(--y2k-blue);
+    background: transparent;
+    color: var(--text-main);
+    font-size: 12px;
+    letter-spacing: 0.03em;
+    transition: all 0.2s;
+
+    &:hover {
+      background: rgba(0, 153, 204, 0.04);
+      transform: translateY(-1px);
+    }
+
+    &.active {
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--y2k-blue), white 10%),
+        var(--y2k-blue)
+      );
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 2px 8px var(--y2k-glow);
+    }
+  }
+
+  /* ============================================================
+     6. 表单控件
+     ============================================================ */
+
+  .form-control {
+    border-radius: 8px;
+    padding: 9px 14px;
+    border: 1.5px solid rgba(0, 153, 204, 0.3);
+    background: rgba(255, 255, 255, 0.8);
+    font-size: 13px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &:focus {
+      outline: none;
+      border-color: var(--y2k-blue);
+      box-shadow: 0 0 0 3px rgba(0, 153, 204, 0.12);
+    }
+
+    &::placeholder {
+      color: rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  /* ============================================================
+     7. 头像
+     ============================================================ */
+
+  .avatar-trigger {
+    border-radius: 999px;
+    border: 1.5px solid rgba(0, 153, 204, 0.3);
+    background: rgba(255, 255, 255, 0.6);
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &:hover, &:focus-visible {
+      border-color: var(--y2k-blue);
+      box-shadow: 0 0 0 3px rgba(0, 153, 204, 0.12);
+    }
+  }
+
+  .avatar-preview {
+    border-radius: 50%;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .avatar-panel {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  }
+
+  .avatar-option {
+    border-radius: 50%;
+    transition: transform 0.2s, box-shadow 0.2s;
+
+    &:hover {
+      transform: translateY(-2px) scale(1.06);
+      box-shadow: 0 4px 12px var(--y2k-glow);
+    }
+
+    &.selected {
+      border: 2px solid var(--y2k-blue);
+      box-shadow: 0 0 0 2px rgba(0, 153, 204, 0.15);
+    }
+  }
+
+  /* ============================================================
+     8. 调色板/风格选择器
+     ============================================================ */
+
+  .palette-swatch {
+    border-radius: 50%;
+    transition: transform 0.2s, box-shadow 0.2s;
+
+    &:hover {
+      transform: scale(1.18);
+    }
+
+    &.active {
+      box-shadow: 0 0 0 2px var(--y2k-blue);
+      transform: scale(1.18);
+    }
+  }
+
+  .style-swatch {
+    border-radius: 999px;
+    border: 1.5px solid transparent;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+
+    &:hover {
+      transform: scale(1.08);
+    }
+
+    &.active {
+      border-color: var(--y2k-blue);
+      box-shadow: 0 0 0 2px rgba(0, 153, 204, 0.15);
+      transform: scale(1.08);
+    }
+  }
+
+  /* ============================================================
+     9. 记录列表
+     ============================================================ */
+
+  .record {
+    padding: 10px 8px;
+    border-radius: 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    transition: background 0.2s, transform 0.15s;
+
+    &:hover {
+      background: rgba(0, 153, 204, 0.03);
+      transform: translateX(3px);
+    }
+  }
+
+  .record-amount {
+    font-weight: 700;
+    color: var(--y2k-blue);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .record-icon {
+    border-radius: 50%;
+    background: rgba(0, 153, 204, 0.06);
+    padding: 6px;
+    width: 36px; height: 36px;
+    display: grid; place-items: center;
+  }
+
+  .record-cat { font-weight: 600; }
+  .record-note { color: var(--text-muted); font-size: 11px; }
+
+  /* ============================================================
+     10. 统计概览
+     ============================================================ */
+
+  .stat-item {
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  }
+
+  .stat-total {
+    border-top: 2px solid var(--y2k-blue);
+    margin-top: 8px;
+    padding-top: 8px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .stat-value {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    font-size: 15px;
+  }
+
+  .stat-total .stat-value {
+    color: var(--y2k-blue);
+  }
+
+  /* ============================================================
+     11. 装饰元素
+     ============================================================ */
+
+  .guide-banner {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 14px;
+  }
+
+  .status-badge {
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--y2k-blue), var(--y2k-blue-dark));
+    color: #fff;
+    font-weight: 600;
+    font-size: 11px;
+  }
+
+  .toast {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 999px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
+  }
+
+  .modal {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 16px;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.12);
+  }
+
+  .modal-overlay {
+    background: rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+
+  .insight-text {
+    border-radius: 10px;
+    background: rgba(0, 153, 204, 0.04);
+    border: 1px solid rgba(0, 153, 204, 0.1);
+    padding: 10px 16px;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .month-filter input {
+    border-radius: 8px;
+    border: 1.5px solid rgba(0, 153, 204, 0.3);
+    background: rgba(255, 255, 255, 0.7);
+    padding: 6px 12px;
+    font-family: var(--stl-font-ui);
+    font-size: 13px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &:focus {
+      outline: none;
+      border-color: var(--y2k-blue);
+      box-shadow: 0 0 0 3px rgba(0, 153, 204, 0.12);
+    }
+  }
+
+  /* ============================================================
+     12. 无障碍 — prefers-reduced-motion
+     ============================================================ */
+
+  @media (prefers-reduced-motion: reduce) {
+    body { animation: none; }
+    .btn-submit, .btn-demo {
+      &::after { animation: none; }
+    }
+  }
+}

@@ -1,0 +1,156 @@
+/* ============================================================
+   头像选择器
+   ============================================================ */
+
+.profile-bar {
+  margin-top: 16px;
+  position: relative;
+  max-width: 420px;
+}
+
+.avatar-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border: var(--stl-border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text-main);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 102, 255, 0.12);
+  }
+
+  &[aria-expanded="true"] .avatar-chevron {
+    transform: rotate(180deg);
+  }
+}
+
+.avatar-preview {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  display: grid;
+  place-items: center;
+  border: var(--stl-border);
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+  overflow: hidden;
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+}
+
+.avatar-copy {
+  display: grid;
+  gap: 2px;
+  flex: 1;
+
+  strong {
+    font-size: 13px;
+  }
+
+  small {
+    color: var(--text-muted);
+    font-size: 11px;
+  }
+}
+
+.avatar-chevron {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s ease;
+}
+
+.avatar-panel {
+  margin-top: 8px;
+  padding: 12px;
+  border: var(--stl-border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  animation: fadeIn 0.2s ease-out;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.avatar-panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.avatar-close {
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 11px;
+  padding: 2px 4px;
+}
+
+.avatar-license {
+  margin-top: 10px;
+  font-size: 10px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.avatar-option {
+  min-width: 0;
+  aspect-ratio: 1;
+  border: var(--stl-border);
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+  cursor: pointer;
+  padding: 2px;
+  transition: border-color 0.2s, transform 0.2s, background 0.2s;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    outline: none;
+  }
+
+  &.selected {
+    border: 2px solid var(--primary);
+    background: var(--primary-soft);
+  }
+}

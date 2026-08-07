@@ -1,0 +1,30 @@
+/* ============================================================
+   卡片/区块 — Section 容器
+   ============================================================ */
+
+.section {
+  border: var(--stl-border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  padding: calc(var(--grid-base) * 2);
+  position: relative;
+  animation: fadeIn 0.6s ease-out 0.3s both;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: calc(var(--grid-base) * 2);
+  border-bottom: var(--stl-border-width) var(--stl-border-style) var(--pal-border);
+  padding-bottom: calc(var(--grid-base) * 1);
+}
+
+.stats-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}

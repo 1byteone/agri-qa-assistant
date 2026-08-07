@@ -1,0 +1,84 @@
+/* ============================================================
+   模态框 — 弹出层 + 遮罩
+   ============================================================ */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: grid;
+  place-items: center;
+  z-index: 200;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-overlay[hidden] { display: none; }
+
+.modal {
+  background: var(--surface);
+  border: var(--stl-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: calc(var(--grid-base) * 3);
+  max-width: 480px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease-out;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: calc(var(--grid-base) * 2);
+  padding-bottom: calc(var(--grid-base) * 1);
+  border-bottom: var(--stl-border);
+}
+
+.modal-header .section-title {
+  margin-bottom: 0;
+  border: 0;
+  padding: 0;
+}
+
+.modal-close {
+  border: 0;
+  background: transparent;
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.modal-close:hover { color: var(--text-main); }
+
+.modal-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: calc(var(--grid-base) * 2);
+  padding-bottom: calc(var(--grid-base) * 1);
+  border-bottom: var(--stl-border);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: calc(var(--grid-base) * 2);
+  padding-top: calc(var(--grid-base) * 1);
+  border-top: var(--stl-border);
+}
+
+.modal-body {
+  display: grid;
+  gap: 10px;
+}
+
+.modal-footer {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: var(--stl-border);
+  text-align: right;
+}

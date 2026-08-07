@@ -1,0 +1,68 @@
+/* ============================================================
+   头部区域 — 标题 + 副标题
+   ============================================================ */
+
+.header {
+  text-align: left;
+  border-bottom: 2px solid var(--text-main);
+  padding-bottom: calc(var(--grid-base) * 2);
+  animation: slideDown 0.4s ease-out;
+  position: relative;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  border-radius: var(--radius);
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    display: inline-block;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    animation: fadeIn 0.5s ease-out 0.1s both;
+  }
+}
+
+/* 引导横幅 */
+.guide-banner {
+  background: var(--primary-soft);
+  border: 1px solid var(--primary);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  margin-top: 12px;
+  animation: fadeIn 0.5s ease-out;
+
+  p {
+    font-size: 13px;
+    color: var(--text-main);
+    margin-bottom: 8px;
+    line-height: 1.6;
+  }
+
+  ul {
+    margin: 0 0 8px 16px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  li {
+    margin-bottom: 2px;
+  }
+}
+
+.guide-dismiss {
+  font-size: 11px;
+  color: var(--primary);
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-weight: 600;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

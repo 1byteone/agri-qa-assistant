@@ -1,0 +1,115 @@
+/* ============================================================
+   MAXIMALISM — 极复主义 (极繁主义)
+   核心特征: 重复图案背景、双边框、丰富色彩、装饰性元素、大胆
+   ============================================================ */
+
+[data-style="maximalism"] {
+  --stl-radius: 8px;
+  --stl-border-width: 2px;
+  --stl-border-style: double;
+  --stl-font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  --stl-font-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  --stl-letter-spacing: 0.02em;
+  --stl-line-height: 1.5;
+  --stl-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  --stl-chip-style: solid;
+  --stl-btn-style: solid;
+  --stl-header-border: 3px double var(--pal-text-main);
+  --stl-decoration: pattern;
+
+  .section {
+    border: 2px double var(--pal-border);
+    background: repeating-linear-gradient(
+      45deg, transparent, transparent 10px,
+      var(--pal-primary-soft) 10px, var(--pal-primary-soft) 11px
+    );
+  }
+
+  .header {
+    background: repeating-linear-gradient(
+      -45deg, transparent, transparent 8px,
+      var(--pal-primary-soft) 8px, var(--pal-primary-soft) 9px
+    );
+  }
+
+  .chip {
+    border-width: 2px;
+    border-style: double;
+  }
+
+  .section-title {
+    font-size: 16px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border-bottom: 2px double var(--pal-text-main);
+    padding-bottom: 12px;
+  }
+
+  .btn-submit {
+    border: 2px double var(--pal-text-main);
+    background: var(--pal-primary);
+    color: #fff;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        90deg, transparent, transparent 5px,
+        rgba(255,255,255,0.05) 5px, rgba(255,255,255,0.05) 6px
+      );
+    }
+  }
+
+  .btn-outline {
+    border: 2px double var(--pal-border);
+    letter-spacing: 0.08em;
+  }
+
+  .btn-demo {
+    border: 2px double var(--pal-text-main);
+  }
+
+  .form-control {
+    border: 2px double var(--pal-border);
+  }
+
+  .avatar-trigger {
+    border: 2px double var(--pal-border);
+  }
+
+  .avatar-preview { border: 2px double var(--pal-border); }
+  .avatar-option { border: 2px double var(--pal-border); }
+  .avatar-panel { border: 2px double var(--pal-border); }
+
+  .palette-swatch { border: 2px double var(--pal-border); }
+  .style-swatch { border: 2px double var(--pal-border); }
+
+  .guide-banner {
+    border: 2px double var(--pal-primary);
+  }
+
+  .toast {
+    border: 1px double var(--pal-border);
+  }
+
+  .modal {
+    border: 2px double var(--pal-text-main);
+  }
+
+  .record {
+    border-bottom: 2px double var(--pal-border);
+  }
+
+  .stat-item {
+    border-bottom: 2px double var(--pal-border);
+  }
+
+  .stat-total {
+    border-top: 3px double var(--pal-text-main);
+  }
+}

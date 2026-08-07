@@ -1,0 +1,58 @@
+// ============================================================
+// DESIGN TOKENS — 设计令牌系统
+// 全局 SCSS 变量和函数，通过 Vite additionalData 自动注入
+// ============================================================
+
+// ---- 间距系统 (8px 网格) ----
+$grid-base: 8px;
+$space-1: $grid-base;          // 8px
+$space-2: $grid-base * 2;      // 16px
+$space-3: $grid-base * 3;      // 24px
+$space-4: $grid-base * 4;      // 32px
+$space-5: $grid-base * 5;      // 40px
+$space-6: $grid-base * 6;      // 48px
+$space-8: $grid-base * 8;      // 64px
+$space-12: $grid-base * 12;    // 96px
+
+// ---- 容器宽度 ----
+$container-max-width: 960px;
+
+// ---- 断点 ----
+$bp-mobile: 768px;
+$bp-tablet: 1024px;
+
+// ---- 字体栈 ----
+$font-system: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', Arial, sans-serif;
+$font-helvetica: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+$font-georgia: Georgia, 'Palatino', serif;
+$font-times: 'Times New Roman', Times, Georgia, serif;
+$font-mono: 'Courier New', 'Lucida Console', monospace;
+$font-impact: 'Impact', 'Arial Black', sans-serif;
+$font-trebuchet: 'Trebuchet MS', 'Arial', sans-serif;
+$font-roboto: Roboto, 'Segoe UI', sans-serif;
+
+// ---- Z-index 分层 ----
+$z-dropdown: 100;
+$z-modal: 200;
+$z-toast: 9999;
+$z-audit-panel: 10000;
+
+// ---- 过渡速度 ----
+$transition-fast: 0.15s;
+$transition-normal: 0.25s;
+$transition-slow: 0.4s;
+
+// ---- 圆角预设 ----
+$radius-none: 0px;
+$radius-sm: 4px;
+$radius-md: 6px;
+$radius-lg: 12px;
+$radius-xl: 16px;
+$radius-full: 999px;
+
+// ---- 阴影层级 ----
+$shadow-none: none;
+$shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+$shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 10px 28px rgba(17, 24, 39, 0.06);
+$shadow-xl: 0 20px 48px rgba(0, 0, 0, 0.12);

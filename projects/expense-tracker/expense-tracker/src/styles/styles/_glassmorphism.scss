@@ -1,0 +1,161 @@
+/* ============================================================
+   GLASSMORPHISM — 玻璃拟态主义
+   核心特征: backdrop-filter blur、半透明背景、渐变背景层、发光边框
+   ============================================================ */
+
+[data-style="glassmorphism"] {
+  --stl-radius: 12px;
+  --stl-border-width: 1px;
+  --stl-border-style: solid;
+  --stl-font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  --stl-font-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  --stl-letter-spacing: 0;
+  --stl-line-height: 1.5;
+  --stl-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --stl-chip-style: glass;
+  --stl-btn-style: glass;
+  --stl-header-border: 1px solid rgba(255, 255, 255, 0.3);
+  --stl-decoration: none;
+
+  .header, .section, .avatar-panel {
+    background: rgba(255, 255, 255, 0.15) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+  }
+
+  body {
+    background: linear-gradient(135deg, #667eea, #764ba2) !important;
+  }
+
+  .avatar-trigger {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .palette-swatch {
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+
+  .chip {
+    background: rgba(255, 255, 255, 0.12) !important;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+
+    &.active {
+      background: rgba(255, 255, 255, 0.3) !important;
+    }
+  }
+
+  .section-title {
+    border-bottom-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .btn-submit {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    text-transform: none;
+    letter-spacing: 0.02em;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
+
+  .btn-outline {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(4px);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+  }
+
+  .btn-demo {
+    background: rgba(102, 126, 234, 0.5);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .form-control {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    backdrop-filter: blur(4px);
+
+    &:focus {
+      border-color: rgba(255, 255, 255, 0.5);
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15);
+    }
+  }
+
+  .record {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .record-amount, .stat-value, .stat-label {
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .stat-item {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .stat-total {
+    border-top-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .header h1, .header .subtitle {
+    color: #fff;
+  }
+
+  .section-title {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .palette-label, .style-label {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .palette-name-display, .style-name-display {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .empty, .empty-text {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .toast {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+  }
+
+  .modal {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+  }
+
+  .modal-overlay {
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  .insight-text {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .guide-banner {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+}
