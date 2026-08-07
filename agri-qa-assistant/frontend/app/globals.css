@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --radius: 0.75rem;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    @apply font-sf antialiased;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+    color: hsl(var(--foreground));
+    min-height: 100vh;
+    overflow: hidden;
+  }
+}
+
+@layer components {
+  /* Apple Liquid Glass 核心效果 */
+  .glass-panel {
+    @apply bg-white/70 backdrop-blur-xl backdrop-saturate-150;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  }
+
+  .glass-card {
+    @apply bg-white/60 backdrop-blur-lg backdrop-saturate-125;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  }
+
+  .glass-input {
+    @apply bg-white/80 backdrop-blur-md;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: all 0.2s ease;
+  }
+
+  .glass-input:focus {
+    @apply ring-2 ring-blue-500/30 border-blue-400/50;
+    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.08);
+  }
+
+  .glass-button {
+    @apply bg-blue-500 text-white font-medium;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+  }
+
+  .glass-button:hover {
+    @apply bg-blue-600;
+    box-shadow: 0 4px 16px rgba(0, 122, 255, 0.4);
+    transform: translateY(-1px);
+  }
+
+  .glass-button:active {
+    transform: translateY(0);
+  }
+
+  /* 消息气泡 */
+  .message-user {
+    @apply bg-blue-500 text-white rounded-2xl rounded-br-md;
+    box-shadow: 0 2px 12px rgba(0, 122, 255, 0.25);
+  }
+
+  .message-assistant {
+    @apply bg-white/80 backdrop-blur-md text-gray-800 rounded-2xl rounded-bl-md;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+
+  /* 滚动条 */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-gray-300/80 rounded-full;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400/80;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
