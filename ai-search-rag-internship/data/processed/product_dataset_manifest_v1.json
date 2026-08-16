@@ -1,0 +1,13 @@
+{
+  "dataset_type": "synthetic_teaching_catalog",
+  "data_version": "product-search-v1",
+  "product_count": 500,
+  "query_count": 50,
+  "family_count": 10,
+  "relevance_definition": "products in the same family and feature bucket as the query intent",
+  "files": {
+    "catalog": "product_catalog_v1.json",
+    "queries": "product_queries_v1.json",
+    "qrels": "product_qrels_v1.json"
+  }
+}

@@ -1,0 +1,5 @@
+-r phase3.txt
+fastapi>=0.115,<1
+uvicorn[standard]>=0.30,<1
+openai>=1.50,<3
+

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>EvidenceDesk Mini RAG</title>
+    <style>
+      body { max-width: 960px; margin: 40px auto; padding: 0 20px; font-family: system-ui, sans-serif; color: #17202a; }
+      textarea { width: 100%; min-height: 90px; padding: 12px; box-sizing: border-box; }
+      button { margin-top: 12px; padding: 10px 16px; cursor: pointer; }
+      pre { white-space: pre-wrap; background: #f4f6f7; padding: 14px; }
+      .result { border-left: 4px solid #2874a6; padding: 10px 14px; margin: 12px 0; background: #f8fbfd; }
+      .meta { color: #5d6d7e; font-size: 0.9rem; }
+    </style>
+  </head>
+  <body>
+    <h1>EvidenceDesk Mini RAG</h1>
+    <p>输入问题，查看可追溯的知识库证据。</p>
+    <textarea id="query" placeholder="例如：overlap 有什么作用？"></textarea>
+    <button id="search">检索证据</button>
+    <section id="output"></section>
+    <script>
+      const query = document.getElementById('query');
+      const output = document.getElementById('output');
+      document.getElementById('search').onclick = async () => {
+        output.textContent = '检索中...';
+        const response = await fetch('/chat', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({query: query.value, top_k: 5}) });
+        const data = await response.json();
+        output.innerHTML = '';
+        const answer = document.createElement('pre');
+        answer.textContent = data.answer || data.detail || '请求失败';
+        output.appendChild(answer);
+        (data.citations || []).forEach(item => {
+          const card = document.createElement('article');
+          card.className = 'result';
+          const title = document.createElement('strong');
+          title.textContent = item.chunk_id;
+          const meta = document.createElement('div');
+          meta.className = 'meta';
+          meta.textContent = `${item.source || ''} · page ${item.page || '-'} · score ${item.score}`;
+          card.appendChild(title);
+          card.appendChild(meta);
+          const text = document.createElement('p');
+          text.textContent = item.text;
+          card.appendChild(text);
+          output.appendChild(card);
+        });
+      };
+    </script>
+  </body>
+</html>

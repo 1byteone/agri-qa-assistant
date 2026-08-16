@@ -1,0 +1,19 @@
+{
+  "health": {
+    "status": "ok",
+    "chunks": 2,
+    "index_version": "chunks-2-size-512-overlap-128"
+  },
+  "search_trace_id": "search-8544e38c256c",
+  "chat_trace_id": "chat-27b1ba326ea4",
+  "chat_mode": "evidence-only",
+  "invalid_query_status": 422,
+  "citations": [
+    {
+      "chunk_id": "656e2c0615cc360f",
+      "source": "D:\\code\\codeByCursor\\AI_EXAM\\ai-search-rag-internship\\phase1_doc_parser\\examples\\input\\quickstart.md",
+      "page": null,
+      "score": 1.318776
+    }
+  ]
+}

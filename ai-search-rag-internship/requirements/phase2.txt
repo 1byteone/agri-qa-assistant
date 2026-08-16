@@ -1,0 +1,6 @@
+-r phase1.txt
+numpy>=1.26,<3
+faiss-cpu>=1.8,<2
+rank-bm25>=0.2,<1
+FlagEmbedding>=1.3,<2
+

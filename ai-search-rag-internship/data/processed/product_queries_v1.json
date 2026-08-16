@@ -1,0 +1,1002 @@
+[
+  {
+    "query_id": "q-001",
+    "query": "降噪蓝牙耳机 主动降噪",
+    "query_type": "exact_category",
+    "family_id": "audio",
+    "required_feature": "主动降噪",
+    "relevant_ids": [
+      "prod-01-001",
+      "prod-01-006",
+      "prod-01-011",
+      "prod-01-016",
+      "prod-01-021",
+      "prod-01-026",
+      "prod-01-031",
+      "prod-01-036",
+      "prod-01-041",
+      "prod-01-046"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-002",
+    "query": "想找无线耳机，用于通勤，重点是充一次电用很久",
+    "query_type": "natural_language",
+    "family_id": "audio",
+    "required_feature": "长续航",
+    "relevant_ids": [
+      "prod-01-002",
+      "prod-01-007",
+      "prod-01-012",
+      "prod-01-017",
+      "prod-01-022",
+      "prod-01-027",
+      "prod-01-032",
+      "prod-01-037",
+      "prod-01-042",
+      "prod-01-047"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-003",
+    "query": "数码配件 打游戏声音别拖 便携",
+    "query_type": "attribute_filter",
+    "family_id": "audio",
+    "required_feature": "低延迟",
+    "relevant_ids": [
+      "prod-01-003",
+      "prod-01-008",
+      "prod-01-013",
+      "prod-01-018",
+      "prod-01-023",
+      "prod-01-028",
+      "prod-01-033",
+      "prod-01-038",
+      "prod-01-043",
+      "prod-01-048"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-004",
+    "query": "通勤想要耳塞，线上开会人声清楚，预算不要太高",
+    "query_type": "long_tail",
+    "family_id": "audio",
+    "required_feature": "通话清晰",
+    "relevant_ids": [
+      "prod-01-004",
+      "prod-01-009",
+      "prod-01-014",
+      "prod-01-019",
+      "prod-01-024",
+      "prod-01-029",
+      "prod-01-034",
+      "prod-01-039",
+      "prod-01-044",
+      "prod-01-049"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-005",
+    "query": "通勤用的无线耳机，希望戴久了耳朵不疼",
+    "query_type": "scenario_first",
+    "family_id": "audio",
+    "required_feature": "入耳舒适",
+    "relevant_ids": [
+      "prod-01-005",
+      "prod-01-010",
+      "prod-01-015",
+      "prod-01-020",
+      "prod-01-025",
+      "prod-01-030",
+      "prod-01-035",
+      "prod-01-040",
+      "prod-01-045",
+      "prod-01-050"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-006",
+    "query": "轻量保温杯 316不锈钢",
+    "query_type": "exact_category",
+    "family_id": "thermos",
+    "required_feature": "316不锈钢",
+    "relevant_ids": [
+      "prod-02-001",
+      "prod-02-006",
+      "prod-02-011",
+      "prod-02-016",
+      "prod-02-021",
+      "prod-02-026",
+      "prod-02-031",
+      "prod-02-036",
+      "prod-02-041",
+      "prod-02-046"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-007",
+    "query": "想找随行杯，用于露营，重点是一天喝水不用反复加",
+    "query_type": "natural_language",
+    "family_id": "thermos",
+    "required_feature": "大容量",
+    "relevant_ids": [
+      "prod-02-002",
+      "prod-02-007",
+      "prod-02-012",
+      "prod-02-017",
+      "prod-02-022",
+      "prod-02-027",
+      "prod-02-032",
+      "prod-02-037",
+      "prod-02-042",
+      "prod-02-047"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-008",
+    "query": "户外用品 背包里尽量没重量 户外",
+    "query_type": "attribute_filter",
+    "family_id": "thermos",
+    "required_feature": "轻量杯身",
+    "relevant_ids": [
+      "prod-02-003",
+      "prod-02-008",
+      "prod-02-013",
+      "prod-02-018",
+      "prod-02-023",
+      "prod-02-028",
+      "prod-02-033",
+      "prod-02-038",
+      "prod-02-043",
+      "prod-02-048"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-009",
+    "query": "露营想要水杯，冷饮热饮都能带，预算不要太高",
+    "query_type": "long_tail",
+    "family_id": "thermos",
+    "required_feature": "保温保冷",
+    "relevant_ids": [
+      "prod-02-004",
+      "prod-02-009",
+      "prod-02-014",
+      "prod-02-019",
+      "prod-02-024",
+      "prod-02-029",
+      "prod-02-034",
+      "prod-02-039",
+      "prod-02-044",
+      "prod-02-049"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-010",
+    "query": "露营用的随行杯，希望走路时单手打开",
+    "query_type": "scenario_first",
+    "family_id": "thermos",
+    "required_feature": "一键开盖",
+    "relevant_ids": [
+      "prod-02-005",
+      "prod-02-010",
+      "prod-02-015",
+      "prod-02-020",
+      "prod-02-025",
+      "prod-02-030",
+      "prod-02-035",
+      "prod-02-040",
+      "prod-02-045",
+      "prod-02-050"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-011",
+    "query": "静音机械键盘 红轴手感",
+    "query_type": "exact_category",
+    "family_id": "keyboard",
+    "required_feature": "红轴手感",
+    "relevant_ids": [
+      "prod-03-001",
+      "prod-03-006",
+      "prod-03-011",
+      "prod-03-016",
+      "prod-03-021",
+      "prod-03-026",
+      "prod-03-031",
+      "prod-03-036",
+      "prod-03-041",
+      "prod-03-046"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-012",
+    "query": "想找码字键盘，用于办公，重点是敲代码手感轻",
+    "query_type": "natural_language",
+    "family_id": "keyboard",
+    "required_feature": "静音轴体",
+    "relevant_ids": [
+      "prod-03-002",
+      "prod-03-007",
+      "prod-03-012",
+      "prod-03-017",
+      "prod-03-022",
+      "prod-03-027",
+      "prod-03-032",
+      "prod-03-037",
+      "prod-03-042",
+      "prod-03-047"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-013",
+    "query": "电脑外设 电脑平板来回切 可充电",
+    "query_type": "attribute_filter",
+    "family_id": "keyboard",
+    "required_feature": "蓝牙多设备",
+    "relevant_ids": [
+      "prod-03-003",
+      "prod-03-008",
+      "prod-03-013",
+      "prod-03-018",
+      "prod-03-023",
+      "prod-03-028",
+      "prod-03-033",
+      "prod-03-038",
+      "prod-03-043",
+      "prod-03-048"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-014",
+    "query": "办公想要办公键盘，常用操作一键完成，预算不要太高",
+    "query_type": "long_tail",
+    "family_id": "keyboard",
+    "required_feature": "可编程按键",
+    "relevant_ids": [
+      "prod-03-004",
+      "prod-03-009",
+      "prod-03-014",
+      "prod-03-019",
+      "prod-03-024",
+      "prod-03-029",
+      "prod-03-034",
+      "prod-03-039",
+      "prod-03-044",
+      "prod-03-049"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-015",
+    "query": "办公用的码字键盘，希望久坐打字手腕舒服",
+    "query_type": "scenario_first",
+    "family_id": "keyboard",
+    "required_feature": "人体工学",
+    "relevant_ids": [
+      "prod-03-005",
+      "prod-03-010",
+      "prod-03-015",
+      "prod-03-020",
+      "prod-03-025",
+      "prod-03-030",
+      "prod-03-035",
+      "prod-03-040",
+      "prod-03-045",
+      "prod-03-050"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-016",
+    "query": "多口氮化镓充电器 65W快充",
+    "query_type": "exact_category",
+    "family_id": "charger",
+    "required_feature": "65W快充",
+    "relevant_ids": [
+      "prod-04-001",
+      "prod-04-006",
+      "prod-04-011",
+      "prod-04-016",
+      "prod-04-021",
+      "prod-04-026",
+      "prod-04-031",
+      "prod-04-036",
+      "prod-04-041",
+      "prod-04-046"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-017",
+    "query": "想找电源适配器，用于出差，重点是手机电脑一起充",
+    "query_type": "natural_language",
+    "family_id": "charger",
+    "required_feature": "三口输出",
+    "relevant_ids": [
+      "prod-04-002",
+      "prod-04-007",
+      "prod-04-012",
+      "prod-04-017",
+      "prod-04-022",
+      "prod-04-027",
+      "prod-04-032",
+      "prod-04-037",
+      "prod-04-042",
+      "prod-04-047"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-018",
+    "query": "数码配件 大功率本也能带动 安全保护",
+    "query_type": "attribute_filter",
+    "family_id": "charger",
+    "required_feature": "100W高功率",
+    "relevant_ids": [
+      "prod-04-003",
+      "prod-04-008",
+      "prod-04-013",
+      "prod-04-018",
+      "prod-04-023",
+      "prod-04-028",
+      "prod-04-033",
+      "prod-04-038",
+      "prod-04-043",
+      "prod-04-048"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-019",
+    "query": "出差想要充电头，收进行李不占地方，预算不要太高",
+    "query_type": "long_tail",
+    "family_id": "charger",
+    "required_feature": "折叠插脚",
+    "relevant_ids": [
+      "prod-04-004",
+      "prod-04-009",
+      "prod-04-014",
+      "prod-04-019",
+      "prod-04-024",
+      "prod-04-029",
+      "prod-04-034",
+      "prod-04-039",
+      "prod-04-044",
+      "prod-04-049"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-020",
+    "query": "出差用的电源适配器，希望各种设备都能快充",
+    "query_type": "scenario_first",
+    "family_id": "charger",
+    "required_feature": "协议兼容",
+    "relevant_ids": [
+      "prod-04-005",
+      "prod-04-010",
+      "prod-04-015",
+      "prod-04-020",
+      "prod-04-025",
+      "prod-04-030",
+      "prod-04-035",
+      "prod-04-040",
+      "prod-04-045",
+      "prod-04-050"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-021",
+    "query": "防滑徒步鞋 防水鞋面",
+    "query_type": "exact_category",
+    "family_id": "shoes",
+    "required_feature": "防水鞋面",
+    "relevant_ids": [
+      "prod-05-001",
+      "prod-05-006",
+      "prod-05-011",
+      "prod-05-016",
+      "prod-05-021",
+      "prod-05-026",
+      "prod-05-031",
+      "prod-05-036",
+      "prod-05-041",
+      "prod-05-046"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-022",
+    "query": "想找户外鞋，用于徒步，重点是走一天脚底不累",
+    "query_type": "natural_language",
+    "family_id": "shoes",
+    "required_feature": "轻量鞋底",
+    "relevant_ids": [
+      "prod-05-002",
+      "prod-05-007",
+      "prod-05-012",
+      "prod-05-017",
+      "prod-05-022",
+      "prod-05-027",
+      "prod-05-032",
+      "prod-05-037",
+      "prod-05-042",
+      "prod-05-047"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-023",
+    "query": "户外服饰 碎石路保护脚踝 户外",
+    "query_type": "attribute_filter",
+    "family_id": "shoes",
+    "required_feature": "高帮支撑",
+    "relevant_ids": [
+      "prod-05-003",
+      "prod-05-008",
+      "prod-05-013",
+      "prod-05-018",
+      "prod-05-023",
+      "prod-05-028",
+      "prod-05-033",
+      "prod-05-038",
+      "prod-05-043",
+      "prod-05-048"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-024",
+    "query": "徒步想要登山鞋，夏天走路脚不闷，预算不要太高",
+    "query_type": "long_tail",
+    "family_id": "shoes",
+    "required_feature": "透气网面",
+    "relevant_ids": [
+      "prod-05-004",
+      "prod-05-009",
+      "prod-05-014",
+      "prod-05-019",
+      "prod-05-024",
+      "prod-05-029",
+      "prod-05-034",
+      "prod-05-039",
+      "prod-05-044",
+      "prod-05-049"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-025",
+    "query": "徒步用的户外鞋，希望泥地石路都抓得住",
+    "query_type": "scenario_first",
+    "family_id": "shoes",
+    "required_feature": "越野抓地",
+    "relevant_ids": [
+      "prod-05-005",
+      "prod-05-010",
+      "prod-05-015",
+      "prod-05-020",
+      "prod-05-025",
+      "prod-05-030",
+      "prod-05-035",
+      "prod-05-040",
+      "prod-05-045",
+      "prod-05-050"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-026",
+    "query": "人体工学办公椅 腰部支撑",
+    "query_type": "exact_category",
+    "family_id": "chair",
+    "required_feature": "腰部支撑",
+    "relevant_ids": [
+      "prod-06-001",
+      "prod-06-006",
+      "prod-06-011",
+      "prod-06-016",
+      "prod-06-021",
+      "prod-06-026",
+      "prod-06-031",
+      "prod-06-036",
+      "prod-06-041",
+      "prod-06-046"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-027",
+    "query": "想找办公座椅，用于久坐办公，重点是脖子需要有地方靠",
+    "query_type": "natural_language",
+    "family_id": "chair",
+    "required_feature": "头枕可调",
+    "relevant_ids": [
+      "prod-06-002",
+      "prod-06-007",
+      "prod-06-012",
+      "prod-06-017",
+      "prod-06-022",
+      "prod-06-027",
+      "prod-06-032",
+      "prod-06-037",
+      "prod-06-042",
+      "prod-06-047"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-028",
+    "query": "办公家具 夏天坐着后背不出汗 办公",
+    "query_type": "attribute_filter",
+    "family_id": "chair",
+    "required_feature": "透气网布",
+    "relevant_ids": [
+      "prod-06-003",
+      "prod-06-008",
+      "prod-06-013",
+      "prod-06-018",
+      "prod-06-023",
+      "prod-06-028",
+      "prod-06-033",
+      "prod-06-038",
+      "prod-06-043",
+      "prod-06-048"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-029",
+    "query": "久坐办公想要电脑椅，手臂能跟着椅背动，预算不要太高",
+    "query_type": "long_tail",
+    "family_id": "chair",
+    "required_feature": "扶手联动",
+    "relevant_ids": [
+      "prod-06-004",
+      "prod-06-009",
+      "prod-06-014",
+      "prod-06-019",
+      "prod-06-024",
+      "prod-06-029",
+      "prod-06-034",
+      "prod-06-039",
+      "prod-06-044",
+      "prod-06-049"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-030",
+    "query": "久坐办公用的办公座椅，希望小书桌也放得下",
+    "query_type": "scenario_first",
+    "family_id": "chair",
+    "required_feature": "小户型窄身",
+    "relevant_ids": [
+      "prod-06-005",
+      "prod-06-010",
+      "prod-06-015",
+      "prod-06-020",
+      "prod-06-025",
+      "prod-06-030",
+      "prod-06-035",
+      "prod-06-040",
+      "prod-06-045",
+      "prod-06-050"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-031",
+    "query": "防摔手机壳 镜头全包",
+    "query_type": "exact_category",
+    "family_id": "case",
+    "required_feature": "镜头全包",
+    "relevant_ids": [
+      "prod-07-001",
+      "prod-07-006",
+      "prod-07-011",
+      "prod-07-016",
+      "prod-07-021",
+      "prod-07-026",
+      "prod-07-031",
+      "prod-07-036",
+      "prod-07-041",
+      "prod-07-046"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-032",
+    "query": "想找保护壳，用于日常通勤，重点是能吸住磁吸支架",
+    "query_type": "natural_language",
+    "family_id": "case",
+    "required_feature": "磁吸兼容",
+    "relevant_ids": [
+      "prod-07-002",
+      "prod-07-007",
+      "prod-07-012",
+      "prod-07-017",
+      "prod-07-022",
+      "prod-07-027",
+      "prod-07-032",
+      "prod-07-037",
+      "prod-07-042",
+      "prod-07-047"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-033",
+    "query": "手机配件 手机原色要露出来 保护",
+    "query_type": "attribute_filter",
+    "family_id": "case",
+    "required_feature": "透明不发黄",
+    "relevant_ids": [
+      "prod-07-003",
+      "prod-07-008",
+      "prod-07-013",
+      "prod-07-018",
+      "prod-07-023",
+      "prod-07-028",
+      "prod-07-033",
+      "prod-07-038",
+      "prod-07-043",
+      "prod-07-048"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-034",
+    "query": "日常通勤想要手机套，拿在手里别打滑，预算不要太高",
+    "query_type": "long_tail",
+    "family_id": "case",
+    "required_feature": "防滑边框",
+    "relevant_ids": [
+      "prod-07-004",
+      "prod-07-009",
+      "prod-07-014",
+      "prod-07-019",
+      "prod-07-024",
+      "prod-07-029",
+      "prod-07-034",
+      "prod-07-039",
+      "prod-07-044",
+      "prod-07-049"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-035",
+    "query": "日常通勤用的保护壳，希望摔一下也尽量不坏",
+    "query_type": "scenario_first",
+    "family_id": "case",
+    "required_feature": "军规防摔",
+    "relevant_ids": [
+      "prod-07-005",
+      "prod-07-010",
+      "prod-07-015",
+      "prod-07-020",
+      "prod-07-025",
+      "prod-07-030",
+      "prod-07-035",
+      "prod-07-040",
+      "prod-07-045",
+      "prod-07-050"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-036",
+    "query": "智能空气炸锅 大容量",
+    "query_type": "exact_category",
+    "family_id": "airfryer",
+    "required_feature": "大容量",
+    "relevant_ids": [
+      "prod-08-001",
+      "prod-08-006",
+      "prod-08-011",
+      "prod-08-016",
+      "prod-08-021",
+      "prod-08-026",
+      "prod-08-031",
+      "prod-08-036",
+      "prod-08-041",
+      "prod-08-046"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-037",
+    "query": "想找无油锅，用于家庭做饭，重点是不用打开锅盖看火",
+    "query_type": "natural_language",
+    "family_id": "airfryer",
+    "required_feature": "可视窗口",
+    "relevant_ids": [
+      "prod-08-002",
+      "prod-08-007",
+      "prod-08-012",
+      "prod-08-017",
+      "prod-08-022",
+      "prod-08-027",
+      "prod-08-032",
+      "prod-08-037",
+      "prod-08-042",
+      "prod-08-047"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-038",
+    "query": "厨房电器 少放油也能做脆 厨房",
+    "query_type": "attribute_filter",
+    "family_id": "airfryer",
+    "required_feature": "低脂烹饪",
+    "relevant_ids": [
+      "prod-08-003",
+      "prod-08-008",
+      "prod-08-013",
+      "prod-08-018",
+      "prod-08-023",
+      "prod-08-028",
+      "prod-08-033",
+      "prod-08-038",
+      "prod-08-043",
+      "prod-08-048"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-039",
+    "query": "家庭做饭想要空气炸锅，厨房小白也会用，预算不要太高",
+    "query_type": "long_tail",
+    "family_id": "airfryer",
+    "required_feature": "一键菜单",
+    "relevant_ids": [
+      "prod-08-004",
+      "prod-08-009",
+      "prod-08-014",
+      "prod-08-019",
+      "prod-08-024",
+      "prod-08-029",
+      "prod-08-034",
+      "prod-08-039",
+      "prod-08-044",
+      "prod-08-049"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-040",
+    "query": "家庭做饭用的无油锅，希望两种食物不要串味",
+    "query_type": "scenario_first",
+    "family_id": "airfryer",
+    "required_feature": "双锅分区",
+    "relevant_ids": [
+      "prod-08-005",
+      "prod-08-010",
+      "prod-08-015",
+      "prod-08-020",
+      "prod-08-025",
+      "prod-08-030",
+      "prod-08-035",
+      "prod-08-040",
+      "prod-08-045",
+      "prod-08-050"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-041",
+    "query": "轻便登机箱 20寸登机",
+    "query_type": "exact_category",
+    "family_id": "luggage",
+    "required_feature": "20寸登机",
+    "relevant_ids": [
+      "prod-09-001",
+      "prod-09-006",
+      "prod-09-011",
+      "prod-09-016",
+      "prod-09-021",
+      "prod-09-026",
+      "prod-09-031",
+      "prod-09-036",
+      "prod-09-041",
+      "prod-09-046"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-042",
+    "query": "想找旅行箱，用于短途出行，重点是箱子硬一点更安心",
+    "query_type": "natural_language",
+    "family_id": "luggage",
+    "required_feature": "铝框结构",
+    "relevant_ids": [
+      "prod-09-002",
+      "prod-09-007",
+      "prod-09-012",
+      "prod-09-017",
+      "prod-09-022",
+      "prod-09-027",
+      "prod-09-032",
+      "prod-09-037",
+      "prod-09-042",
+      "prod-09-047"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-043",
+    "query": "旅行用品 回来买东西还能多装 便携",
+    "query_type": "attribute_filter",
+    "family_id": "luggage",
+    "required_feature": "扩容设计",
+    "relevant_ids": [
+      "prod-09-003",
+      "prod-09-008",
+      "prod-09-013",
+      "prod-09-018",
+      "prod-09-023",
+      "prod-09-028",
+      "prod-09-033",
+      "prod-09-038",
+      "prod-09-043",
+      "prod-09-048"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-044",
+    "query": "短途出行想要行李箱，小雨天行李别进水，预算不要太高",
+    "query_type": "long_tail",
+    "family_id": "luggage",
+    "required_feature": "防水面料",
+    "relevant_ids": [
+      "prod-09-004",
+      "prod-09-009",
+      "prod-09-014",
+      "prod-09-019",
+      "prod-09-024",
+      "prod-09-029",
+      "prod-09-034",
+      "prod-09-039",
+      "prod-09-044",
+      "prod-09-049"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-045",
+    "query": "短途出行用的旅行箱，希望衣服和电脑分开放",
+    "query_type": "scenario_first",
+    "family_id": "luggage",
+    "required_feature": "分区收纳",
+    "relevant_ids": [
+      "prod-09-005",
+      "prod-09-010",
+      "prod-09-015",
+      "prod-09-020",
+      "prod-09-025",
+      "prod-09-030",
+      "prod-09-035",
+      "prod-09-040",
+      "prod-09-045",
+      "prod-09-050"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-046",
+    "query": "护眼阅读台灯 色温调节",
+    "query_type": "exact_category",
+    "family_id": "lamp",
+    "required_feature": "色温调节",
+    "relevant_ids": [
+      "prod-10-001",
+      "prod-10-006",
+      "prod-10-011",
+      "prod-10-016",
+      "prod-10-021",
+      "prod-10-026",
+      "prod-10-031",
+      "prod-10-036",
+      "prod-10-041",
+      "prod-10-046"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-047",
+    "query": "想找桌面灯，用于夜间学习，重点是睡前不用起身关灯",
+    "query_type": "natural_language",
+    "family_id": "lamp",
+    "required_feature": "定时关闭",
+    "relevant_ids": [
+      "prod-10-002",
+      "prod-10-007",
+      "prod-10-012",
+      "prod-10-017",
+      "prod-10-022",
+      "prod-10-027",
+      "prod-10-032",
+      "prod-10-037",
+      "prod-10-042",
+      "prod-10-047"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-048",
+    "query": "办公家具 桌面大一点也照得到 节能",
+    "query_type": "attribute_filter",
+    "family_id": "lamp",
+    "required_feature": "长臂照明",
+    "relevant_ids": [
+      "prod-10-003",
+      "prod-10-008",
+      "prod-10-013",
+      "prod-10-018",
+      "prod-10-023",
+      "prod-10-028",
+      "prod-10-033",
+      "prod-10-038",
+      "prod-10-043",
+      "prod-10-048"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-049",
+    "query": "夜间学习想要学习灯，宿舍桌边能夹住，预算不要太高",
+    "query_type": "long_tail",
+    "family_id": "lamp",
+    "required_feature": "夹式安装",
+    "relevant_ids": [
+      "prod-10-004",
+      "prod-10-009",
+      "prod-10-014",
+      "prod-10-019",
+      "prod-10-024",
+      "prod-10-029",
+      "prod-10-034",
+      "prod-10-039",
+      "prod-10-044",
+      "prod-10-049"
+    ],
+    "data_version": "product-qrels-v1"
+  },
+  {
+    "query_id": "q-050",
+    "query": "夜间学习用的桌面灯，希望看书颜色不要失真",
+    "query_type": "scenario_first",
+    "family_id": "lamp",
+    "required_feature": "高显色",
+    "relevant_ids": [
+      "prod-10-005",
+      "prod-10-010",
+      "prod-10-015",
+      "prod-10-020",
+      "prod-10-025",
+      "prod-10-030",
+      "prod-10-035",
+      "prod-10-040",
+      "prod-10-045",
+      "prod-10-050"
+    ],
+    "data_version": "product-qrels-v1"
+  }
+]

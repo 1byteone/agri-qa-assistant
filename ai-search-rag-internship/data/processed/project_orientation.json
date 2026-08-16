@@ -1,0 +1,30 @@
+{
+  "project_root": "D:\\code\\codeByCursor\\AI_EXAM\\ai-search-rag-internship",
+  "input_files": [
+    "quickstart.md",
+    "retrieval-notes.md"
+  ],
+  "contract": {
+    "phase1": {
+      "input": "PDF/Markdown/TXT",
+      "process": "parse + split",
+      "output": "chunks.json"
+    },
+    "phase2": {
+      "input": "chunks.json",
+      "process": "BM25/Dense/RRF",
+      "output": "rankings + qrels metrics"
+    },
+    "phase3": {
+      "input": "rankings + qrels",
+      "process": "benchmark + error analysis",
+      "output": "experiment records"
+    },
+    "phase4": {
+      "input": "validated knowledge base",
+      "process": "FastAPI orchestration",
+      "output": "search/chat citations"
+    }
+  },
+  "next_notebook": "phase1/01_files_and_documents.ipynb"
+}

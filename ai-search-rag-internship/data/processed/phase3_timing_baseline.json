@@ -1,0 +1,12 @@
+{
+  "query": "Chunk overlap",
+  "top_k": 5,
+  "warmup": 5,
+  "iterations": 30,
+  "python": "3.13.5",
+  "index_version": "chunks-4-size-128-overlap-32",
+  "first_ms": 0.12040000001434237,
+  "mean_ms": 0.031226666275567066,
+  "p50_ms": 0.02925000444520265,
+  "p95_ms": 0.04599998646881431
+}

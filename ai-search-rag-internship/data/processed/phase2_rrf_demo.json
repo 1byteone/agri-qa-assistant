@@ -1,0 +1,27 @@
+{
+  "experiment_type": "mechanism_demo",
+  "ranking_sources": [
+    "manual_bm25_like",
+    "manual_dense_like"
+  ],
+  "rrf_k": 60,
+  "rankings": {
+    "bm25": [
+      "exact_model",
+      "semantic_doc",
+      "unrelated"
+    ],
+    "dense": [
+      "semantic_doc",
+      "exact_model",
+      "another_doc"
+    ]
+  },
+  "fused_ids": [
+    "exact_model",
+    "semantic_doc",
+    "another_doc",
+    "unrelated"
+  ],
+  "note": "人工向量和人工排名用于理解机制，不代表 BGE-M3 质量指标。"
+}

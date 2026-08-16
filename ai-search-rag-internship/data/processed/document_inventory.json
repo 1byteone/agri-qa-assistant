@@ -1,0 +1,14 @@
+[
+  {
+    "name": "quickstart.md",
+    "suffix": ".md",
+    "bytes": 330,
+    "supported": true
+  },
+  {
+    "name": "retrieval-notes.md",
+    "suffix": ".md",
+    "bytes": 285,
+    "supported": true
+  }
+]

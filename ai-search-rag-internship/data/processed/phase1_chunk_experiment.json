@@ -1,0 +1,30 @@
+[
+  {
+    "chunk_size": 32,
+    "overlap": 0,
+    "count": 2,
+    "avg_chars": 19.0,
+    "max_chars": 23
+  },
+  {
+    "chunk_size": 32,
+    "overlap": 8,
+    "count": 2,
+    "avg_chars": 23.0,
+    "max_chars": 31
+  },
+  {
+    "chunk_size": 64,
+    "overlap": 16,
+    "count": 1,
+    "avg_chars": 40.0,
+    "max_chars": 40
+  },
+  {
+    "chunk_size": 128,
+    "overlap": 32,
+    "count": 1,
+    "avg_chars": 40.0,
+    "max_chars": 40
+  }
+]
