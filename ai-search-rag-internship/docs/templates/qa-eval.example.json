@@ -1,0 +1,21 @@
+[
+  {
+    "question_id": "qa-001",
+    "question": "如何配置索引？",
+    "reference_answer": "根据文档中的索引配置章节设置参数。",
+    "reference_context_ids": ["chunk-001"],
+    "is_answerable": true,
+    "difficulty": "fact",
+    "notes": "答案必须引用 chunk-001。"
+  },
+  {
+    "question_id": "qa-002",
+    "question": "文档没有覆盖的外部问题",
+    "reference_answer": "无法从当前知识库确定。",
+    "reference_context_ids": [],
+    "is_answerable": false,
+    "difficulty": "unanswerable",
+    "notes": "测试拒答和无证据路径。"
+  }
+]
+
