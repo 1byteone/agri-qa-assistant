@@ -288,10 +288,10 @@ MIT
 ## 📸 产品截图
 
 ### 桌面端界面
-![桌面端界面](docs/screenshots/homepage.png)
+![桌面端界面](backend/docs/screenshots/homepage.png)
 
 ### 移动端界面
-![移动端界面](docs/screenshots/mobile.png)
+![移动端界面](backend/docs/screenshots/mobile.png)
 
 ## 🎯 产品演示
 
