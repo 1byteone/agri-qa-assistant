@@ -140,6 +140,19 @@ class AgriIRPipeline:
         top_k = next((stage.top_k for stage in self.config.stages if stage.name == "parallel_retrieval" and stage.top_k), 3)
         required_scope = self.required_evidence_scope(refined)
         candidate_top_k = max(int(top_k), int(top_k) * 3) if required_scope else int(top_k)
+
+        # ── QueryRouter 路由提示 ──
+        search_hints = {}
+        try:
+            from retrieval.query_router import query_router
+            route = query_router.route(query)
+            scenario = query_router.classify_scenario(query)
+            search_hints = query_router.get_search_hints(query, scenario)
+            logger.info("QueryRouter: route=%s, scenario=%s, hints=%s", route.value, scenario, search_hints)
+        except ImportError:
+            pass
+
+        # ── 并行检索 ──
         candidates: List[Dict[str, Any]] = []
         for subquery in subqueries:
             try:
@@ -176,6 +189,15 @@ class AgriIRPipeline:
                 if previous is None or float(item.get("relevance", 0.0)) > float(previous.get("relevance", 0.0)):
                     unique[key] = item
             ranked = sorted(unique.values(), key=lambda item: float(item.get("relevance", 0.0)), reverse=True)
+
+        # ── Parent-Child 上下文恢复 ──
+        try:
+            from retrieval.parent_child import ParentChildIndexer
+            indexer = ParentChildIndexer()
+            ranked = indexer.enrich_results(ranked, include_parent=True)
+        except ImportError:
+            pass
+
         result_limit = max(1, int(top_k))
         if required_scope:
             # A high-risk answer must retain an admissible official candidate
