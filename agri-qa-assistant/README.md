@@ -1,5 +1,7 @@
 # AgriQA Assistant - 农业智能问答原型系统
 
+![AgriQA Assistant Logo](docs/screenshots/homepage.png)
+
 基于《第2章_构建智能体》构建的面向农业领域的智能问答原型系统，采用 LangGraph 目标导向型智能体架构，集成 ChromaDB 私有农业知识库，支持多轮对话记忆，并配备 Apple Liquid Glass 风格的高颜值前端界面。
 
 ## 核心特性
@@ -49,7 +51,8 @@
 ### 1. 克隆项目
 
 ```bash
-cd d:\code\codeByCursor\AI_EXAM\agri-qa-assistant
+git clone https://github.com/1byteone/AI_EXAM.git
+cd AI_EXAM/agri-qa-assistant
 ```
 
 ### 2. 后端部署
@@ -73,7 +76,7 @@ copy .env.example .env
 python main.py
 ```
 
-后端服务将在 `http://localhost:8000` 启动。
+后端服务将在 `http://localhost:8001` 启动。
 
 ### 3. 前端部署
 
@@ -257,7 +260,7 @@ agri-qa-assistant/
 A: 确保在虚拟环境中安装了所有依赖：`pip install -r requirements.txt`
 
 ### Q: 前端无法连接后端
-A: 检查 `next.config.js` 中的 rewrites 配置，确保后端运行在 `localhost:8000`
+A: 检查 `next.config.js` 中的 rewrites 配置，确保后端运行在 `localhost:8001`
 
 ### Q: 知识库为空
 A: 首次启动时会自动初始化，如果失败可手动调用 `init_default_knowledge_base()`
@@ -281,3 +284,35 @@ A: 编辑 `knowledge_base.py` 中的 `default_docs` 列表，或通过代码调�
 ## License
 
 MIT
+
+## 📸 产品截图
+
+### 桌面端界面
+![桌面端界面](docs/screenshots/homepage.png)
+
+### 移动端界面
+![移动端界面](docs/screenshots/mobile.png)
+
+## 🎯 产品演示
+
+### 功能演示
+
+1. **智能问答**：输入农业问题，获得专业回答
+2. **知识库检索**：优先从私有农业知识库中检索答案
+3. **多轮对话**：支持上下文连续性对话
+4. **专业模式**：提供详细决策卡与知识依据
+
+### 在线演示
+
+访问 [http://localhost:3000](http://localhost:3000) 体验完整功能
+
+## 📊 技术栈
+
+| 类别 | 技术 |
+|------|------|
+| 前端 | Next.js, React, Tailwind CSS, shadcn/ui |
+| 后端 | FastAPI, LangGraph, ChromaDB |
+| 数据库 | SQLite, ChromaDB |
+| AI | Agnes AI (agnes-2.0-flash) |
+| 工具 | MCP (Fetch, Time, Memory) |
+| 样式 | Apple Liquid Glass UI |
