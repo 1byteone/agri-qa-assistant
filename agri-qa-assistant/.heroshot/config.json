@@ -1,63 +1,143 @@
 {
   "project": "AgriQA Assistant",
-  "description": "Agricultural Intelligent QA Prototype System",
-  "version": "1.0.0",
+  "description": "Agricultural Intelligent QA System - Level 4 Marketing Kit",
+  "version": "2.0.0",
   "screenshots": [
     {
-      "id": "homepage",
-      "name": "Homepage",
-      "url": "http://localhost:3000",
-      "viewport": {
-        "width": 1280,
-        "height": 800
-      },
+      "id": "chat-empty",
+      "name": "Chat Empty State",
+      "url": "http://localhost:3001",
+      "viewport": { "width": 1280, "height": 800 },
       "waitFor": 3000,
       "selector": "main"
     },
     {
-      "id": "chat-interface",
-      "name": "Chat Interface",
-      "url": "http://localhost:3000",
-      "viewport": {
-        "width": 1280,
-        "height": 800
-      },
-      "waitFor": 3000,
+      "id": "chat-streaming",
+      "name": "Chat Streaming Answer",
+      "url": "http://localhost:3001",
+      "viewport": { "width": 1280, "height": 800 },
       "actions": [
-        {
-          "type": "click",
-          "selector": "textarea"
-        },
-        {
-          "type": "type",
-          "text": "水稻稻飞虱怎么防治？"
-        },
-        {
-          "type": "wait",
-          "ms": 2000
-        },
-        {
-          "type": "click",
-          "selector": "button[type='submit']"
-        }
+        { "type": "click", "selector": "textarea" },
+        { "type": "type", "selector": "textarea", "text": "江西早稻当前主要病虫害及防治措施" },
+        { "type": "wait", "ms": 1000 },
+        { "type": "click", "selector": "button[type=submit]" }
       ],
-      "waitFor": 5000,
+      "waitFor": 8000,
       "selector": "main"
     },
     {
-      "id": "mobile-view",
-      "name": "Mobile View",
-      "url": "http://localhost:3000",
-      "viewport": {
-        "width": 375,
-        "height": 812
-      },
+      "id": "chat-decision-card",
+      "name": "Decision Card UI",
+      "url": "http://localhost:3001",
+      "viewport": { "width": 1280, "height": 800 },
+      "actions": [
+        { "type": "click", "selector": "textarea" },
+        { "type": "type", "selector": "textarea", "text": "水稻稻飞虱怎么防治？" },
+        { "type": "wait", "ms": 1000 },
+        { "type": "click", "selector": "button[type=submit]" }
+      ],
+      "waitFor": 12000,
+      "selector": "main"
+    },
+    {
+      "id": "chat-mobile",
+      "name": "Chat Mobile View",
+      "url": "http://localhost:3001",
+      "viewport": { "width": 375, "height": 812 },
+      "waitFor": 3000,
+      "selector": "main"
+    },
+    {
+      "id": "crop-diagnosis",
+      "name": "Crop Diagnosis Form",
+      "url": "http://localhost:3001/crop-diagnosis",
+      "viewport": { "width": 1280, "height": 800 },
+      "waitFor": 3000,
+      "selector": "main"
+    },
+    {
+      "id": "farming-calendar",
+      "name": "Farming Calendar",
+      "url": "http://localhost:3001/farming-calendar",
+      "viewport": { "width": 1280, "height": 800 },
+      "waitFor": 3000,
+      "selector": "main"
+    },
+    {
+      "id": "policy-consultation",
+      "name": "Policy Consultation",
+      "url": "http://localhost:3001/policy",
+      "viewport": { "width": 1280, "height": 800 },
+      "waitFor": 3000,
+      "selector": "main"
+    },
+    {
+      "id": "pilot-dashboard",
+      "name": "Pilot Management",
+      "url": "http://localhost:3001/pilot",
+      "viewport": { "width": 1280, "height": 800 },
+      "waitFor": 3000,
+      "selector": "main"
+    },
+    {
+      "id": "rag-evaluation",
+      "name": "Retrieval Evaluation",
+      "url": "http://localhost:3001/evaluations",
+      "viewport": { "width": 1280, "height": 800 },
+      "waitFor": 3000,
+      "selector": "main"
+    },
+    {
+      "id": "knowledge-panel",
+      "name": "Knowledge Panel",
+      "url": "http://localhost:3001",
+      "viewport": { "width": 1280, "height": 800 },
+      "actions": [
+        { "type": "wait", "ms": 2000 },
+        { "type": "click", "selector": "[title='打开科研成果']" }
+      ],
+      "waitFor": 3000,
+      "selector": "main"
+    },
+    {
+      "id": "chat-term-annotation",
+      "name": "Term Annotation",
+      "url": "http://localhost:3001",
+      "viewport": { "width": 1280, "height": 800 },
+      "actions": [
+        { "type": "click", "selector": "textarea" },
+        { "type": "type", "selector": "textarea", "text": "水稻分蘖期追肥" },
+        { "type": "wait", "ms": 1000 },
+        { "type": "click", "selector": "button[type=submit]" }
+      ],
+      "waitFor": 10000,
+      "selector": "main"
+    },
+    {
+      "id": "chat-knowledge-trace",
+      "name": "Knowledge Trace",
+      "url": "http://localhost:3001",
+      "viewport": { "width": 1280, "height": 800 },
+      "actions": [
+        { "type": "click", "selector": "textarea" },
+        { "type": "type", "selector": "textarea", "text": "小麦条锈病怎么识别？" },
+        { "type": "wait", "ms": 1000 },
+        { "type": "click", "selector": "button[type=submit]" }
+      ],
+      "waitFor": 12000,
+      "selector": "main"
+    },
+    {
+      "id": "crop-diagnosis-result",
+      "name": "Diagnosis Result",
+      "url": "http://localhost:3001/crop-diagnosis",
+      "viewport": { "width": 1280, "height": 800 },
       "waitFor": 3000,
       "selector": "main"
     }
   ],
   "output": {
-    "directory": "./docs/screenshots",
+    "directory": "./docs/marketing-kit/screenshots",
     "format": "png",
     "quality": 100
   },

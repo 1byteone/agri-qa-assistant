@@ -1,318 +1,211 @@
-# AgriQA Assistant - 农业智能问答原型系统
-
-![AgriQA Assistant Logo](docs/screenshots/homepage.png)
-
-基于《第2章_构建智能体》构建的面向农业领域的智能问答原型系统，采用 LangGraph 目标导向型智能体架构，集成 ChromaDB 私有农业知识库，支持多轮对话记忆，并配备 Apple Liquid Glass 风格的高颜值前端界面。
-
-## 核心特性
-
-- **专业农业知识库**：覆盖作物种植、病虫害防治、施肥灌溉、土壤管理、农机具使用等综合农技知识
-- **多轮对话记忆**：基于 SQLite 持久化存储对话历史，支持上下文连续性
-- **私有知识库优先**：优先检索 ChromaDB 向量数据库，确保答案专业可靠
-- **引导式兜底策略**：知识库无结果时诚实告知，并提供一般性解答建议
-- **Apple Liquid Glass UI**：深度毛玻璃效果、半透明层叠、动态光效、iOS 风格动画
-- **MCP 工具集成**：支持开源 MCP 服务（Fetch、Time、Memory）
-
-## 技术架构
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    前端：Next.js + shadcn/ui                  │
-│   Apple Liquid Glass 风格聊天界面                            │
-│   - 毛玻璃消息卡片                                            │
-│   - 圆角输入框 + SF 风格字体                                   │
-│   - 打字机效果 + 流式响应                                      │
-└───────────────────────────┬─────────────────────────────────┘
-                            │ HTTP/SSE
-┌───────────────────────────▼─────────────────────────────────┐
-│                  后端：FastAPI + LangGraph                    │
-│   - Agent 路由层：意图识别 → RAG / 通用 / 工具                 │
-│   - Memory 层：SQLite 持久化对话历史                          │
-│   - RAG 层：ChromaDB + 农业知识库                             │
-│   - Tools 层：MCP Fetch / Time + 农业工具                     │
-└───────────────────────────┬─────────────────────────────────┘
-                            │
-┌───────────────────────────▼─────────────────────────────────┐
-│                      外部服务                                 │
-│   - LLM：Agnes AI (agnes-2.0-flash)                          │
-│   - Embedding：Agnes AI embedding 模型                       │
-│   - 向量数据库：ChromaDB (本地持久化)                          │
-└─────────────────────────────────────────────────────────────┘
-```
-
-## 快速开始
-
-### 环境要求
-
-- Python 3.10+
-- Node.js 18+
-- pip / npm
-
-### 1. 克隆项目
-
-```bash
-git clone https://github.com/1byteone/AI_EXAM.git
-cd AI_EXAM/agri-qa-assistant
-```
-
-### 2. 后端部署
-
-```bash
-cd backend
-
-# 创建虚拟环境
-python -m venv venv
-venv\Scripts\activate  # Windows
-# source venv/bin/activate  # Linux/Mac
-
-# 安装依赖
-pip install -r requirements.txt
-
-# 配置环境变量
-copy .env.example .env
-# 编辑 .env 文件，填入 Agnes AI API Key
-
-# 启动服务
-python main.py
-```
-
-后端服务将在 `http://localhost:8001` 启动。
-
-### 3. 前端部署
-
-```bash
-cd frontend
-
-# 安装依赖
-npm install
-
-# 启动开发服务器
-npm run dev
-```
-
-前端服务将在 `http://localhost:3000` 启动。
-
-### 4. 访问应用
-
-打开浏览器访问 `http://localhost:3000`
-
-## 环境配置
-
-### 后端环境变量 (.env)
-
-```env
-# LLM 配置（必填）
-AGNES_AI_API_KEY=sk-your-agnes-api-key
-AGNES_AI_BASE_URL=https://apihub.agnes-ai.cn
-AGNES_AI_CHAT_MODEL=agnes-2.0-flash
-AGNES_AI_EMBEDDING_MODEL=text-embedding-3-small
-
-# 数据库配置
-CHROMA_PERSIST_DIR=./data/chroma_db
-SQLITE_DB_URL=sqlite+aiosqlite:///./data/agri_qa.db
-
-# MCP 服务
-MCP_FETCH_ENABLED=true
-MCP_TIME_ENABLED=true
-MCP_MEMORY_ENABLED=false
-```
-
-## 知识库管理
-
-### 初始化默认知识库
-
-首次启动后端时，系统会自动初始化默认农业知识库，包含：
-- 作物种植技术（水稻、小麦、玉米）
-- 病虫害防治（稻飞虱、小麦锈病、玉米螟、蚜虫）
-- 肥料施用（氮磷钾肥、测土配方、叶面肥）
-- 土壤管理（土壤改良、节水灌溉）
-- 农机具（旋耕机、植保无人机）
-
-### 添加自定义知识
-
-```python
-from knowledge_base import knowledge_base
-
-# 添加文档
-documents = [
-    Document(
-        page_content="你的农业知识内容...",
-        metadata={"category": "crop", "crop": "蔬菜", "topic": "planting"}
-    )
-]
-knowledge_base.add_documents(documents)
-
-# 或添加纯文本
-knowledge_base.add_texts(
-    ["文本内容1", "文本内容2"],
-    metadatas=[{"category": "crop"}, {"category": "pest"}]
-)
-```
-
-## API 接口
-
-### POST /chat
-多轮对话接口
-
-**请求体：**
-```json
-{
-  "message": "水稻稻飞虱怎么防治？",
-  "thread_id": "thread_001",
-  "user_id": "user_123"
-}
-```
-
-**响应体：**
-```json
-{
-  "thread_id": "thread_001",
-  "message": "稻飞虱是水稻主要害虫...",
-  "tool_calls": [{"name": "query_crop_knowledge", "args": {...}}],
-  "timestamp": "2025-01-15T10:30:00"
-}
-```
-
-### GET /history/{thread_id}
-获取对话历史
-
-### DELETE /history/{thread_id}
-清空对话历史
-
-### GET /knowledge-base/status
-知识库状态
-
-### GET /health
-健康检查
-
-## MCP 服务配置
-
-### 已集成的开源 MCP 服务
-
-| 服务 | 用途 | 状态 |
-|------|------|------|
-| mcp-server-fetch | 网页内容获取 | ✅ 已启用 |
-| mcp-server-time | 时间/时区查询 | ✅ 已启用 |
-| mcp-server-memory | 知识图谱记忆 | ⏸️ 可选 |
-
-### 安装 MCP 服务（可选）
-
-```bash
-# 使用 uvx 运行（推荐）
-uvx mcp-server-fetch
-uvx mcp-server-time
-
-# 或使用 pip 安装
-pip install mcp-server-fetch mcp-server-time
-```
-
-## 前端特性
-
-### Apple Liquid Glass 设计元素
-
-- **毛玻璃背景**：`backdrop-filter: blur(20px)` + 半透明背景
-- **圆角卡片**：`rounded-2xl` / `rounded-3xl`
-- **柔和阴影**：多层阴影模拟 iOS 浮层效果
-- **流畅动画**：framer-motion 实现消息入场、按钮悬停
-- **iOS 风格输入框**：内阴影 + 聚焦光效
-- **SF 字体栈**：`-apple-system, BlinkMacSystemFont`
-
-### 交互细节
-
-- 消息气泡圆角适配（用户右圆角小，助手左圆角小）
-- 自动滚动到底部
-- Enter 发送，Shift+Enter 换行
-- 加载状态动画
-- 建议问题快捷按钮
-
-## 项目结构
-
-```
-agri-qa-assistant/
-├── backend/
-│   ├── main.py              # FastAPI 主应用
-│   ├── agent.py             # LangGraph Agent
-│   ├── knowledge_base.py    # ChromaDB 知识库
-│   ├── memory.py            # SQLite 持久化记忆
-│   ├── tools.py             # 农业工具 + MCP 工具
-│   ├── config.py            # 配置管理
-│   ├── schemas.py           # Pydantic 模型
-│   ├── requirements.txt     # Python 依赖
-│   └── .env.example         # 环境变量模板
-├── frontend/
-│   ├── app/
-│   │   ├── page.tsx         # 主页面
-│   │   ├── layout.tsx       # 根布局
-│   │   └── globals.css      # Apple Liquid Glass 样式
-│   ├── components/
-│   │   └── chat-interface.tsx  # 聊天界面
-│   ├── lib/utils.ts         # 工具函数
-│   ├── tailwind.config.ts   # Tailwind 配置
-│   ├── next.config.js       # Next.js 配置
-│   └── package.json         # Node.js 依赖
-└── data/
-    └── knowledge_base/      # ChromaDB 持久化数据
-```
-
-## 常见问题
-
-### Q: 后端启动失败，提示找不到模块
-A: 确保在虚拟环境中安装了所有依赖：`pip install -r requirements.txt`
-
-### Q: 前端无法连接后端
-A: 检查 `next.config.js` 中的 rewrites 配置，确保后端运行在 `localhost:8001`
-
-### Q: 知识库为空
-A: 首次启动时会自动初始化，如果失败可手动调用 `init_default_knowledge_base()`
-
-### Q: 如何添加更多农业知识
-A: 编辑 `knowledge_base.py` 中的 `default_docs` 列表，或通过代码调用 `knowledge_base.add_documents()`
-
-## 下一步计划
-
-- [ ] 集成实时农产品价格 API
-- [ ] 支持图片上传（病虫害识别）
-- [ ] 添加语音输入/输出
-- [ ] 用户认证和多用户隔离
-- [ ] 导出对话记录
-- [ ] 部署到 Docker
-
-## 基于文档
-
-本项目基于《第2章_构建智能体.ipynb》中的 LangChain/LangGraph 智能体架构开发，核心代码模式遵循文档中的 `create_agent` 五层架构。
-
-## License
-
-MIT
+# AgriQA Assistant - 智慧农业智能问答系统
+
+<p align="center">
+  <img src="docs/marketing-kit/screenshots/chat-streaming.png" alt="AgriQA Assistant Demo" width="800">
+</p>
+
+<p align="center">
+  <a href="https://github.com/1byteone/agri-qa-assistant"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT License"></a>
+  <a href="#"><img src="https://img.shields.io/badge/Next.js-14-black" alt="Next.js 14"></a>
+  <a href="#"><img src="https://img.shields.io/badge/FastAPI-3.11+-blue" alt="FastAPI"></a>
+  <a href="#"><img src="https://img.shields.io/badge/LangGraph-Agent-purple" alt="LangGraph"></a>
+  <a href="#"><img src="https://img.shields.io/badge/ChromaDB-VectorDB-orange" alt="ChromaDB"></a>
+  <a href="#"><img src="https://img.shields.io/badge/Apple-Liquid%20Glass-999" alt="Liquid Glass UI"></a>
+</p>
+
+<p align="center">
+  <b>🌾 基于 LangGraph 智能体架构的农业智能问答系统</b><br>
+  集成 ChromaDB 私有农业知识库 · 多轮对话记忆 · Apple Liquid Glass 高颜值前端
+</p>
+
+---
+
+## ✨ 核心特性
+
+<table>
+<tr>
+<td width="33%">
+<h3>💬 智能对话</h3>
+<p>SSE 流式响应、决策卡、知识溯源、专业词条注释，让每次问答都有据可查</p>
+</td>
+<td width="33%">
+<h3>🔍 作物诊断</h3>
+<p>结构化症状输入 → 智能诊断 → 证据来源背书，快速识别病虫害</p>
+</td>
+<td width="33%">
+<h3>📅 农事日历</h3>
+<p>基于作物、地区、生长阶段的智能农事安排，融合天气风险评估</p>
+</td>
+</tr>
+<tr>
+<td>
+<h3>📋 政策咨询</h3>
+<p>检索惠农政策证据，A 级来源背书，确保政策信息可追溯可验证</p>
+</td>
+<td>
+<h3>📚 RAG 知识库</h3>
+<p>ChromaDB 向量检索 + 多策略融合（Hybrid、RRF、Parent-Child）</p>
+</td>
+<td>
+<h3>🎨 Liquid Glass UI</h3>
+<p>Apple 风格毛玻璃设计、流畅动画、响应式布局，桌面移动端完美适配</p>
+</td>
+</tr>
+</table>
+
+---
 
 ## 📸 产品截图
 
 ### 桌面端界面
-![桌面端界面](backend/docs/screenshots/homepage.png)
 
-### 移动端界面
-![移动端界面](backend/docs/screenshots/mobile.png)
+| 聊天空状态 | 流式回答 | 决策卡 |
+|:---:|:---:|:---:|
+| ![空状态](docs/marketing-kit/screenshots/chat-empty.png) | ![流式回答](docs/marketing-kit/screenshots/chat-streaming.png) | ![决策卡](docs/marketing-kit/screenshots/chat-decision-card.png) |
 
-## 🎯 产品演示
+| 知识溯源 | 移动端 | 移动端回答 |
+|:---:|:---:|:---:|
+| ![知识溯源](docs/marketing-kit/screenshots/chat-knowledge-trace.png) | ![移动端](docs/marketing-kit/screenshots/chat-mobile.png) | ![移动端回答](docs/marketing-kit/screenshots/chat-mobile-response.png) |
 
-### 功能演示
+---
 
-1. **智能问答**：输入农业问题，获得专业回答
-2. **知识库检索**：优先从私有农业知识库中检索答案
-3. **多轮对话**：支持上下文连续性对话
-4. **专业模式**：提供详细决策卡与知识依据
+## 🏗️ 技术架构
 
-### 在线演示
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                    前端：Next.js 14 + shadcn/ui                   │
+│    Apple Liquid Glass 风格 · 毛玻璃效果 · 流畅动画 · 响应式布局    │
+└──────────────────────────┬───────────────────────────────────────┘
+                           │ HTTP/SSE
+┌──────────────────────────▼───────────────────────────────────────┐
+│                 后端：FastAPI + LangGraph Agent                    │
+│  Domain Guard → Query Router → RAG Pipeline → LLM → Post-process │
+│  6 工具：作物知识 · 生长周期 · 农事天气 · 网页获取 · 资源搜索 · 时间  │
+└──────────────────────────┬───────────────────────────────────────┘
+                           │
+┌──────────────────────────▼───────────────────────────────────────┐
+│                   知识库：ChromaDB 向量存储                        │
+│  多策略检索：Hybrid / RRF Fusion / Parent-Child / 元数据增强      │
+│  6 证据包 · 120 项 P0 评估 · 4 级来源注册表                      │
+└──────────────────────────┬───────────────────────────────────────┘
+                           │
+┌──────────────────────────▼───────────────────────────────────────┐
+│                    AI：Agnes AI 大模型 + MCP 工具                  │
+│   agnes-2.5-flash · text-embedding-3-small · MCP Fetch/Time      │
+└──────────────────────────────────────────────────────────────────┘
+```
 
-访问 [http://localhost:3000](http://localhost:3000) 体验完整功能
+---
 
-## 📊 技术栈
+## 🎯 场景演示
 
-| 类别 | 技术 |
-|------|------|
-| 前端 | Next.js, React, Tailwind CSS, shadcn/ui |
-| 后端 | FastAPI, LangGraph, ChromaDB |
-| 数据库 | SQLite, ChromaDB |
-| AI | Agnes AI (agnes-2.0-flash) |
-| 工具 | MCP (Fetch, Time, Memory) |
-| 样式 | Apple Liquid Glass UI |
+### 💬 智能对话全流程
+输入农业问题 → 流式回答 → 决策卡 → 知识溯源 → 专业词条
+
+### 🔍 作物诊断服务
+结构化症状输入 → 智能诊断建议 → 证据来源背书
+
+### 📅 农事日历服务
+选择作物/地区 → 生成可执行农事安排 → 天气风险评估
+
+### 📋 政策咨询服务
+检索惠农政策证据 → A 级来源背书 → 可追溯验证
+
+---
+
+## 📊 性能指标
+
+| 指标 | 说明 | 状态 |
+|------|------|------|
+| Recall@K | 检索召回率评估 | ✅ 120 项 P0 用例 |
+| Citation Coverage | 引用覆盖率 | ✅ 多策略融合 |
+| Faithfulness | 回答忠实度 | ✅ 证据门槛机制 |
+| Safety Coverage | 安全边界覆盖 | ✅ Domain Guard |
+| 回答模式 | 专业/简要 | ✅ SSE 流式 |
+| 知识库规模 | 6 证据包 | ✅ 覆盖主要作物 |
+
+---
+
+## 🚀 快速开始
+
+### 环境要求
+- Python 3.10+
+- Node.js 18+
+- Agnes AI API Key
+
+### 一键启动
+
+```bash
+# 1. 克隆项目
+git clone https://github.com/1byteone/agri-qa-assistant.git
+cd agri-qa-assistant
+
+# 2. 后端
+cd backend
+pip install -r requirements.txt
+python main.py
+# 后端运行在 http://localhost:8000
+
+# 3. 前端（新终端）
+cd frontend
+npm install
+npm run dev
+# 前端运行在 http://localhost:3000
+```
+
+### 配置环境变量
+```bash
+cp backend/.env.example backend/.env
+# 编辑 .env，填入 AGNES_AI_API_KEY
+```
+
+---
+
+## 📁 项目结构
+
+```
+agri-qa-assistant/
+├── backend/                    # FastAPI 后端
+│   ├── main.py                # 主应用入口
+│   ├── agent.py               # LangGraph Agent
+│   ├── knowledge_base.py      # ChromaDB 知识库
+│   ├── memory.py              # SQLite 对话记忆
+│   ├── tools.py               # 农业工具 + MCP
+│   ├── agriir_pipeline.py     # RAG 检索管道
+│   ├── retrieval/             # 检索模块
+│   ├── farming_calendar.py    # 农事日历
+│   ├── case_manager.py        # 案例管理
+│   └── data/                  # 数据存储
+├── frontend/                   # Next.js 前端
+│   ├── app/                   # 页面组件
+│   ├── components/            # UI 组件
+│   └── lib/                   # 工具函数
+├── docs/                      # 文档与营销素材
+│   ├── landing-page.html      # 营销落地页
+│   └── marketing-kit/         # 营销套件
+└── .heroshot/                 # 截图配置
+```
+
+---
+
+## 📄 License
+
+MIT © 2026 江西农业大学
+
+---
+
+## 🤝 贡献
+
+欢迎提交 Issue 和 PR！请确保：
+1. 代码风格符合项目规范
+2. 添加测试用例
+3. 更新相关文档
+
+---
+
+<p align="center">
+  <b>江西农业大学 · 农业智能技术研究团队</b><br>
+  <a href="https://github.com/1byteone/agri-qa-assistant">GitHub</a> ·
+  <a href="docs/landing-page.html">营销落地页</a> ·
+  <a href="docs/marketing-kit/pitch-deck.md">Pitch Deck</a>
+</p>

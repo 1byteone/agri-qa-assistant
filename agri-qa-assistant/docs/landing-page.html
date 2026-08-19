@@ -3,312 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AgriQA Assistant - 智慧农业问答系统</title>
+    <title>AgriQA Assistant - 智慧农业智能问答系统 | 江西农业大学</title>
+    <meta name="description" content="基于 LangGraph 智能体架构的农业知识问答系统。集成 ChromaDB 私有知识库，支持多轮对话、作物诊断、农事日历、政策咨询。">
+    <meta property="og:title" content="AgriQA Assistant - 智慧农业智能问答系统">
+    <meta property="og:description" content="AI 驱动的农业知识服务平台，让农技服务触手可及">
+    <meta property="og:image" content="marketing-kit/social/github-social-preview.png">
+    <meta property="og:type" content="website">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', Helvetica, Arial, sans-serif; }
+        body { background: #f5f7fa; min-height: 100vh; color: #333; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
 
-        body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            color: #333;
-        }
+        header { background: rgba(255,255,255,0.9); backdrop-filter: blur(20px); padding: 16px 0; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(0,0,0,0.08); }
+        .header-content { display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 700; color: #17613c; }
+        .logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg,#17613c,#2a8f5e); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; }
+        .nav-links { display: flex; gap: 24px; align-items: center; }
+        .nav-links a { text-decoration: none; color: #555; font-weight: 500; font-size: 14px; transition: color .2s; }
+        .nav-links a:hover { color: #17613c; }
+        .nav-links .btn-sm { background: #17613c; color: #fff; padding: 8px 20px; border-radius: 8px; font-size: 13px; }
+        .nav-links .btn-sm:hover { background: #1a7a4a; color: #fff; }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+        .hero { padding: 80px 0 60px; text-align: center; }
+        .hero-badge { display: inline-block; background: #e7f1e8; color: #17613c; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 20px; }
+        .hero h1 { font-size: 48px; font-weight: 800; color: #17613c; margin-bottom: 16px; line-height: 1.2; }
+        .hero h1 span { background: linear-gradient(135deg,#17613c,#3cb371); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { font-size: 18px; color: #666; max-width: 700px; margin: 0 auto 32px; line-height: 1.7; }
+        .hero-stats { display: flex; justify-content: center; gap: 48px; margin: 40px 0; }
+        .hero-stat { text-align: center; }
+        .hero-stat .num { font-size: 32px; font-weight: 800; color: #17613c; }
+        .hero-stat .label { font-size: 13px; color: #888; margin-top: 4px; }
+        .cta-buttons { display: flex; gap: 16px; justify-content: center; }
+        .btn { padding: 14px 32px; border-radius: 10px; font-size: 15px; font-weight: 600; text-decoration: none; transition: all .3s; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-primary { background: #17613c; color: #fff; box-shadow: 0 4px 15px rgba(23,97,60,.3); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(23,97,60,.4); }
+        .btn-secondary { background: #fff; color: #17613c; border: 2px solid #17613c; }
+        .btn-secondary:hover { background: #f3f8f2; }
 
-        /* Header */
-        header {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(20px);
-            padding: 20px 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-        }
+        .section { padding: 80px 0; }
+        .section-title { text-align: center; font-size: 32px; font-weight: 700; color: #17613c; margin-bottom: 12px; }
+        .section-subtitle { text-align: center; font-size: 16px; color: #888; margin-bottom: 48px; }
 
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        .feature-card { background: #fff; padding: 32px; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.06); transition: all .3s; }
+        .feature-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,.1); }
+        .feature-icon { width: 48px; height: 48px; background: #e7f1e8; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 16px; }
+        .feature-card h3 { font-size: 18px; font-weight: 600; color: #17613c; margin-bottom: 10px; }
+        .feature-card p { color: #666; line-height: 1.6; font-size: 14px; }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 24px;
-            font-weight: bold;
-            color: #17613c;
-        }
+        .gallery { background: #fff; }
+        .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .gallery-item { border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,.08); transition: all .3s; }
+        .gallery-item:hover { transform: scale(1.02); }
+        .gallery-item img { width: 100%; height: 200px; object-fit: cover; display: block; }
+        .gallery-item .caption { padding: 12px 16px; font-size: 13px; color: #555; font-weight: 500; }
 
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: #17613c;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 20px;
-        }
+        .arch-section { background: #fff; }
+        .arch-diagram { display: flex; justify-content: center; align-items: center; gap: 24px; padding: 40px; flex-wrap: wrap; }
+        .arch-box { background: #f8faf8; border: 1px solid #d8e0d6; border-radius: 12px; padding: 20px 28px; text-align: center; min-width: 160px; }
+        .arch-box h4 { color: #17613c; font-size: 14px; margin-bottom: 6px; }
+        .arch-box p { color: #888; font-size: 12px; }
+        .arch-arrow { color: #17613c; font-size: 24px; font-weight: 300; }
 
-        .nav-links {
-            display: flex;
-            gap: 30px;
-        }
+        .demo-section { text-align: center; }
+        .demo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+        .demo-card { background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.06); text-align: left; }
+        .demo-card img { width: 100%; border-radius: 8px; margin-bottom: 12px; }
+        .demo-card h4 { font-size: 15px; color: #17613c; margin-bottom: 6px; }
+        .demo-card p { font-size: 13px; color: #666; }
 
-        .nav-links a {
-            text-decoration: none;
-            color: #666;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
+        footer { background: #17613c; color: #fff; padding: 40px 0; margin-top: 60px; }
+        .footer-content { display: flex; justify-content: space-between; align-items: center; }
+        .footer-links { display: flex; gap: 20px; }
+        .footer-links a { color: #fff; text-decoration: none; opacity: .8; transition: opacity .2s; font-size: 14px; }
+        .footer-links a:hover { opacity: 1; }
 
-        .nav-links a:hover {
-            color: #17613c;
-        }
-
-        /* Hero Section */
-        .hero {
-            padding: 100px 0 60px;
-            text-align: center;
-        }
-
-        .hero h1 {
-            font-size: 48px;
-            font-weight: 700;
-            color: #17613c;
-            margin-bottom: 20px;
-            line-height: 1.2;
-        }
-
-        .hero p {
-            font-size: 20px;
-            color: #666;
-            max-width: 800px;
-            margin: 0 auto 40px;
-            line-height: 1.6;
-        }
-
-        .cta-buttons {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-        }
-
-        .btn {
-            padding: 15px 30px;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s;
-            cursor: pointer;
-            border: none;
-        }
-
-        .btn-primary {
-            background: #17613c;
-            color: white;
-            box-shadow: 0 4px 15px rgba(23, 97, 60, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(23, 97, 60, 0.4);
-        }
-
-        .btn-secondary {
-            background: white;
-            color: #17613c;
-            border: 2px solid #17613c;
-        }
-
-        .btn-secondary:hover {
-            background: #f3f8f2;
-        }
-
-        /* Features Section */
-        .features {
-            padding: 80px 0;
-            background: white;
-            margin: 40px 0;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: 36px;
-            font-weight: 700;
-            color: #17613c;
-            margin-bottom: 60px;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px;
-            padding: 0 40px;
-        }
-
-        .feature-card {
-            padding: 30px;
-            border-radius: 15px;
-            background: #f9fafb;
-            transition: transform 0.3s;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .feature-icon {
-            width: 60px;
-            height: 60px;
-            background: #e7f1e8;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-
-        .feature-card h3 {
-            font-size: 20px;
-            font-weight: 600;
-            color: #17613c;
-            margin-bottom: 15px;
-        }
-
-        .feature-card p {
-            color: #666;
-            line-height: 1.6;
-        }
-
-        /* Screenshots Section */
-        .screenshots {
-            padding: 80px 0;
-            text-align: center;
-        }
-
-        .screenshot-container {
-            display: flex;
-            gap: 30px;
-            justify-content: center;
-            margin-top: 40px;
-        }
-
-        .screenshot {
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            transition: transform 0.3s;
-        }
-
-        .screenshot:hover {
-            transform: scale(1.02);
-        }
-
-        .screenshot img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        /* Tech Stack */
-        .tech-stack {
-            padding: 80px 0;
-            background: white;
-            margin: 40px 0;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .tech-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 30px;
-            padding: 0 40px;
-            margin-top: 40px;
-        }
-
-        .tech-item {
-            text-align: center;
-            padding: 20px;
-        }
-
-        .tech-item h4 {
-            font-size: 16px;
-            color: #17613c;
-            margin-bottom: 10px;
-        }
-
-        .tech-item p {
-            color: #666;
-            font-size: 14px;
-        }
-
-        /* Footer */
-        footer {
-            background: #17613c;
-            color: white;
-            padding: 40px 0;
-            margin-top: 80px;
-        }
-
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .footer-links {
-            display: flex;
-            gap: 20px;
-        }
-
-        .footer-links a {
-            color: white;
-            text-decoration: none;
-            opacity: 0.8;
-            transition: opacity 0.3s;
-        }
-
-        .footer-links a:hover {
-            opacity: 1;
-        }
-
-        /* Responsive */
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 36px;
-            }
-
-            .cta-buttons {
-                flex-direction: column;
-            }
-
-            .screenshot-container {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .footer-content {
-                flex-direction: column;
-                gap: 20px;
-                text-align: center;
-            }
+            .hero h1 { font-size: 32px; }
+            .features-grid, .gallery-grid, .demo-grid { grid-template-columns: 1fr; }
+            .hero-stats { flex-direction: column; gap: 20px; }
+            .cta-buttons { flex-direction: column; }
+            .nav-links { display: none; }
         }
     </style>
 </head>
@@ -321,10 +96,11 @@
                     AgriQA Assistant
                 </div>
                 <div class="nav-links">
-                    <a href="#features">功能特性</a>
-                    <a href="#screenshots">产品截图</a>
-                    <a href="#tech">技术栈</a>
-                    <a href="#demo">在线演示</a>
+                    <a href="#features">功能</a>
+                    <a href="#screenshots">截图</a>
+                    <a href="#tech">架构</a>
+                    <a href="#demo">演示</a>
+                    <a href="https://github.com/1byteone/agri-qa-assistant" class="btn-sm">GitHub</a>
                 </div>
             </div>
         </div>
@@ -332,146 +108,159 @@
 
     <section class="hero">
         <div class="container">
-            <h1>智慧农业问答系统</h1>
-            <p>基于 LangGraph 智能体架构，集成 ChromaDB 农业知识库，提供专业、可靠的农业技术问答服务</p>
+            <div class="hero-badge">🚀 基于 LangGraph 智能体架构</div>
+            <h1>智慧农业<span>智能问答系统</span></h1>
+            <p>融合 ChromaDB 私有农业知识库、多轮对话记忆与 Apple Liquid Glass 设计语言，为农业从业者提供专业、可靠、即时的农技知识服务</p>
+            <div class="hero-stats">
+                <div class="hero-stat"><div class="num">6</div><div class="label">核心功能模块</div></div>
+                <div class="hero-stat"><div class="num">120+</div><div class="label">评估测试用例</div></div>
+                <div class="hero-stat"><div class="num">6</div><div class="label">证据包覆盖</div></div>
+                <div class="hero-stat"><div class="num">4</div><div class="label">场景化服务</div></div>
+            </div>
             <div class="cta-buttons">
-                <a href="#demo" class="btn btn-primary">立即体验</a>
-                <a href="https://github.com/1byteone/AI_EXAM" class="btn btn-secondary">GitHub 源码</a>
+                <a href="#demo" class="btn btn-primary">📺 查看演示</a>
+                <a href="https://github.com/1byteone/agri-qa-assistant" class="btn btn-secondary">📦 GitHub 源码</a>
             </div>
         </div>
     </section>
 
-    <section class="features" id="features">
+    <section class="section" id="features" style="background:#fff;margin:0;">
         <div class="container">
             <h2 class="section-title">核心功能</h2>
+            <p class="section-subtitle">从智能对话到场景化服务，全方位覆盖农业技术需求</p>
             <div class="features-grid">
                 <div class="feature-card">
-                    <div class="feature-icon">📚</div>
-                    <h3>专业农业知识库</h3>
-                    <p>覆盖作物种植、病虫害防治、施肥灌溉、土壤管理、农机具使用等综合农技知识</p>
-                </div>
-                <div class="feature-card">
                     <div class="feature-icon">💬</div>
-                    <h3>多轮对话记忆</h3>
-                    <p>基于 SQLite 持久化存储对话历史，支持上下文连续性，让对话更自然流畅</p>
+                    <h3>智能对话</h3>
+                    <p>SSE 流式响应、决策卡、知识溯源、多轮对话记忆，让每一次问答都有据可查</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">🔍</div>
-                    <h3>私有知识库优先</h3>
-                    <p>优先检索 ChromaDB 向量数据库，确保答案专业可靠，引导式兜底策略</p>
+                    <h3>作物诊断</h3>
+                    <p>结构化症状输入 → 智能诊断 → 证据来源背书，帮助快速识别病虫害</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📅</div>
+                    <h3>农事日历</h3>
+                    <p>基于作物、地区、生长阶段的智能农事安排，融合天气风险评估</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📋</div>
+                    <h3>政策咨询</h3>
+                    <p>检索惠农政策证据，A 级来源背书，确保政策信息可追溯、可验证</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📚</div>
+                    <h3>RAG 知识库</h3>
+                    <p>ChromaDB 向量检索 + 多策略融合（Hybrid、RRF、Parent-Child），检索质量可量化评估</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">🎨</div>
-                    <h3>Apple Liquid Glass UI</h3>
-                    <p>深度毛玻璃效果、半透明层叠、动态光效、iOS 风格动画，用户体验极致</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔧</div>
-                    <h3>MCP 工具集成</h3>
-                    <p>支持开源 MCP 服务（Fetch、Time、Memory），扩展性强，功能丰富</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📱</div>
-                    <h3>响应式设计</h3>
-                    <p>完美适配桌面端和移动端，随时随地获取农业技术支持</p>
+                    <h3>Liquid Glass UI</h3>
+                    <p>Apple 风格毛玻璃设计、流畅动画、响应式布局，桌面移动端完美适配</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="screenshots" id="screenshots">
+    <section class="section gallery" id="screenshots">
         <div class="container">
             <h2 class="section-title">产品截图</h2>
-            <div class="screenshot-container">
-                <div class="screenshot">
-                    <img src="backend/docs/screenshots/homepage.png" alt="桌面端界面" width="600">
+            <p class="section-subtitle">桌面端 · 移动端 · 各功能模块真实展示</p>
+            <div class="gallery-grid">
+                <div class="gallery-item">
+                    <img src="marketing-kit/screenshots/chat-empty.png" alt="聊天空状态" loading="lazy">
+                    <div class="caption">🏠 主界面 · 空状态</div>
                 </div>
-                <div class="screenshot">
-                    <img src="backend/docs/screenshots/mobile.png" alt="移动端界面" width="300">
+                <div class="gallery-item">
+                    <img src="marketing-kit/screenshots/chat-streaming.png" alt="流式回答" loading="lazy">
+                    <div class="caption">💬 智能对话 · 流式回答</div>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="tech-stack" id="tech">
-        <div class="container">
-            <h2 class="section-title">技术栈</h2>
-            <div class="tech-grid">
-                <div class="tech-item">
-                    <h4>前端</h4>
-                    <p>Next.js, React, Tailwind CSS, shadcn/ui</p>
+                <div class="gallery-item">
+                    <img src="marketing-kit/screenshots/chat-decision-card.png" alt="决策卡" loading="lazy">
+                    <div class="caption">📋 决策卡 · 专业回答</div>
                 </div>
-                <div class="tech-item">
-                    <h4>后端</h4>
-                    <p>FastAPI, LangGraph, ChromaDB</p>
+                <div class="gallery-item">
+                    <img src="marketing-kit/screenshots/chat-mobile.png" alt="移动端" loading="lazy">
+                    <div class="caption">📱 移动端适配</div>
                 </div>
-                <div class="tech-item">
-                    <h4>数据库</h4>
-                    <p>SQLite, ChromaDB</p>
+                <div class="gallery-item">
+                    <img src="marketing-kit/screenshots/chat-mobile-response.png" alt="移动端回答" loading="lazy">
+                    <div class="caption">📱 移动端 · 问答结果</div>
                 </div>
-                <div class="tech-item">
-                    <h4>AI</h4>
-                    <p>Agnes AI (agnes-2.0-flash)</p>
-                </div>
-                <div class="tech-item">
-                    <h4>工具</h4>
-                    <p>MCP (Fetch, Time, Memory)</p>
-                </div>
-                <div class="tech-item">
-                    <h4>样式</h4>
-                    <p>Apple Liquid Glass UI</p>
+                <div class="gallery-item">
+                    <img src="marketing-kit/screenshots/chat-knowledge-trace.png" alt="知识溯源" loading="lazy">
+                    <div class="caption">🔍 知识溯源 · 引用来源</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="demo" style="padding: 80px 0; text-align: center;">
+    <section class="section arch-section" id="tech">
         <div class="container">
-            <h2 class="section-title">在线演示</h2>
-            <p style="font-size: 18px; color: #666; max-width: 600px; margin: 0 auto 30px;">
-                体验 AgriQA Assistant 的强大功能，输入任何农业问题，获得专业回答
-            </p>
-            <a href="http://localhost:3000" class="btn btn-primary" style="font-size: 18px; padding: 20px 40px;">
-                🌐 访问演示站点
-            </a>
+            <h2 class="section-title">技术架构</h2>
+            <p class="section-subtitle">LangGraph + ChromaDB + FastAPI + Next.js 四层架构</p>
+            <div class="arch-diagram">
+                <div class="arch-box"><h4>🌐 前端</h4><p>Next.js 14 + shadcn/ui<br>Tailwind CSS + Framer Motion<br>Apple Liquid Glass 设计</p></div>
+                <div class="arch-arrow">→</div>
+                <div class="arch-box"><h4>⚙️ 后端</h4><p>FastAPI + LangGraph<br>Agent 路由 + 工具调用<br>SSE 流式响应</p></div>
+                <div class="arch-arrow">→</div>
+                <div class="arch-box"><h4>🗄️ 知识库</h4><p>ChromaDB 向量存储<br>多策略检索 (Hybrid/RRF)<br>证据包管理</p></div>
+                <div class="arch-arrow">→</div>
+                <div class="arch-box"><h4>🤖 AI</h4><p>Agnes AI 大模型<br>Embedding 向量化<br>MCP 工具集成</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section demo-section" id="demo">
+        <div class="container">
+            <h2 class="section-title">场景演示</h2>
+            <p class="section-subtitle">四大核心场景，全面展示系统能力</p>
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <img src="marketing-kit/screenshots/chat-streaming.png" alt="智能对话" loading="lazy">
+                    <h4>💬 智能对话</h4>
+                    <p>输入农业问题，系统实时流式回答，附带决策卡、知识溯源和引用来源</p>
+                </div>
+                <div class="demo-card">
+                    <img src="marketing-kit/screenshots/chat-decision-card.png" alt="决策卡" loading="lazy">
+                    <h4>📋 专业决策卡</h4>
+                    <p>结构化的专业回答格式：结论、田间概况、优先诊断、行动方案、风险边界</p>
+                </div>
+                <div class="demo-card">
+                    <img src="marketing-kit/screenshots/chat-mobile.png" alt="移动端" loading="lazy">
+                    <h4>📱 移动端适配</h4>
+                    <p>完整的响应式设计，在手机上也能获得流畅的问答体验</p>
+                </div>
+                <div class="demo-card">
+                    <img src="marketing-kit/screenshots/chat-knowledge-trace.png" alt="知识溯源" loading="lazy">
+                    <h4>🔍 知识溯源</h4>
+                    <p>每条回答都附带知识库引用来源，支持专业词条释义和证据链追溯</p>
+                </div>
+            </div>
         </div>
     </section>
 
     <footer>
         <div class="container">
             <div class="footer-content">
-                <div>
-                    <p>© 2026 AgriQA Assistant. 基于 LangGraph 智能体架构构建</p>
-                </div>
+                <div><p>© 2026 AgriQA Assistant · 江西农业大学 · 基于 LangGraph 构建</p></div>
                 <div class="footer-links">
-                    <a href="https://github.com/1byteone/AI_EXAM">GitHub</a>
-                    <a href="#features">功能特性</a>
-                    <a href="#screenshots">产品截图</a>
-                    <a href="#tech">技术栈</a>
+                    <a href="https://github.com/1byteone/agri-qa-assistant">GitHub</a>
+                    <a href="#features">功能</a>
+                    <a href="#screenshots">截图</a>
+                    <a href="#tech">架构</a>
                 </div>
             </div>
         </div>
     </footer>
 
     <script>
-        // Smooth scrolling for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', e => {
                 e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
+                document.querySelector(a.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
             });
-        });
-
-        // Add scroll effect to header
-        window.addEventListener('scroll', function() {
-            const header = document.querySelector('header');
-            if (window.scrollY > 50) {
-                header.style.boxShadow = '0 2px 20px rgba(0,0,0,0.1)';
-            } else {
-                header.style.boxShadow = 'none';
-            }
         });
     </script>
 </body>
