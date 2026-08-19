@@ -1,0 +1,366 @@
+{
+  "entity_to_community": {
+    "E_5cfcfb00ba57d0da": 0,
+    "E_08215cd2d90ab6d5": 1,
+    "E_2385c79b76a67f83": 1,
+    "E_cb092d134dc2d7c6": 1,
+    "E_11db60210a9f2026": 1,
+    "E_c08a1f4b8d1c61ec": 1,
+    "E_4901451dbf28b837": 1,
+    "E_2a5c7c51c9c40036": 1,
+    "E_783e29c8f45d2053": 1,
+    "E_c438b37f88e1873c": 1,
+    "E_51a2fe23588e0b6e": 1,
+    "E_176393330b34d9db": 1,
+    "E_a54f0a086e363a45": 1,
+    "E_e008c6578788a187": 1,
+    "E_08844e6d5a14f0f9": 1,
+    "E_04431021a462464c": 1,
+    "E_989e9f19b8438996": 1,
+    "E_26c05d581177beb0": 1,
+    "E_f5a1fd7bab4abbad": 1,
+    "E_b600a0da6853bf96": 1,
+    "E_17e50913230a9716": 1,
+    "E_7eeb183d3a42f440": 1,
+    "E_38e7cbe3f3df4ca1": 1,
+    "E_dc1a107525263fc6": 1,
+    "E_f7af7add8a7d0fdb": 1,
+    "E_0e525eecf70e4838": 1,
+    "E_6f5bb602c622aedc": 1,
+    "E_a50fcf136cefcca2": 1,
+    "E_ea2c76d58afe6aa2": 1,
+    "E_4e7545e6417206b7": 1,
+    "E_072688c71bfe5ca3": 1,
+    "E_9e835cf81ef7fd43": 1,
+    "E_046f732831f0f688": 1,
+    "E_e2762d9d1e1104b9": 2,
+    "E_f96f7cca3c7fd3ee": 3,
+    "E_68607252daaa633f": 4,
+    "E_0f5de929ba743658": 5,
+    "E_6f21e8042fa6b42e": 5,
+    "E_1a1d78156b5f7aec": 5,
+    "E_ec5da90a0ff9f836": 5,
+    "E_5214c36afa8d1f3c": 5,
+    "E_e78bcd3dd63cf241": 5,
+    "E_a4885937a50dd6bc": 5,
+    "E_ca8eda5dde48bab9": 5,
+    "E_fa0bf3b7f2084426": 5,
+    "E_b4e14d4cf37c8d35": 5,
+    "E_77c48fcc5024f5cc": 5,
+    "E_d72a66b5a815bb4d": 5,
+    "E_17047da014ca589d": 5,
+    "E_b5597be6bafe7ee4": 5,
+    "E_f01067d5d1459410": 5,
+    "E_25b863026266027a": 5,
+    "E_79ae785a821effa8": 5,
+    "E_fd102650992a5345": 5,
+    "E_602b05059b875e58": 5,
+    "E_6017a11fb008b6b9": 5,
+    "E_83934e1765133a51": 5,
+    "E_50eda3f3916683ed": 5,
+    "E_c3c584da9eadc6a0": 5,
+    "E_0ee3327e104fd02a": 5,
+    "E_a893777ad7bb6eca": 5,
+    "E_a4e979e93aaa1c07": 5,
+    "E_747173922e95c331": 5,
+    "E_d4fd1a38c7aead77": 5,
+    "E_df357535edd83f56": 5,
+    "E_84a960c53dbf26b0": 5,
+    "E_71c4ac63d2717fa4": 5,
+    "E_40f99bf02066515b": 5,
+    "E_f4d16e6c69840d31": 5,
+    "E_3a13779c2bd78b16": 5,
+    "E_6ae8dab8d143252f": 5,
+    "E_fcce161245365290": 5,
+    "E_589a9980533e0866": 5,
+    "E_8c0ab0e1654dfc65": 5,
+    "E_8a45c81b17d1734c": 5,
+    "E_0bd4cb672f0662df": 5,
+    "E_9121f3e2ff785348": 5,
+    "E_20aaeabbb9f64bff": 5,
+    "E_c8aab84614e05d5a": 5,
+    "E_42b29346011c3bad": 5,
+    "E_709a98e6cc996827": 5,
+    "E_f84aa292bf2e02d1": 5,
+    "E_8d1315a200b6e492": 5,
+    "E_dbfdb7ebb9839f02": 5,
+    "E_7ae8c5b4b33348ae": 5,
+    "E_e623b4f232c1ea1a": 5,
+    "E_d181fa5ab26c10ae": 5,
+    "E_90b7e9df1eb3304b": 6,
+    "E_cafcefa088107afb": 7,
+    "E_90dbc9a77a3fc050": 8,
+    "E_604c66b92a224622": 9,
+    "E_35e619946f32eed5": 10,
+    "E_6eb3d5bf398fa27d": 11,
+    "E_dcf42bb008dc257c": 12,
+    "E_fe478381c9388103": 13,
+    "E_4f03578dbd5d7992": 14,
+    "E_1bda4ef5cadf910a": 15,
+    "E_e2a6787fcee2dcd0": 16,
+    "E_d55144019600eff2": 17,
+    "E_bf7ccc6a0a182642": 18,
+    "E_5fb726786da4161f": 19,
+    "E_80283835ef49a574": 20,
+    "E_781aa1f61d1249fd": 21
+  },
+  "communities": [
+    {
+      "id": 0,
+      "entity_count": 1,
+      "entities": [
+        "E_5cfcfb00ba57d0da"
+      ],
+      "summary": "社区 (共1个实体)\n类型分布: crop(1)\n实体: 赣南脐橙"
+    },
+    {
+      "id": 1,
+      "entity_count": 32,
+      "entities": [
+        "E_08215cd2d90ab6d5",
+        "E_2385c79b76a67f83",
+        "E_cb092d134dc2d7c6",
+        "E_11db60210a9f2026",
+        "E_c08a1f4b8d1c61ec",
+        "E_4901451dbf28b837",
+        "E_2a5c7c51c9c40036",
+        "E_783e29c8f45d2053",
+        "E_c438b37f88e1873c",
+        "E_51a2fe23588e0b6e",
+        "E_176393330b34d9db",
+        "E_a54f0a086e363a45",
+        "E_e008c6578788a187",
+        "E_08844e6d5a14f0f9",
+        "E_04431021a462464c",
+        "E_989e9f19b8438996",
+        "E_26c05d581177beb0",
+        "E_f5a1fd7bab4abbad",
+        "E_b600a0da6853bf96",
+        "E_17e50913230a9716",
+        "E_7eeb183d3a42f440",
+        "E_38e7cbe3f3df4ca1",
+        "E_dc1a107525263fc6",
+        "E_f7af7add8a7d0fdb",
+        "E_0e525eecf70e4838",
+        "E_6f5bb602c622aedc",
+        "E_a50fcf136cefcca2",
+        "E_ea2c76d58afe6aa2",
+        "E_4e7545e6417206b7",
+        "E_072688c71bfe5ca3",
+        "E_9e835cf81ef7fd43",
+        "E_046f732831f0f688"
+      ],
+      "summary": "社区 (共32个实体)\n类型分布: practice(14), growth_stage(12), crop(5)\n实体: 抽穗扬花期, 返青期, 蕾薹期, 播种, 灌溉, 基肥, 浸种, 开花期, 晒田, 早稻, 水稻, 扬花期, 催芽, 培土, 三化螟, 油菜, 中耕, 分蘖期, 中稻, 苗期"
+    },
+    {
+      "id": 2,
+      "entity_count": 1,
+      "entities": [
+        "E_e2762d9d1e1104b9"
+      ],
+      "summary": "社区 (共1个实体)\n类型分布: practice(1)\n实体: 覆盖"
+    },
+    {
+      "id": 3,
+      "entity_count": 1,
+      "entities": [
+        "E_f96f7cca3c7fd3ee"
+      ],
+      "summary": "社区 (共1个实体)\n类型分布: practice(1)\n实体: 熏烟"
+    },
+    {
+      "id": 4,
+      "entity_count": 1,
+      "entities": [
+        "E_68607252daaa633f"
+      ],
+      "summary": "社区 (共1个实体)\n类型分布: region(1)\n实体: 江西"
+    },
+    {
+      "id": 5,
+      "entity_count": 51,
+      "entities": [
+        "E_0f5de929ba743658",
+        "E_6f21e8042fa6b42e",
+        "E_1a1d78156b5f7aec",
+        "E_ec5da90a0ff9f836",
+        "E_5214c36afa8d1f3c",
+        "E_e78bcd3dd63cf241",
+        "E_a4885937a50dd6bc",
+        "E_ca8eda5dde48bab9",
+        "E_fa0bf3b7f2084426",
+        "E_b4e14d4cf37c8d35",
+        "E_77c48fcc5024f5cc",
+        "E_d72a66b5a815bb4d",
+        "E_17047da014ca589d",
+        "E_b5597be6bafe7ee4",
+        "E_f01067d5d1459410",
+        "E_25b863026266027a",
+        "E_79ae785a821effa8",
+        "E_fd102650992a5345",
+        "E_602b05059b875e58",
+        "E_6017a11fb008b6b9",
+        "E_83934e1765133a51",
+        "E_50eda3f3916683ed",
+        "E_c3c584da9eadc6a0",
+        "E_0ee3327e104fd02a",
+        "E_a893777ad7bb6eca",
+        "E_a4e979e93aaa1c07",
+        "E_747173922e95c331",
+        "E_d4fd1a38c7aead77",
+        "E_df357535edd83f56",
+        "E_84a960c53dbf26b0",
+        "E_71c4ac63d2717fa4",
+        "E_40f99bf02066515b",
+        "E_f4d16e6c69840d31",
+        "E_3a13779c2bd78b16",
+        "E_6ae8dab8d143252f",
+        "E_fcce161245365290",
+        "E_589a9980533e0866",
+        "E_8c0ab0e1654dfc65",
+        "E_8a45c81b17d1734c",
+        "E_0bd4cb672f0662df",
+        "E_9121f3e2ff785348",
+        "E_20aaeabbb9f64bff",
+        "E_c8aab84614e05d5a",
+        "E_42b29346011c3bad",
+        "E_709a98e6cc996827",
+        "E_f84aa292bf2e02d1",
+        "E_8d1315a200b6e492",
+        "E_dbfdb7ebb9839f02",
+        "E_7ae8c5b4b33348ae",
+        "E_e623b4f232c1ea1a",
+        "E_d181fa5ab26c10ae"
+      ],
+      "summary": "社区 (共51个实体)\n类型分布: pesticide(38), disease(7), pest(6)\n实体: 纹枯病, 剂量_5-6kg/亩, 井冈霉素, 病毒病, 剂量_30g/亩, 氯虫苯甲酰胺, 剂量_13.5%, 霜霉病, 剂量_10ml/亩, 剂量_60g/亩, 剂量_4kg/亩, 三环唑, 剂量_50g/亩, 剂量_40-50kg/亩, 剂量_3%, 剂量_3-4kg/亩, 剂量_80%, 二化螟, 稻蓟马, 剂量_0.5-0.8kg/亩"
+    },
+    {
+      "id": 6,
+      "entity_count": 1,
+      "entities": [
+        "E_90b7e9df1eb3304b"
+      ],
+      "summary": "社区 (共1个实体)\n类型分布: fertilizer(1)\n实体: 尿素"
+    },
+    {
+      "id": 7,
+      "entity_count": 1,
+      "entities": [
+        "E_cafcefa088107afb"
+      ],
+      "summary": "社区 (共1个实体)\n类型分布: fertilizer(1)\n实体: 氯化钾"
+    },
+    {
+      "id": 8,
+      "entity_count": 1,
+      "entities": [
+        "E_90dbc9a77a3fc050"
+      ],
+      "summary": "社区 (共1个实体)\n类型分布: fertilizer(1)\n实体: 硼砂"
+    },
+    {
+      "id": 9,
+      "entity_count": 1,
+      "entities": [
+        "E_604c66b92a224622"
+      ],
+      "summary": "社区 (共1个实体)\n类型分布: fertilizer(1)\n实体: 硼肥"
+    },
+    {
+      "id": 10,
+      "entity_count": 1,
+      "entities": [
+        "E_35e619946f32eed5"
+      ],
+      "summary": "社区 (共1个实体)\n类型分布: fertilizer(1)\n实体: 蕾薹肥"
+    },
+    {
+      "id": 11,
+      "entity_count": 1,
+      "entities": [
+        "E_6eb3d5bf398fa27d"
+      ],
+      "summary": "社区 (共1个实体)\n类型分布: fertilizer(1)\n实体: 返青肥"
+    },
+    {
+      "id": 12,
+      "entity_count": 1,
+      "entities": [
+        "E_dcf42bb008dc257c"
+      ],
+      "summary": "社区 (共1个实体)\n类型分布: region(1)\n实体: 赣中南"
+    },
+    {
+      "id": 13,
+      "entity_count": 1,
+      "entities": [
+        "E_fe478381c9388103"
+      ],
+      "summary": "社区 (共1个实体)\n类型分布: region(1)\n实体: 赣北"
+    },
+    {
+      "id": 14,
+      "entity_count": 1,
+      "entities": [
+        "E_4f03578dbd5d7992"
+      ],
+      "summary": "社区 (共1个实体)\n类型分布: fertilizer(1)\n实体: 磷酸二氢钾"
+    },
+    {
+      "id": 15,
+      "entity_count": 1,
+      "entities": [
+        "E_1bda4ef5cadf910a"
+      ],
+      "summary": "社区 (共1个实体)\n类型分布: fertilizer(1)\n实体: 断奶肥"
+    },
+    {
+      "id": 16,
+      "entity_count": 1,
+      "entities": [
+        "E_e2a6787fcee2dcd0"
+      ],
+      "summary": "社区 (共1个实体)\n类型分布: fertilizer(1)\n实体: 分蘖肥"
+    },
+    {
+      "id": 17,
+      "entity_count": 1,
+      "entities": [
+        "E_d55144019600eff2"
+      ],
+      "summary": "社区 (共1个实体)\n类型分布: fertilizer(1)\n实体: 穗肥"
+    },
+    {
+      "id": 18,
+      "entity_count": 1,
+      "entities": [
+        "E_bf7ccc6a0a182642"
+      ],
+      "summary": "社区 (共1个实体)\n类型分布: symptom(1)\n实体: 卷叶"
+    },
+    {
+      "id": 19,
+      "entity_count": 1,
+      "entities": [
+        "E_5fb726786da4161f"
+      ],
+      "summary": "社区 (共1个实体)\n类型分布: crop(1)\n实体: 玉米"
+    },
+    {
+      "id": 20,
+      "entity_count": 1,
+      "entities": [
+        "E_80283835ef49a574"
+      ],
+      "summary": "社区 (共1个实体)\n类型分布: practice(1)\n实体: 追肥"
+    },
+    {
+      "id": 21,
+      "entity_count": 1,
+      "entities": [
+        "E_781aa1f61d1249fd"
+      ],
+      "summary": "社区 (共1个实体)\n类型分布: crop(1)\n实体: 蔬菜"
+    }
+  ]
+}
