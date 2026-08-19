@@ -685,6 +685,44 @@ async def get_news():
     return {"news": fetch_jxau_news()}
 
 
+# ── 图像诊断 ─────────────────────────────────────────────────
+
+@app.post("/diagnose/image")
+async def diagnose_image(
+    file: UploadFile = File(...),
+    description: str = Form(""),
+    crop: str = Form(""),
+):
+    """上传图片进行病虫害诊断。
+
+    返回诊断结果，包含可能原因、置信度和建议。
+    所有诊断结果均标注"需人工复核"。
+    """
+    content = await file.read()
+    content_type = file.content_type or "image/jpeg"
+
+    from image_diagnosis import image_engine, IMAGE_STORE_DIR
+
+    # 校验图片
+    error = image_engine.validate_image(content, content_type)
+    if error:
+        raise HTTPException(status_code=422, detail=error)
+
+    # 执行分析
+    result = image_engine.analyze(content, content_type=content_type, description=description, crop=crop)
+
+    # 保存图片到本地（可选，用于后续复审）
+    try:
+        IMAGE_STORE_DIR.mkdir(parents=True, exist_ok=True)
+        ext = ".jpg" if content_type == "image/jpeg" else ".png" if content_type == "image/png" else ".webp"
+        image_path = IMAGE_STORE_DIR / f"{result.id}{ext}"
+        image_path.write_bytes(content)
+    except Exception as exc:
+        logger.warning("保存诊断图片失败: %s", exc)
+
+    return result.to_dict()
+
+
 if __name__ == "__main__":
     uvicorn.run(
         "main:app",
