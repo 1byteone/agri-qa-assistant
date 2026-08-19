@@ -3,6 +3,7 @@ uvicorn
 langchain
 langchain-openai
 langchain-community
+langchain-text-splitters
 langgraph
 chromadb
 pydantic
@@ -12,6 +13,7 @@ requests
 python-multipart
 python-docx
 PyMuPDF
+beautifulsoup4
 sqlalchemy
 aiosqlite
 redis

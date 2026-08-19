@@ -106,7 +106,13 @@ class AgriIRPipeline:
         }
 
     def refine_query(self, query: str, context: Optional[Dict[str, Any]] = None) -> str:
-        compact = re.sub(r"\s+", " ", (query or "").strip())
+        # 先使用 QueryTransformer 进行查询改写
+        try:
+            from retrieval.query_transformer import query_transformer
+            refined = query_transformer.rewrite(query, context)
+        except ImportError:
+            refined = re.sub(r"\s+", " ", (query or "").strip())
+
         context = context or {}
         hints = [str(context.get(key, "")).strip() for key in ("crop", "region", "stage")]
         evidence_anchor = {
@@ -114,11 +120,11 @@ class AgriIRPipeline:
             "rapeseed_fertilizer_recommendation": "油菜施肥 测土配方 蕾薹期",
             "citrus_fertilizer_recommendation": "脐橙施肥 测土配方 膨果期",
             "vegetable_fertilizer_recommendation": "蔬菜施肥 测土配方 苗期",
-        }.get(self.required_evidence_scope(compact))
+        }.get(self.required_evidence_scope(refined))
         if evidence_anchor:
             hints.append(evidence_anchor)
-        hints = [hint for hint in hints if hint and hint not in compact]
-        return "；".join([compact, *hints]) if hints else compact
+        hints = [hint for hint in hints if hint and hint not in refined]
+        return "；".join([refined, *hints]) if hints else refined
 
     def decompose_query(self, query: str) -> List[str]:
         parts = [part.strip(" ，,、；;。") for part in re.split(r"(?:并且|同时|以及|和|与|及|\?|？|。|；|;)", query or "")]
@@ -144,16 +150,32 @@ class AgriIRPipeline:
             except Exception as exc:
                 logger.warning("AgriIR retrieval failed for subquery: %s", exc)
 
-        unique: Dict[str, Dict[str, Any]] = {}
-        for item in candidates:
-            metadata = item.get("metadata") or {}
-            key = str(metadata.get("content_hash") or item.get("content") or "")
-            if not key:
-                continue
-            previous = unique.get(key)
-            if previous is None or float(item.get("relevance", 0.0)) > float(previous.get("relevance", 0.0)):
-                unique[key] = item
-        ranked = sorted(unique.values(), key=lambda item: float(item.get("relevance", 0.0)), reverse=True)
+        # ── RRF 融合：将各子查询的检索结果通过 RRF 合并 ──
+        try:
+            from retrieval.rrf_fusion import rrf_fusion
+            # 按子查询分组，每组是一个 ranked list
+            subquery_groups: Dict[str, List[Dict[str, Any]]] = {}
+            for item in candidates:
+                sq = item.get("subquery", "")
+                subquery_groups.setdefault(sq, []).append(item)
+            if len(subquery_groups) > 1:
+                ranked_lists = list(subquery_groups.values())
+                ranked = rrf_fusion(ranked_lists, k=60)
+                logger.info("RRF fusion applied: %d subqueries → %d ranked", len(ranked_lists), len(ranked))
+            else:
+                ranked = sorted(candidates, key=lambda x: float(x.get("relevance", 0.0)), reverse=True)
+        except ImportError:
+            # 回退到原有去重排序
+            unique: Dict[str, Dict[str, Any]] = {}
+            for item in candidates:
+                metadata = item.get("metadata") or {}
+                key = str(metadata.get("content_hash") or item.get("content") or "")
+                if not key:
+                    continue
+                previous = unique.get(key)
+                if previous is None or float(item.get("relevance", 0.0)) > float(previous.get("relevance", 0.0)):
+                    unique[key] = item
+            ranked = sorted(unique.values(), key=lambda item: float(item.get("relevance", 0.0)), reverse=True)
         result_limit = max(1, int(top_k))
         if required_scope:
             # A high-risk answer must retain an admissible official candidate

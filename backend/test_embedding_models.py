@@ -1,12 +1,11 @@
+import os
+import pytest
 import requests
 
-url = "https://apihub.agnes-ai.cn/v1/embeddings"
-headers = {
-    "Authorization": "Bearer sk-H2xBJlVMLMLiM9tplNS4zeBchkmVa87ZyAZjZWJVfkLLYWHq",
-    "Content-Type": "application/json",
-}
+API_KEY = os.environ.get("AGNES_AI_API_KEY", "")
+BASE_URL = os.environ.get("AGNES_BASE_URL", "https://apihub.agnes-ai.cn/v1")
 
-models_to_try = [
+MODELS_TO_TRY = [
     "text-embedding-ada-002",
     "text-embedding-3-small",
     "text-embedding-3-large",
@@ -15,15 +14,16 @@ models_to_try = [
     "embedding-2-small",
 ]
 
-for model in models_to_try:
+
+@pytest.mark.skipif(not API_KEY, reason="需要设置 AGNES_AI_API_KEY 环境变量")
+@pytest.mark.parametrize("model", MODELS_TO_TRY)
+def test_embedding_model(model):
+    url = f"{BASE_URL}/embeddings"
+    headers = {
+        "Authorization": f"Bearer {API_KEY}",
+        "Content-Type": "application/json",
+    }
     payload = {"model": model, "input": ["test"]}
-    try:
-        r = requests.post(url, headers=headers, json=payload, timeout=30)
-        print(f"Model: {model} -> Status: {r.status_code}")
-        if r.status_code == 200:
-            print(f"  SUCCESS! Response: {r.text[:200]}")
-            break
-        else:
-            print(f"  Error: {r.text[:200]}")
-    except Exception as e:
-        print(f"Model: {model} -> Error: {e}")
+    r = requests.post(url, headers=headers, json=payload, timeout=30)
+    # 至少部分模型应该可用，记录结果
+    print(f"Model: {model} -> Status: {r.status_code}")

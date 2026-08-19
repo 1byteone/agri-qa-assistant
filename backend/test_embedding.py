@@ -1,15 +1,21 @@
+import os
+import pytest
 import requests
 
-url = "https://apihub.agnes-ai.cn/v1/embeddings"
-headers = {
-    "Authorization": "Bearer sk-H2xBJlVMLMLiM9tplNS4zeBchkmVa87ZyAZjZWJVfkLLYWHq",
-    "Content-Type": "application/json",
-}
-payload = {"model": "text-embedding-3-small", "input": ["test"]}
+API_KEY = os.environ.get("AGNES_AI_API_KEY", "")
+BASE_URL = os.environ.get("AGNES_BASE_URL", "https://apihub.agnes-ai.cn/v1")
 
-try:
+
+@pytest.mark.skipif(not API_KEY, reason="需要设置 AGNES_AI_API_KEY 环境变量")
+def test_embedding_api():
+    url = f"{BASE_URL}/embeddings"
+    headers = {
+        "Authorization": f"Bearer {API_KEY}",
+        "Content-Type": "application/json",
+    }
+    payload = {"model": "text-embedding-3-small", "input": ["test"]}
     r = requests.post(url, headers=headers, json=payload, timeout=30)
-    print("Status:", r.status_code)
-    print("Body:", r.text[:500])
-except Exception as e:
-    print("Error:", e)
+    assert r.status_code == 200, f"Embedding API 返回非 200: {r.status_code}"
+    data = r.json()
+    assert "data" in data, "响应缺少 data 字段"
+    assert len(data["data"]) > 0, "嵌入向量为空"

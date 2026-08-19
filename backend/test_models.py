@@ -1,13 +1,17 @@
+import os
+import pytest
 import requests
 
-url = "https://apihub.agnes-ai.cn/v1/models"
-headers = {
-    "Authorization": "Bearer sk-H2xBJlVMLMLiM9tplNS4zeBchkmVa87ZyAZjZWJVfkLLYWHq",
-}
+API_KEY = os.environ.get("AGNES_AI_API_KEY", "")
+BASE_URL = os.environ.get("AGNES_BASE_URL", "https://apihub.agnes-ai.cn/v1")
 
-try:
+
+@pytest.mark.skipif(not API_KEY, reason="需要设置 AGNES_AI_API_KEY 环境变量")
+def test_list_models():
+    url = f"{BASE_URL}/models"
+    headers = {"Authorization": f"Bearer {API_KEY}"}
     r = requests.get(url, headers=headers, timeout=30)
-    print(f"Status: {r.status_code}")
-    print(f"Body: {r.text[:2000]}")
-except Exception as e:
-    print(f"Error: {e}")
+    assert r.status_code == 200, f"模型列表返回非 200: {r.status_code}"
+    data = r.json()
+    assert "data" in data, "响应缺少 data 字段"
+    print(f"可用模型数: {len(data['data'])}")
