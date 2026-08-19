@@ -1,16 +1,95 @@
 import os
 import logging
-from typing import List, Dict, Any, Optional
+import hashlib
+import math
+import re
+from typing import List, Dict, Any, Optional, Tuple
 from pathlib import Path
 
-from langchain_openai import OpenAIEmbeddings
+import requests
 from langchain_community.vectorstores import Chroma
 from langchain_core.documents import Document
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from config import settings
 
 logger = logging.getLogger(__name__)
+
+
+class LocalHashingEmbeddingFunction:
+    """Dependency-free Chinese-friendly vector fallback for local RAG operation."""
+
+    dimension = 384
+
+    def _tokens(self, text: str) -> List[str]:
+        compact = re.sub(r"\s+", "", text.lower())
+        tokens = re.findall(r"[a-z0-9]+", text.lower())
+        tokens.extend(compact[index:index + 2] for index in range(max(0, len(compact) - 1)))
+        return tokens or [compact]
+
+    def _embed(self, text: str) -> List[float]:
+        vector = [0.0] * self.dimension
+        for token in self._tokens(text):
+            digest = hashlib.blake2b(token.encode("utf-8"), digest_size=8).digest()
+            value = int.from_bytes(digest, "big")
+            index = value % self.dimension
+            vector[index] += -1.0 if value & 1 else 1.0
+        norm = math.sqrt(sum(value * value for value in vector)) or 1.0
+        return [value / norm for value in vector]
+
+    def embed_documents(self, texts: List[str]) -> List[List[float]]:
+        return [self._embed(text) for text in texts]
+
+    def embed_query(self, text: str) -> List[float]:
+        return self._embed(text)
+
+    def __call__(self, input: List[str]) -> List[List[float]]:
+        return self.embed_documents(input)
+
+
+class AgnesEmbeddingFunction:
+    """自定义 Embedding 函数，直接调用 Agnes AI，绕过 tiktoken。"""
+
+    def __init__(self):
+        self.api_key = settings.agnes_api_key
+        base_url = settings.agnes_base_url.rstrip("/")
+        # 兼容 base_url 已带 /v1 的情况
+        if base_url.endswith("/v1"):
+            base_url = base_url[:-3]
+        self.base_url = base_url
+        self.model = settings.agnes_embedding_model
+
+    def _call_api(self, input: List[str]) -> List[List[float]]:
+        if not input:
+            return []
+
+        url = f"{self.base_url}/v1/embeddings"
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+        }
+        payload = {"model": self.model, "input": input}
+
+        try:
+            resp = requests.post(url, headers=headers, json=payload, timeout=60)
+            resp.raise_for_status()
+            data = resp.json()
+            return [item["embedding"] for item in sorted(data["data"], key=lambda x: x["index"])]
+        except Exception as e:
+            logger.error(f"获取 Embedding 失败: {e}")
+            raise
+
+    def embed_documents(self, texts: List[str]) -> List[List[float]]:
+        """Chroma 文档嵌入接口"""
+        return self._call_api(texts)
+
+    def embed_query(self, text: str) -> List[float]:
+        """Chroma 查询嵌入接口"""
+        return self._call_api([text])[0]
+
+    def __call__(self, input: List[str]) -> List[List[float]]:
+        """兼容直接调用"""
+        return self.embed_documents(input)
 
 
 class KnowledgeBase:
@@ -18,12 +97,11 @@ class KnowledgeBase:
 
     def __init__(self):
         self.persist_dir = settings.chroma_persist_dir
-        self.collection_name = "agri_knowledge"
-        self.embeddings = OpenAIEmbeddings(
-            openai_api_key=settings.agnes_api_key,
-            openai_api_base=settings.agnes_base_url,
-            model=settings.agnes_embedding_model,
-        )
+        self.embedding_mode = settings.rag_embedding_mode.lower()
+        if self.embedding_mode not in {"local", "remote"}:
+            raise ValueError("RAG_EMBEDDING_MODE 必须为 local 或 remote")
+        self.collection_name = f"agri_knowledge_{self.embedding_mode}_v1"
+        self.embedding_fn = LocalHashingEmbeddingFunction() if self.embedding_mode == "local" else AgnesEmbeddingFunction()
         self._vectorstore: Optional[Chroma] = None
         self._ensure_db_dir()
 
@@ -35,7 +113,7 @@ class KnowledgeBase:
             self._vectorstore = Chroma(
                 collection_name=self.collection_name,
                 persist_directory=self.persist_dir,
-                embedding_function=self.embeddings,
+                embedding_function=self.embedding_fn,
             )
         return self._vectorstore
 
@@ -47,10 +125,46 @@ class KnowledgeBase:
             separators=["\n\n", "\n", "。", "；", " ", ""],
         )
         chunks = text_splitter.split_documents(documents)
-        
+
         vectorstore = self._get_vectorstore()
         vectorstore.add_documents(chunks)
         return len(chunks)
+
+    def ingest_document(self, text: str, metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """Chunk, embed and persist one approved document with hash-based dedupe."""
+        metadata = dict(metadata or {})
+        content_hash = str(metadata.get("content_hash", ""))
+        vectorstore = self._get_vectorstore()
+        if content_hash:
+            existing = vectorstore.get(where={"content_hash": content_hash}, include=["metadatas"])
+            existing_ids = existing.get("ids", [])
+            existing_metadata = existing.get("metadatas", [])
+            if existing_ids:
+                if all(item and all(item.get(key) == value for key, value in metadata.items()) for item in existing_metadata):
+                    return {"added_chunks": 0, "duplicate": True, "content_hash": content_hash}
+                # Preserve idempotency while allowing a verified source record
+                # to gain new governance metadata such as evidence_scope.
+                vectorstore.delete(ids=existing_ids)
+        chunks = RecursiveCharacterTextSplitter(
+            chunk_size=1000,
+            chunk_overlap=200,
+            separators=["\n\n", "\n", "。", "；", " ", ""],
+        ).split_documents([Document(page_content=text, metadata=metadata)])
+        if not chunks:
+            return {"added_chunks": 0, "duplicate": False, "content_hash": content_hash}
+        vectorstore.add_documents(chunks)
+        return {"added_chunks": len(chunks), "duplicate": False, "content_hash": content_hash}
+
+    def remove_by_content_hash(self, content_hash: str) -> int:
+        """Remove one imported document version for an explicit evidence rollback."""
+        if not content_hash:
+            return 0
+        vectorstore = self._get_vectorstore()
+        matches = vectorstore.get(where={"content_hash": content_hash}, include=[])
+        ids = matches.get("ids", [])
+        if ids:
+            vectorstore.delete(ids=ids)
+        return len(ids)
 
     def add_texts(self, texts: List[str], metadatas: Optional[List[Dict[str, Any]]] = None) -> int:
         """添加纯文本到知识库"""
@@ -60,20 +174,88 @@ class KnowledgeBase:
         ]
         return self.add_documents(documents)
 
-    def search(self, query: str, top_k: int = 5, score_threshold: float = 0.5) -> List[Dict[str, Any]]:
-        """语义检索"""
+    @staticmethod
+    def choose_strategy(query: str) -> str:
+        text = (query or "").lower()
+        if re.search(r"政策|标准|规范|文件|编号|产品型号|id", text):
+            return "hybrid-metadata"
+        if re.search(r"第几天|什么时候|去年|上周|最近|农时|播期|生育期", text):
+            return "hybrid-temporal"
+        return "hybrid"
+
+    @staticmethod
+    def _query_terms(query: str) -> List[str]:
+        compact = re.sub(r"\s+", "", (query or "").lower())
+        terms = re.findall(r"[a-z0-9]{2,}|[\u4e00-\u9fff]{2,}", compact)
+        bigrams = [compact[index:index + 2] for index in range(max(0, len(compact) - 1))]
+        return list(dict.fromkeys(terms + bigrams))
+
+    @staticmethod
+    def _metadata_boost(metadata: Dict[str, Any], query: str) -> float:
+        """Small evidence-quality boost; it never overrides textual match."""
+        compact = (query or "").lower()
+        boost = 0.0
+        if "江西" in compact and str(metadata.get("region", "")) == "江西":
+            boost += 0.08
+        if any(word in compact for word in ("政策", "规范", "标准", "官方")) and metadata.get("source"):
+            boost += 0.05
+        if any(word in compact for word in ("病", "虫", "症状", "防治")) and metadata.get("category") == "pest":
+            boost += 0.05
+        return boost
+
+    def search(self, query: str, top_k: int = 5, max_distance: float = 1.7, strategy: str = "hybrid") -> List[Dict[str, Any]]:
+        """Hybrid retrieval: vector candidates + Chinese lexical rerank + metadata quality."""
         vectorstore = self._get_vectorstore()
-        results = vectorstore.similarity_search_with_score(query, k=top_k)
-        
+        # Retrieve a wider candidate set, then apply a small lexical signal.
+        # The local hashing embedding is deterministic and offline, but Chinese
+        # short queries can otherwise rank a semantically unrelated chunk above
+        # an exact crop/disease match.
+        results = vectorstore.similarity_search_with_score(query, k=max(top_k, 12))
+        query_terms = self._query_terms(query)
+
+        def lexical_overlap(text: str) -> float:
+            compact_query = re.sub(r"\s+", "", (query or "").lower())
+            compact_text = re.sub(r"\s+", "", (text or "").lower())
+            if not compact_query or not compact_text:
+                return 0.0
+            if compact_query in compact_text:
+                return 1.0
+            query_bigrams = {compact_query[i:i + 2] for i in range(max(0, len(compact_query) - 1))}
+            if not query_bigrams:
+                return 0.0
+            return len(query_bigrams & {
+                compact_text[i:i + 2] for i in range(max(0, len(compact_text) - 1))
+            }) / len(query_bigrams)
+
         filtered = []
-        for doc, score in results:
-            if score >= score_threshold:
+        for doc, distance in results:
+            if distance <= max_distance:
+                vector_relevance = max(0.0, 1.0 - float(distance) / 2)
+                lexical_relevance = lexical_overlap(doc.page_content)
+                if strategy == "vector":
+                    relevance = vector_relevance
+                else:
+                    text = re.sub(r"\s+", "", doc.page_content.lower())
+                    term_hits = sum(1 for term in query_terms if term in text)
+                    bm25_signal = min(1.0, term_hits / max(1, min(len(query_terms), 8)))
+                    relevance = min(1.0, 0.52 * vector_relevance + 0.33 * max(lexical_relevance, bm25_signal) + self._metadata_boost(doc.metadata, query))
                 filtered.append({
-                    "content": doc.page_content,
-                    "metadata": doc.metadata,
-                    "score": float(score),
-                })
-        return filtered
+                        "content": doc.page_content,
+                        "metadata": doc.metadata,
+                        "distance": float(distance),
+                        "relevance": relevance,
+                        "score_breakdown": {
+                            "vector": round(vector_relevance, 4),
+                            "lexical": round(lexical_relevance, 4),
+                            "metadata": round(self._metadata_boost(doc.metadata, query), 4),
+                        },
+                        "_rank_score": relevance,
+                        "retrieval_strategy": strategy,
+                    })
+        filtered.sort(key=lambda item: item["_rank_score"], reverse=True)
+        for item in filtered:
+            item.pop("_rank_score", None)
+        return filtered[:top_k]
 
     def get_status(self) -> Dict[str, Any]:
         """获取知识库状态"""
@@ -84,12 +266,14 @@ class KnowledgeBase:
                 "total_documents": count,
                 "collection_name": self.collection_name,
                 "persist_dir": self.persist_dir,
+                "embedding_mode": self.embedding_mode,
             }
         except Exception as e:
             logger.error(f"获取知识库状态失败: {e}")
             return {
                 "total_documents": 0,
                 "collection_name": self.collection_name,
+                "embedding_mode": self.embedding_mode,
                 "error": str(e),
             }
 
@@ -173,6 +357,27 @@ def init_default_knowledge_base():
             page_content="植保无人机操作规范：植保无人机适用于病虫害防治和叶面施肥。作业前检查电池电量、药箱密封性、喷头是否堵塞。飞行高度距作物冠层2-3米，飞行速度3-5米/秒。避免在高温(>35℃)、大风(>4级)、降雨天气作业。作业后清洗药箱、滤网和喷头。",
             metadata={"category": "machinery", "topic": "spraying"}
         ),
+        # 江西农业大学重点知识域（本地可核验的基础知识包）
+        Document(
+            page_content="江西家猪遗传育种基础：家猪育种应先明确繁殖性能、生长速度、料肉比和胴体品质等目标，建立可追溯的系谱和生产记录。选择亲本需结合健康状况、近交风险和多性状综合育种值，配种前进行疫病检测；具体品种和配方应由动物遗传育种与兽医人员依据群体数据复核。",
+            metadata={"category": "jiangxi_focus", "topic": "pig_breeding", "region": "江西", "source": "CropWise江农专题基础知识包"}
+        ),
+        Document(
+            page_content="鄱阳湖流域农业生态基础：鄱阳湖周边农田管理要兼顾稻作生产、湿地和水质保护。施肥应以测土结果为依据，严格控制氮磷流失；灌排沟渠设置缓冲带，农药按登记作物和安全间隔使用，暴雨或湖区水位变化前应做好排水与污染风险巡查。",
+            metadata={"category": "jiangxi_focus", "topic": "poyang_ecology", "region": "江西", "source": "CropWise江农专题基础知识包"}
+        ),
+        Document(
+            page_content="赣南脐橙采后保鲜基础：采收应选择成熟度适宜、无机械伤的果实，分级后及时预冷、清洁和通风贮藏。包装和运输要避免挤压、日晒及温度剧烈波动，定期检查腐烂果；保鲜剂和处理浓度必须符合现行登记、标签及食品安全要求，不能仅凭外观图片判断品质或病害。",
+            metadata={"category": "jiangxi_focus", "topic": "gannan_orange_postharvest", "region": "江西", "source": "CropWise江农专题基础知识包"}
+        ),
+        Document(
+            page_content="江西双季稻生产要点：早稻和晚稻应根据当地积温、无霜期和水源条件安排播期，育秧、移栽密度和水肥管理需要结合品种熟期与田块条件。遇寒潮、暴雨或高温，应优先参考江西气象预警和当地农技部门意见，不能用单一日期替代区域化农时判断。",
+            metadata={"category": "jiangxi_focus", "topic": "double_crop_rice", "region": "江西", "source": "CropWise江农专题基础知识包"}
+        ),
+        Document(
+            page_content="江西现代农业装备与植保：植保无人机作业前应核验登记药剂、飞防区域、风速和周边敏感目标，作业中保持稳定高度与航线，作业后清洗设备并留存药剂和地块记录。涉及学校试验田、饮用水源或大面积病虫害时，应由植保和农机专业人员现场复核。",
+            metadata={"category": "jiangxi_focus", "topic": "agri_equipment", "region": "江西", "source": "CropWise江农专题基础知识包"}
+        ),
     ]
 
     kb = knowledge_base
@@ -181,4 +386,12 @@ def init_default_knowledge_base():
         added = kb.add_documents(default_docs)
         logger.info(f"默认农业知识库初始化完成，添加 {added} 个文档片段")
     else:
-        logger.info(f"知识库已存在 {current_count} 个文档片段，跳过初始化")
+        # Existing installations receive the Jiangxi focus pack exactly once.
+        existing = kb._get_vectorstore().get(include=["metadatas"]).get("metadatas", [])
+        has_focus_pack = any(meta and meta.get("source") == "CropWise江农专题基础知识包" for meta in existing)
+        if not has_focus_pack:
+            focus_docs = [doc for doc in default_docs if doc.metadata.get("category") == "jiangxi_focus"]
+            added = kb.add_documents(focus_docs)
+            logger.info(f"已补充江农专题知识包，添加 {added} 个文档片段")
+        else:
+            logger.info(f"知识库已存在 {current_count} 个文档片段，跳过初始化")
