@@ -19,7 +19,13 @@ def test_pipeline_is_configurable_and_deduplicates_results():
     pipeline = AgriIRPipeline(PipelineConfig(max_subqueries=4, citation_threshold=0.75, stages=(StageConfig("parallel_retrieval", top_k=3),)))
     trace = pipeline.retrieve("水稻稻飞虱防治和水稻田观察", StubKnowledgeBase())
     assert trace["subqueries"] == ["水稻稻飞虱防治", "水稻田观察"]
-    assert len(trace["results"]) == 1
+    # 向量检索结果去重为 1 (相同 content_hash)，可能包含图谱检索结果
+    vector_results = [r for r in trace["results"] if r.get("retrieval_channel") == "vector"]
+    assert len(vector_results) == 1
+    assert vector_results[0]["metadata"]["content_hash"] == "a"
+    # 药飞虱防治 → 图谱通道也可能命中
+    graph_results = [r for r in trace["results"] if r.get("retrieval_channel") == "graph"]
+    # 图谱检索不应干扰向量结果的基础正确性
     assert trace["citations"][0]["label"] == "S1"
     assert trace["citations"][0]["eligible"] is True
 

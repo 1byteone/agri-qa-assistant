@@ -159,28 +159,62 @@ class AgriIRPipeline:
                 for item in knowledge_base.search(subquery, top_k=candidate_top_k, strategy=strategy):
                     item = dict(item)
                     item["subquery"] = subquery
+                    item["retrieval_channel"] = "vector"
                     candidates.append(item)
             except Exception as exc:
                 logger.warning("AgriIR retrieval failed for subquery: %s", exc)
 
-        # ── RRF 融合：将各子查询的检索结果通过 RRF 合并 ──
+        # ── 图谱检索通道（GraphRAG）：与向量检索并行 ──
+        graph_results: List[Dict[str, Any]] = []
+        try:
+            from graph.graph_store import GraphStore
+            from graph.graph_retriever import GraphRetriever
+            graph_store = GraphStore()
+            graph_store.initialize()
+            graph_retriever = GraphRetriever(graph_store)
+
+            # 实体邻域检索
+            local_results = graph_retriever.search(query, top_k=2)
+            # 社区级检索（针对诊断/政策等综合分析场景）
+            scenario = search_hints.get("scenario")
+            if scenario in ("diagnosis", "policy", "fertilizer"):
+                community_results = graph_retriever.community_search(query, top_k=1)
+                local_results = local_results + community_results
+
+            for item in local_results:
+                item["subquery"] = item.get("metadata", {}).get("entity_name", query)
+                item["retrieval_channel"] = "graph"
+                graph_results.append(item)
+
+            if graph_results:
+                logger.info("知识图谱检索: %d 条结果", len(graph_results))
+        except ImportError:
+            logger.debug("知识图谱模块未安装，跳过图谱检索")
+        except Exception as exc:
+            logger.warning("知识图谱检索失败: %s", exc)
+
+        # ── RRF 融合：向量通道 + 图谱通道 + 各子查询多维融合 ──
+        all_candidates = candidates + graph_results
         try:
             from retrieval.rrf_fusion import rrf_fusion
-            # 按子查询分组，每组是一个 ranked list
+            # 按子查询+通道分组，每组是一个 ranked list
             subquery_groups: Dict[str, List[Dict[str, Any]]] = {}
-            for item in candidates:
+            for item in all_candidates:
                 sq = item.get("subquery", "")
-                subquery_groups.setdefault(sq, []).append(item)
+                channel = item.get("retrieval_channel", "vector")
+                key = f"{sq}|{channel}"
+                subquery_groups.setdefault(key, []).append(item)
             if len(subquery_groups) > 1:
                 ranked_lists = list(subquery_groups.values())
                 ranked = rrf_fusion(ranked_lists, k=60)
-                logger.info("RRF fusion applied: %d subqueries → %d ranked", len(ranked_lists), len(ranked))
+                logger.info("RRF fusion applied: %d 组 (%d 向量 + %d 图谱) → %d ranked",
+                            len(ranked_lists), len(candidates), len(graph_results), len(ranked))
             else:
-                ranked = sorted(candidates, key=lambda x: float(x.get("relevance", 0.0)), reverse=True)
+                ranked = sorted(all_candidates, key=lambda x: float(x.get("relevance", 0.0)), reverse=True)
         except ImportError:
             # 回退到原有去重排序
             unique: Dict[str, Dict[str, Any]] = {}
-            for item in candidates:
+            for item in all_candidates:
                 metadata = item.get("metadata") or {}
                 key = str(metadata.get("content_hash") or item.get("content") or "")
                 if not key:
@@ -212,6 +246,10 @@ class AgriIRPipeline:
                 ]
         results = ranked[:result_limit]
         citations = self.build_citations(results, query=refined, threshold=self.citation_threshold_for(knowledge_base))
+
+        # 标记图谱检索结果
+        graph_channel_used = len(graph_results) > 0
+
         return {
             "query": query,
             "refined_query": refined,
@@ -219,6 +257,8 @@ class AgriIRPipeline:
             "strategy": strategy,
             "results": results,
             "citations": citations,
+            "graph_channel_used": graph_channel_used,
+            "graph_count": len(graph_results),
         }
 
     @staticmethod
