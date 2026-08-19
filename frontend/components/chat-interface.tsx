@@ -26,6 +26,7 @@ import {
   Sparkles,
   StopCircle,
   Trash2,
+  Users,
   X,
 } from "lucide-react"
 import { AchievementFooter } from "@/components/achievement-footer"
@@ -204,6 +205,7 @@ function LeftPanel({ mobile = false }: { mobile?: boolean }) {
             { label: "农时查询", href: "/farming-calendar", icon: CalendarDays },
             { label: "政策咨询", href: "/policy", icon: FileText },
             { label: "证据评测", href: "/evaluations", icon: FlaskConical },
+            { label: "试点管理", href: "/pilot", icon: Users },
           ].map(({ label, href, icon: Icon }) => (
             <Link
               key={label}
