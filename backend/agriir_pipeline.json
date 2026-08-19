@@ -1,0 +1,13 @@
+{
+  "version": "0.1",
+  "citation_threshold": 0.75,
+  "citation_threshold_by_embedding": {"local": 0.45, "remote": 0.75},
+  "max_subqueries": 4,
+  "stages": [
+    {"name": "query_refinement", "enabled": true, "temperature": 0.1},
+    {"name": "subquery_decomposition", "enabled": true, "temperature": 0.5},
+    {"name": "parallel_retrieval", "enabled": true, "top_k": 3},
+    {"name": "synthesis", "enabled": true, "temperature": 0.2},
+    {"name": "citation_insertion", "enabled": true}
+  ]
+}

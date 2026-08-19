@@ -1,0 +1,108 @@
+# ============================================
+# Agri-QA-Assistant .gitignore
+# ============================================
+
+# ------------------------------------------
+# Environment & Secrets
+# ------------------------------------------
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+*.env
+
+# ------------------------------------------
+# Python
+# ------------------------------------------
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+.python-version
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+*.egg
+.eggs/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Logs
+*.log
+*.err.log
+*.out.log
+logs/
+
+# ------------------------------------------
+# Node.js / Frontend
+# ------------------------------------------
+node_modules/
+.next/
+.next-*/
+.next.*
+out/
+.npm
+.yarn-integrity
+
+# TypeScript
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# ------------------------------------------
+# IDE & OS
+# ------------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+*.lnk
+
+# ------------------------------------------
+# Build Artifacts
+# ------------------------------------------
+*.map
+.vercel/
+.netlify/
+
+# ------------------------------------------
+# Data (runtime-generated, not source)
+# ------------------------------------------
+data/chroma_db/
+data/*.db
+data/*.sqlite
+data/*.sqlite3
+
+# ------------------------------------------
+# Crawl / Scraping Cache
+# ------------------------------------------
+.firecrawl/
+.crawl_cache/
+
+# ------------------------------------------
+# Temporary / Debug
+# ------------------------------------------
+tmp/
+temp/
+.tmp/
+_debug/
+*.tmp

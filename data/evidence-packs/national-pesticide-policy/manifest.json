@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0",
+  "pack_id": "national-pesticide-policy",
+  "version": "2026.08.0",
+  "owner": "CropWise data steward",
+  "source_policy": "A-level official evidence required",
+  "documents": [
+    {
+      "document_id": "moa-pesticide-regulation-2023-12-05",
+      "source_id": "moa-official",
+      "source_url": "https://fgs.moa.gov.cn/flfg/202312/t20231205_6442161.htm",
+      "published_at": "2023-12-05",
+      "region": "全国",
+      "evidence_scope": "pesticide_governance|pesticide_registration",
+      "local_path": "documents/moa-pesticide-regulation-2023-12-05.md",
+      "status": "materialized",
+      "title": "农药管理条例",
+      "content_hash": "3c1bc7ab86a033888e5db521925207fe08187339f97b83c5fda2340356f49736",
+      "evidence_id": "moa-official:787dd660ccb1567b"
+    }
+  ]
+}

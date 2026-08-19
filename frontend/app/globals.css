@@ -1,0 +1,276 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --ink: #17352b;
+    --ink-muted: #5c6c63;
+    --canvas: #f4f6f1;
+    --surface: #ffffff;
+    --surface-subtle: #eef2ea;
+    --line: #d8e0d6;
+    --leaf: #17613c;
+    --leaf-dark: #10462c;
+    --brand: #a6192e;
+    --brand-dark: #811225;
+    --brand-soft: #f9eaed;
+    --radius: 0.625rem;
+    --workspace-header-height: calc(4rem + 2px + env(safe-area-inset-top));
+  }
+
+  * { border-color: var(--line); }
+
+  html, body { min-height: 100%; }
+
+  html { background: var(--canvas); }
+
+  body {
+    @apply font-sf antialiased;
+    background: var(--canvas);
+    color: var(--ink);
+  }
+
+  button, textarea { font: inherit; }
+  button:focus-visible, textarea:focus-visible { outline: 3px solid rgb(166 25 46 / 22%); outline-offset: 2px; }
+}
+
+@layer components {
+  .app-shell {
+    background:
+      linear-gradient(90deg, rgb(23 97 60 / 3%) 1px, transparent 1px),
+      linear-gradient(rgb(23 97 60 / 3%) 1px, transparent 1px),
+      var(--canvas);
+    background-size: 28px 28px;
+  }
+
+  .workspace-header {
+    @apply fixed inset-x-0 top-0 z-50 box-border border-b bg-white/95;
+    height: var(--workspace-header-height);
+    padding-top: env(safe-area-inset-top);
+    box-shadow: 0 1px 0 rgb(23 53 43 / 4%), 0 8px 20px rgb(23 53 43 / 5%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  /* The header is fixed, so reserve its exact measured height in layout flow.
+     Using margin instead of a smaller padding prevents sidebars from starting
+     underneath the header when their own scroll container moves. */
+  .app-content {
+    margin-top: var(--workspace-header-height);
+    height: calc(100dvh - var(--workspace-header-height));
+    min-height: calc(100dvh - var(--workspace-header-height));
+    flex: 0 0 auto;
+  }
+
+  .workspace-panel {
+    @apply border bg-white;
+    box-shadow: 0 10px 24px rgb(23 53 43 / 5%);
+  }
+
+  .sidebar-panel {
+    @apply min-h-0 border bg-white;
+    box-shadow: 0 8px 18px rgb(23 53 43 / 4%);
+  }
+
+  .section-kicker {
+    @apply text-xs font-semibold uppercase tracking-[0.06em];
+    color: var(--leaf);
+  }
+
+  .icon-button {
+    @apply inline-flex h-9 w-9 items-center justify-center rounded-md border bg-white text-[#526158] transition-colors;
+    min-height: 40px;
+    min-width: 40px;
+  }
+
+  .icon-button:hover { @apply border-[#aac1b0] bg-[#f3f7f1] text-[#17613c]; }
+  .icon-button:active { transform: translateY(1px); }
+
+  .primary-button {
+    @apply inline-flex items-center justify-center rounded-md bg-[#a6192e] px-3 text-sm font-medium text-white transition-colors;
+    box-shadow: 0 2px 6px rgb(166 25 46 / 18%);
+  }
+
+  .primary-button:hover { @apply bg-[#811225]; }
+  .primary-button:active { transform: translateY(1px); }
+  .primary-button:disabled { @apply cursor-not-allowed opacity-45; box-shadow: none; }
+
+  .quick-question {
+    @apply rounded-md border bg-white px-3 py-2 text-left text-sm text-[#405048] transition-colors;
+  }
+
+  .quick-question:hover { @apply border-[#9db9a6] bg-[#f3f7f1] text-[#17613c]; }
+  .quick-question:active { transform: translateY(1px); }
+
+  .field-input {
+    @apply mt-1.5 block min-h-11 w-full rounded-md border bg-white px-3 py-2 text-sm font-normal text-[#273f33] outline-none transition-colors;
+  }
+
+  .field-input:focus {
+    @apply border-[#86a68f] ring-2 ring-[#17613c]/10;
+  }
+
+  .decision-badge {
+    @apply rounded-md border px-2 py-1 text-[10px] font-medium;
+  }
+
+  .decision-badge-ready {
+    @apply border-[#bfd6c0] bg-white text-[#17613c];
+  }
+
+  .decision-badge-pending {
+    @apply border-[#ead8dc] bg-white text-[#8f2332];
+  }
+
+  .message-user {
+    @apply rounded-xl rounded-br-sm border border-[#b9cdbb] bg-[#e8f2e6] text-[#17352b];
+    box-shadow: 0 3px 10px rgb(23 53 43 / 8%);
+  }
+
+  .user-message-copy {
+    @apply whitespace-pre-wrap break-words text-[15px] text-[#17352b] sm:text-sm;
+  }
+
+  /* Structured answers are already framed by the decision surface. Removing
+     the outer assistant bubble avoids a nested-card appearance and gives the
+     conclusion more horizontal room on narrow screens. */
+  .assistant-response-frame {
+    @apply w-full text-[#243b31];
+  }
+
+  .assistant-response-frame .message-status {
+    @apply mb-2;
+  }
+
+  .message-assistant {
+    @apply rounded-xl rounded-bl-sm border bg-white text-[#243b31];
+    box-shadow: 0 2px 7px rgb(23 53 43 / 4%);
+  }
+
+  .term-annotated {
+    @apply relative inline-flex items-baseline gap-0.5 font-medium text-[#17613c];
+  }
+
+  .term-annotation-wrap {
+    @apply relative inline-flex align-super;
+    z-index: 20;
+  }
+
+  .term-annotation-mark {
+    @apply inline-flex h-4 w-4 items-center justify-center rounded-full border border-[#9db9a6] bg-white text-[#17613c] align-top;
+    transform: translateY(-0.15rem);
+  }
+
+  .term-annotation-mark:hover,
+  .term-annotation-mark:focus-visible {
+    @apply border-[#17613c] bg-[#eef6ed];
+  }
+
+  .term-annotation-popover {
+    @apply absolute left-1/2 top-6 w-64 -translate-x-1/2 rounded-md border border-[#cbdacb] bg-white p-3 text-left shadow-xl;
+    color: #334d40;
+  }
+
+  .message-status {
+    @apply relative mb-3 flex min-h-9 items-center justify-between gap-3 overflow-hidden rounded-md border px-2.5 py-2 text-xs;
+  }
+
+  .message-status-detail { @apply text-[11px] font-normal; color: #718077; }
+
+  .message-status-streaming {
+    @apply border-[#b9d8bd] bg-[#f0f8f0] text-[#17613c];
+  }
+
+  .message-status-streaming .message-status-detail { color: #4f765b; }
+
+  .message-status-complete {
+    @apply border-[#c7dfca] bg-[#f5faf4] text-[#17613c];
+  }
+
+  .message-status-cancelled {
+    @apply border-[#dce1dc] bg-[#f7f8f6] text-[#5f6d64];
+  }
+
+  .message-status-error {
+    @apply border-[#e8c9ce] bg-[#fff7f8] text-[#a6192e];
+  }
+
+  .message-status-error .message-status-detail { color: #8f5b63; }
+
+  .message-status-track {
+    @apply relative h-1 w-16 shrink-0 overflow-hidden rounded-full bg-[#d7e8d8];
+  }
+
+  .message-status-track span {
+    @apply absolute inset-y-0 left-0 w-1/2 rounded-full bg-[#2f8a51];
+    animation: message-status-progress 1.35s ease-in-out infinite;
+  }
+
+  @keyframes message-status-progress {
+    0% { transform: translateX(-110%); }
+    50% { transform: translateX(100%); }
+    100% { transform: translateX(220%); }
+  }
+
+  .composer-shell {
+    background: linear-gradient(to top, rgb(244 246 241 / 98%), rgb(244 246 241 / 86%), transparent);
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+    isolation: isolate;
+  }
+
+  .composer-shell textarea {
+    scroll-padding-block: 0.5rem;
+    caret-color: #17613c;
+  }
+
+  .composer-shell textarea::selection {
+    background: rgb(23 97 60 / 22%);
+    color: var(--ink);
+  }
+
+  .drag-drop-overlay {
+    @apply pointer-events-none fixed inset-0 z-[90] flex items-center justify-center px-5;
+    background: rgb(23 53 43 / 16%);
+  }
+
+  .drag-drop-panel {
+    @apply rounded-lg border-2 border-dashed border-[#17613c] bg-white px-8 py-7 text-center shadow-2xl;
+    box-shadow: 0 20px 60px rgb(23 53 43 / 18%);
+  }
+
+  .touch-target { min-height: 44px; min-width: 44px; }
+
+  .custom-scrollbar { scrollbar-color: #bdc9bc transparent; scrollbar-width: thin; }
+  .custom-scrollbar::-webkit-scrollbar { width: 7px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: #bdc9bc; border-radius: 999px; }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #95aa99; }
+
+  .scroll-boundary { overscroll-behavior: contain; }
+
+  .mobile-deprioritize { display: inline-flex; }
+
+  .status-dot {
+    @apply inline-block h-1.5 w-1.5 rounded-full;
+    background: #2f8a51;
+    box-shadow: 0 0 0 3px rgb(47 138 81 / 12%);
+  }
+
+  .skip-link {
+    @apply fixed left-3 top-3 z-[100] -translate-y-20 rounded-md bg-[#17352b] px-3 py-2 text-sm font-medium text-white shadow-lg transition-transform;
+  }
+
+  .skip-link:focus {
+    @apply translate-y-0;
+  }
+}
+
+@media (max-width: 30rem) {
+  .mobile-deprioritize { display: none; }
+  .workspace-header .icon-button { min-height: 44px; min-width: 44px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}

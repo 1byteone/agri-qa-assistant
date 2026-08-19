@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0",
+  "pack_id": "gannan-citrus",
+  "version": "2026.08.0",
+  "owner": "CropWise data steward",
+  "source_policy": "A-level official evidence required for regional recommendations",
+  "documents": [
+    {
+      "document_id": "ganzhou-citrus-frost-risk-2026-01-20",
+      "source_id": "jx-agri-official",
+      "source_url": "https://www.ganzhou.gov.cn/zfxxgk/nyncyjgl/202601/a396bc2c643f4cfc9352b916c1127f4e.shtml",
+      "published_at": "2026-01-20",
+      "region": "江西省赣州市",
+      "evidence_scope": "citrus_weather_risk|citrus_frost_protection",
+      "local_path": "documents/ganzhou-citrus-frost-risk-2026-01-20.md",
+      "status": "materialized",
+      "title": "脐橙冻害风险预警（2026第一期）",
+      "content_hash": "d604d90e488569360738f0c5137ba5956d3d91861e96e8dd73067c5106b475e8",
+      "evidence_id": "jx-agri-official:a01dc42a399c871f"
+    }
+  ]
+}

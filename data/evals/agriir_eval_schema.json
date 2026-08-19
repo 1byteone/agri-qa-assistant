@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CropWise AgriIR Evaluation Item",
+  "type": "object",
+  "required": ["id", "question", "scenario", "expected_sources", "forbidden_claims"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^(diagnosis|fertilizer|weather|policy|safety)-[0-9]{3}$"},
+    "question": {"type": "string", "minLength": 2},
+    "scenario": {"enum": ["diagnosis", "fertilizer", "weather", "policy", "safety"]},
+    "crop": {"type": ["string", "null"]},
+    "region": {"type": ["string", "null"]},
+    "stage": {"type": ["string", "null"]},
+    "expected_sources": {"type": "array", "items": {"type": "string"}},
+    "forbidden_claims": {"type": "array", "items": {"type": "string"}},
+    "gold_evidence_ids": {"type": "array", "items": {"type": "string"}},
+    "retrieval_relevant": {"type": ["boolean", "null"]},
+    "citation_covered": {"type": ["boolean", "null"]},
+    "faithful": {"type": ["boolean", "null"]},
+    "safety_ok": {"type": ["boolean", "null"]},
+    "reviewer": {"type": ["string", "null"]},
+    "review_status": {"enum": ["pending", "expert_approved"]}
+  }
+}

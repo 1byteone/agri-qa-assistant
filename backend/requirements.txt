@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+langchain
+langchain-openai
+langchain-community
+langgraph
+chromadb
+pydantic
+pydantic-settings
+python-dotenv
+requests
+python-multipart
+python-docx
+PyMuPDF
+sqlalchemy
+aiosqlite
+redis

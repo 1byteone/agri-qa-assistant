@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "pack_id": "national-crop-technical",
+  "version": "2026.08.0",
+  "owner": "CropWise data steward",
+  "source_policy": "A-level official evidence required for technical and safety claims",
+  "documents": [
+    {
+      "document_id": "moa-rice-heat-stress-2026-08-05",
+      "source_id": "moa-official",
+      "source_url": "https://www.moa.gov.cn/xw/zxfb/202608/t20260805_6486484.htm",
+      "published_at": "2026-08-05",
+      "region": "全国（含江南北部和东部）",
+      "evidence_scope": "rice_management|rice_weather_response",
+      "local_path": "documents/moa-rice-heat-stress-2026-08-05.md",
+      "status": "materialized",
+      "title": "当前水稻应对高温热害技术意见",
+      "content_hash": "f54d1ce46ee0fc542a2df902fa0c78976c4d47dfef434b20e48672a693f5299f",
+      "evidence_id": "moa-official:6f23a23df6ae01fc"
+    },
+    {
+      "document_id": "moa-rapeseed-straw-return-2026-04-23",
+      "source_id": "moa-official",
+      "source_url": "https://www.moa.gov.cn/gk/nszd_1/2026n/202604/t20260423_6483537.htm",
+      "published_at": "2026-04-23",
+      "region": "长江流域（含江西）",
+      "evidence_scope": "rapeseed_straw_return|rice_fertilizer_recommendation",
+      "local_path": "documents/moa-rapeseed-straw-return-2026-04-23.md",
+      "status": "materialized",
+      "title": "2026年长江流域冬油菜秸秆科学还田指导意见",
+      "content_hash": "b0a8b17391b69a5b2222a9158349aea66ed20a25af78a67e1740821f44aedf0d",
+      "evidence_id": "moa-official:27ee657bef0b16c2"
+    },
+    {
+      "document_id": "moa-rapeseed-pest-control-2026-03-17",
+      "source_id": "moa-official",
+      "source_url": "https://www.moa.gov.cn/gk/zcjd/202603/t20260317_6482369.htm",
+      "published_at": "2026-03-17",
+      "region": "全国冬油菜产区",
+      "evidence_scope": "rapeseed_disease_control|pesticide_governance|pesticide_registration|pesticide_label",
+      "local_path": "documents/moa-rapeseed-pest-control-2026-03-17.md",
+      "status": "materialized",
+      "title": "科学规范合理用药 有效防控油菜病虫害——农业农村部全国农技推广中心、科技发展中心负责人就油菜花期用药等问题答记者问",
+      "content_hash": "4103129f6cad88c905be214f8b6382cf872a475f5a38a71725cece21eb4144a1",
+      "evidence_id": "moa-official:152f3f54912e542e"
+    }
+  ]
+}
