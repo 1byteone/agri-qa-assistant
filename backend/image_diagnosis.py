@@ -74,17 +74,19 @@ class ImageDiagnosisEngine:
             return "图片超过 10MB 大小限制"
         if len(content) == 0:
             return "图片内容为空"
-        # 校验魔数（简化版）
-        if content[:3] == b"\xff\xd8\xff":  # JPEG
-            pass
-        elif content[:8] == b"\x89PNG\r\n\x1a\n":  # PNG
-            pass
-        elif content[:4] == b"RIFF":  # WebP
-            pass
-        elif content_type:
-            pass  # 有 MIME 类型时放宽魔数校验
+        # 校验魔数（简化版）— 优先于 MIME 声明
+        magic = content[:8]
+        if magic[:3] == b"\xff\xd8\xff":  # JPEG
+            if content_type and content_type not in ("image/jpeg", "image/jpg"):
+                return f"文件内容为 JPEG 格式，但声明的 MIME 类型为 {content_type}"
+        elif magic[:8] == b"\x89PNG\r\n\x1a\n":  # PNG
+            if content_type and content_type != "image/png":
+                return f"文件内容为 PNG 格式，但声明的 MIME 类型为 {content_type}"
+        elif magic[:4] == b"RIFF":  # WebP
+            if content_type and content_type != "image/webp":
+                return f"文件内容为 WebP 格式，但声明的 MIME 类型为 {content_type}"
         else:
-            return "无法识别的图片格式"
+            return "无法识别的图片格式，仅支持 JPG/PNG/WebP"
         return None
 
     def analyze(

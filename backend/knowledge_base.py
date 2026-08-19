@@ -44,6 +44,9 @@ class LocalHashingEmbeddingFunction:
         return self._embed(text)
 
     def __call__(self, input: List[str]) -> List[List[float]]:
+        # Chroma 可能传入单个字符串
+        if isinstance(input, str):
+            return [self._embed(input)]
         return self.embed_documents(input)
 
 
@@ -176,6 +179,11 @@ class KnowledgeBase:
 
     @staticmethod
     def choose_strategy(query: str) -> str:
+        """选择检索策略。
+
+        注意：当前 hybrid-metadata 和 hybrid-temporal 与 hybrid 走相同的检索路径，
+        差异仅体现在 metadata_boost 和 query_terms 中。后续可差异化实现。
+        """
         text = (query or "").lower()
         if re.search(r"政策|标准|规范|文件|编号|产品型号|id", text):
             return "hybrid-metadata"

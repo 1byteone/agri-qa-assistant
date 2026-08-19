@@ -14,10 +14,20 @@ os.environ.setdefault("OMP_NUM_THREADS", "1")
 os.environ.setdefault("MKL_NUM_THREADS", "1")
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi.exception_handlers import http_exception_handler
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 import uvicorn
+
+
+# 统一错误处理
+class AppError(Exception):
+    """应用层异常，仅返回友好消息和错误码，不泄露内部细节。"""
+    def __init__(self, status_code: int = 500, message: str = "服务器内部错误", error_code: str = "INTERNAL_ERROR"):
+        self.status_code = status_code
+        self.message = message
+        self.error_code = error_code
 
 from config import settings
 from schemas import ChatRequest, ChatResponse, EvaluationAnnotationRequest, HealthResponse, KnowledgeBaseStatus, CaseCreateRequest, FeedbackRequest
@@ -88,13 +98,13 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS 配置
+# CORS 配置 — 生产环境应限制为具体前端源
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=os.environ.get("CORS_ORIGINS", "http://localhost:3000,http://localhost:8000").split(","),
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization", "X-API-Key"],
 )
 
 
@@ -131,7 +141,7 @@ async def chat(request: ChatRequest):
         )
     except Exception as e:
         logger.error(f"对话处理失败: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="对话处理失败，请稍后重试")
 
 
 @app.post("/chat/stream")
@@ -698,10 +708,13 @@ async def diagnose_image(
     返回诊断结果，包含可能原因、置信度和建议。
     所有诊断结果均标注"需人工复核"。
     """
-    content = await file.read()
-    content_type = file.content_type or "image/jpeg"
+    from image_diagnosis import image_engine, IMAGE_STORE_DIR, MAX_IMAGE_BYTES
 
-    from image_diagnosis import image_engine, IMAGE_STORE_DIR
+    # 读取前先限制大小（防止 OOM）
+    content = await file.read(MAX_IMAGE_BYTES + 1)
+    if len(content) > MAX_IMAGE_BYTES:
+        raise HTTPException(status_code=422, detail="图片超过 10MB 大小限制")
+    content_type = file.content_type or "image/jpeg"
 
     # 校验图片
     error = image_engine.validate_image(content, content_type)
