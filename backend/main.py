@@ -20,7 +20,7 @@ from fastapi.staticfiles import StaticFiles
 import uvicorn
 
 from config import settings
-from schemas import ChatRequest, ChatResponse, EvaluationAnnotationRequest, HealthResponse, KnowledgeBaseStatus
+from schemas import ChatRequest, ChatResponse, EvaluationAnnotationRequest, HealthResponse, KnowledgeBaseStatus, CaseCreateRequest, FeedbackRequest
 from agent import agri_agent
 from tools import get_mcp_status
 from knowledge_base import knowledge_base, init_default_knowledge_base
@@ -59,6 +59,12 @@ async def lifespan(app: FastAPI):
     # 启动时初始化
     logger.info("正在初始化 AgriQA Assistant...")
     await conversation_memory.initialize()
+    # 初始化案例管理表
+    try:
+        from case_manager import case_manager
+        await case_manager.initialize()
+    except Exception as e:
+        logger.warning(f"案例管理表初始化失败: {e}")
     try:
         init_default_knowledge_base()
     except Exception as e:
@@ -438,6 +444,114 @@ async def resource_image(url: str):
     except requests.RequestException as exc:
         logger.warning("图片代理请求失败: %s", exc)
         raise HTTPException(status_code=502, detail="图片暂时无法获取") from exc
+
+
+# ── 案例管理 ─────────────────────────────────────────────────
+
+@app.post("/cases")
+async def create_case(request: CaseCreateRequest):
+    """创建新案例"""
+    from case_manager import case_manager
+    try:
+        return await case_manager.create_case(
+            thread_id=request.thread_id,
+            user_id=request.user_id,
+            topic_category=request.topic_category,
+            title=request.title,
+            summary=request.summary,
+        )
+    except Exception as e:
+        logger.error("创建案例失败: %s", e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/cases")
+async def list_cases(
+    status: Optional[str] = None,
+    user_id: Optional[str] = None,
+    limit: int = 50,
+):
+    """列出案例"""
+    from case_manager import case_manager
+    try:
+        return {"cases": await case_manager.list_cases(status=status, user_id=user_id, limit=limit)}
+    except Exception as e:
+        logger.error("列出案例失败: %s", e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/cases/{case_id}")
+async def get_case(case_id: str):
+    """获取案例详情"""
+    from case_manager import case_manager
+    case = await case_manager.get_case(case_id)
+    if not case:
+        raise HTTPException(status_code=404, detail="案例不存在")
+    return case
+
+
+@app.get("/cases/{case_id}/timeline")
+async def get_case_timeline(case_id: str):
+    """获取案例时间线"""
+    from case_manager import case_manager
+    try:
+        timeline = await case_manager.get_case_timeline(case_id)
+        return {"case_id": case_id, "events": timeline}
+    except Exception as e:
+        logger.error("获取案例时间线失败: %s", e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/cases/{case_id}/escalate")
+async def escalate_case(case_id: str, reason: str = ""):
+    """升级案例"""
+    from case_manager import case_manager
+    try:
+        return await case_manager.escalate_case(case_id, reason=reason)
+    except Exception as e:
+        logger.error("升级案例失败: %s", e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/cases/{case_id}/resolve")
+async def resolve_case(case_id: str, resolution: str = ""):
+    """标记案例为已解决"""
+    from case_manager import case_manager
+    try:
+        return await case_manager.resolve_case(case_id, resolution=resolution)
+    except Exception as e:
+        logger.error("解决案例失败: %s", e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/feedback")
+async def submit_feedback(request: FeedbackRequest):
+    """提交用户反馈"""
+    from case_manager import case_manager
+    try:
+        return await case_manager.submit_feedback(
+            case_id=request.case_id,
+            thread_id=request.thread_id,
+            message_id=request.message_id,
+            feedback_type=request.feedback_type,
+            comment=request.comment,
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    except Exception as e:
+        logger.error("提交反馈失败: %s", e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/feedback/summary")
+async def feedback_summary(case_id: Optional[str] = None):
+    """获取反馈聚合统计"""
+    from case_manager import case_manager
+    try:
+        return await case_manager.get_feedback_summary(case_id=case_id)
+    except Exception as e:
+        logger.error("获取反馈统计失败: %s", e)
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/news")

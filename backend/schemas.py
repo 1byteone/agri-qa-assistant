@@ -42,3 +42,21 @@ class HealthResponse(BaseModel):
     version: str
     knowledge_base: KnowledgeBaseStatus
     llm_connected: bool
+
+
+# ── 案例管理 ─────────────────────────────────────────────────
+
+class CaseCreateRequest(BaseModel):
+    thread_id: str = Field(min_length=1, max_length=128)
+    user_id: Optional[str] = Field(default=None, max_length=128)
+    topic_category: Optional[str] = Field(default=None, max_length=50)
+    title: Optional[str] = Field(default=None, max_length=200)
+    summary: Optional[str] = Field(default=None)
+
+
+class FeedbackRequest(BaseModel):
+    case_id: str = Field(min_length=1, max_length=128)
+    thread_id: str = Field(min_length=1, max_length=128)
+    message_id: Optional[str] = Field(default=None, max_length=128)
+    feedback_type: Literal["helpful", "inaccurate", "needs_expert"]
+    comment: Optional[str] = Field(default=None, max_length=2000)
