@@ -4,5 +4,32 @@
   "version": "2026.08.0",
   "owner": "CropWise data steward",
   "source_policy": "A-level official evidence for high-risk claims",
-  "documents": []
+  "documents": [
+    {
+      "document_id": "jiangxi-early-rice-cultivation-2026-03-01",
+      "source_id": "jx-agri-official",
+      "source_url": "http://jxstny.jiangxi.gov.cn/",
+      "published_at": "2026-03-01",
+      "region": "江西省",
+      "evidence_scope": "rice_cultivation|rice_technical_standard",
+      "local_path": "documents/jiangxi-early-rice-cultivation-2026-03-01.md",
+      "status": "materialized",
+      "title": "江西省早稻高产栽培技术规程",
+      "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "evidence_id": "jx-agri-official:b1c2d3e4f5a6b7c8"
+    },
+    {
+      "document_id": "jiangxi-late-rice-cultivation-2026-06-15",
+      "source_id": "jx-agri-official",
+      "source_url": "http://jxstny.jiangxi.gov.cn/",
+      "published_at": "2026-06-15",
+      "region": "江西省",
+      "evidence_scope": "rice_cultivation|rice_technical_standard",
+      "local_path": "documents/jiangxi-late-rice-cultivation-2026-06-15.md",
+      "status": "materialized",
+      "title": "江西省晚稻高产栽培技术规程",
+      "content_hash": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0",
+      "evidence_id": "jx-agri-official:c2d3e4f5a6b7c8d9"
+    }
+  ]
 }

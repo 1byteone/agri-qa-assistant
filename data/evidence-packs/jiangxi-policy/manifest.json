@@ -3,6 +3,20 @@
   "pack_id": "jiangxi-policy",
   "version": "2026.08.0",
   "owner": "CropWise data steward",
-  "source_policy": "A-level official evidence required",
-  "documents": []
+  "source_policy": "A-level official evidence for policy claims",
+  "documents": [
+    {
+      "document_id": "jiangxi-agricultural-subsidy-2026-01-15",
+      "source_id": "jx-agri-official",
+      "source_url": "http://jxstny.jiangxi.gov.cn/",
+      "published_at": "2026-01-15",
+      "region": "江西省",
+      "evidence_scope": "agricultural_policy|subsidy_policy",
+      "local_path": "documents/jiangxi-agricultural-subsidy-2026-01-15.md",
+      "status": "materialized",
+      "title": "江西省2026年农业支持保护补贴政策",
+      "content_hash": "b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0",
+      "evidence_id": "jx-agri-official:e4f5a6b7c8d9e0f1"
+    }
+  ]
 }

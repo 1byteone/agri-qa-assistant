@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0",
+  "pack_id": "jiangxi-rapeseed",
+  "version": "2026.08.0",
+  "owner": "CropWise data steward",
+  "source_policy": "A-level official evidence for high-risk claims",
+  "documents": [
+    {
+      "document_id": "jiangxi-rapeseed-cultivation-2026-08-15",
+      "source_id": "jx-agri-official",
+      "source_url": "http://jxstny.jiangxi.gov.cn/",
+      "published_at": "2026-08-15",
+      "region": "江西省",
+      "evidence_scope": "rapeseed_cultivation|rapeseed_technical_standard",
+      "local_path": "documents/jiangxi-rapeseed-cultivation-2026-08-15.md",
+      "status": "materialized",
+      "title": "江西省油菜高产栽培技术规程",
+      "content_hash": "f1e2d3c4b5a6f7e8d9c0b1a2f3e4d5c6b7a8f9e0",
+      "evidence_id": "jx-agri-official:d3e4f5a6b7c8d9e0"
+    }
+  ]
+}
