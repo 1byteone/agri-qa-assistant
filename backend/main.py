@@ -65,6 +65,12 @@ async def lifespan(app: FastAPI):
         await case_manager.initialize()
     except Exception as e:
         logger.warning(f"案例管理表初始化失败: {e}")
+    # 初始化试点管理表
+    try:
+        from pilot_manager import pilot_manager
+        await pilot_manager.initialize()
+    except Exception as e:
+        logger.warning(f"试点管理表初始化失败: {e}")
     try:
         init_default_knowledge_base()
     except Exception as e:
@@ -551,6 +557,124 @@ async def feedback_summary(case_id: Optional[str] = None):
         return await case_manager.get_feedback_summary(case_id=case_id)
     except Exception as e:
         logger.error("获取反馈统计失败: %s", e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ── 试点管理 ─────────────────────────────────────────────────
+
+@app.post("/pilot/users")
+async def add_pilot_user(
+    username: str = Form(...),
+    display_name: str = Form(...),
+    role: str = Form(...),
+    organization: str | None = Form(None),
+    phone: str | None = Form(None),
+    email: str | None = Form(None),
+):
+    """添加试用用户"""
+    from pilot_manager import pilot_manager
+    try:
+        return await pilot_manager.add_user(
+            username=username,
+            display_name=display_name,
+            role=role,
+            organization=organization,
+            phone=phone,
+            email=email,
+        )
+    except Exception as e:
+        logger.error("添加试用用户失败: %s", e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/pilot/users")
+async def list_pilot_users(active_only: bool = True):
+    """列出试用用户"""
+    from pilot_manager import pilot_manager
+    try:
+        return {"users": await pilot_manager.list_users(active_only=active_only)}
+    except Exception as e:
+        logger.error("列出试用用户失败: %s", e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/pilot/users/{user_id}/stats")
+async def get_pilot_user_stats(user_id: str):
+    """获取用户试用统计"""
+    from pilot_manager import pilot_manager
+    try:
+        return await pilot_manager.get_user_stats(user_id)
+    except Exception as e:
+        logger.error("获取用户统计失败: %s", e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/pilot/sessions")
+async def start_pilot_session(user_id: str = Form(...), thread_id: str = Form(...)):
+    """开始试用会话"""
+    from pilot_manager import pilot_manager
+    try:
+        return await pilot_manager.start_session(user_id=user_id, thread_id=thread_id)
+    except Exception as e:
+        logger.error("开始试用会话失败: %s", e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/pilot/sessions/{session_id}/end")
+async def end_pilot_session(
+    session_id: str,
+    message_count: int = Form(0),
+    topics: str | None = Form(None),
+    satisfaction_score: int | None = Form(None),
+):
+    """结束试用会话"""
+    from pilot_manager import pilot_manager
+    try:
+        topics_list = json.loads(topics) if topics else []
+        return await pilot_manager.end_session(
+            session_id=session_id,
+            message_count=message_count,
+            topics=topics_list,
+            satisfaction_score=satisfaction_score,
+        )
+    except Exception as e:
+        logger.error("结束试用会话失败: %s", e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/pilot/feedback")
+async def submit_pilot_feedback(
+    user_id: str = Form(...),
+    feedback_type: str = Form(...),
+    content: str = Form(...),
+    rating: int | None = Form(None),
+    category: str | None = Form(None),
+    session_id: str | None = Form(None),
+):
+    """提交试用反馈"""
+    from pilot_manager import pilot_manager
+    try:
+        return await pilot_manager.submit_feedback(
+            user_id=user_id,
+            feedback_type=feedback_type,
+            content=content,
+            rating=rating,
+            category=category,
+            session_id=session_id,
+        )
+    except Exception as e:
+        logger.error("提交试用反馈失败: %s", e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/pilot/summary")
+async def pilot_summary():
+    """获取试点整体统计"""
+    from pilot_manager import pilot_manager
+    try:
+        return await pilot_manager.get_pilot_summary()
+    except Exception as e:
+        logger.error("获取试点统计失败: %s", e)
         raise HTTPException(status_code=500, detail=str(e))
 
 
