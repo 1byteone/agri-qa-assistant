@@ -3,7 +3,7 @@ import logging
 import asyncio
 import json
 from contextlib import asynccontextmanager
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from urllib.parse import urlparse
 
 import requests
