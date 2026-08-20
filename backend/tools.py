@@ -385,85 +385,28 @@ def _clean_html_to_markdown(html: str, url: str) -> str:
     return result
 
 
-# ==================== URL 安全校验 ====================
+import asyncio
+from datetime import datetime
 
-import ipaddress
+# ==================== URL 哈希去重缓存 ====================
 import hashlib
 import time as _time
-from urllib.parse import urlparse
 
-# 禁止访问的私有/回环/元数据地址
-_BLOCKED_HOSTS = {
-    "localhost", "127.0.0.1", "0.0.0.0", "::1", "[::1]",
-    "169.254.169.254",  # AWS/GCP/Azure 元数据
-    "metadata.google.internal",
-    "100.100.100.200",  # 阿里云元数据
-}
-_BLOCKED_PREFIXES = ("10.", "172.16.", "172.17.", "172.18.", "172.19.",
-                     "172.20.", "172.21.", "172.22.", "172.23.",
-                     "172.24.", "172.25.", "172.26.", "172.27.",
-                     "172.28.", "172.29.", "172.30.", "172.31.",
-                     "192.168.",)
-
-
-def _validate_url(url: str) -> Optional[str]:
-    """校验 URL 是否安全可访问，返回错误信息或 None。"""
-    if not url or not isinstance(url, str):
-        return "URL 不能为空"
-    if not url.startswith(("http://", "https://")):
-        return "URL 必须以 http:// 或 https:// 开头"
-    try:
-        parsed = urlparse(url)
-        hostname = parsed.hostname or ""
-        # 检查禁止列表
-        if hostname.lower() in _BLOCKED_HOSTS:
-            return f"禁止访问内网地址: {hostname}"
-        # 检查私有 IP 前缀
-        for prefix in _BLOCKED_PREFIXES:
-            if hostname.startswith(prefix):
-                return f"禁止访问私有地址: {hostname}"
-        # 尝试解析 IP（非必须，但检测到 IP 是私有/回环时拒绝）
-        try:
-            ip = ipaddress.ip_address(hostname)
-            if ip.is_private or ip.is_loopback or ip.is_link_local:
-                return f"禁止访问私有/回环/链路本地地址: {hostname}"
-        except ValueError:
-            pass  # 域名，不做 DNS 解析（避免阻塞）
-        return None
-    except Exception as exc:
-        return f"URL 解析失败: {exc}"
-
-
-# ==================== URL 哈希去重缓存（LRU） ====================
-
-_fetch_cache: dict[str, tuple[float, str]] = {}
-_FETCH_CACHE_MAX = 200  # 最多缓存 200 条
+_fetch_cache: dict[str, tuple[float, str]] = {}  # url_hash -> (timestamp, content)
 FETCH_CACHE_TTL = 3600 * 6  # 6 小时缓存
 
 
-def _cache_evict_if_needed() -> None:
-    """缓存条目超过上限时淘汰最旧条目。"""
-    if len(_fetch_cache) >= _FETCH_CACHE_MAX:
-        oldest = min(_fetch_cache.keys(), key=lambda k: _fetch_cache[k][0])
-        del _fetch_cache[oldest]
-
-
 def _fetch_web_content_impl(url: str, max_length: int = 8000) -> str:
-    """fetch_web_content 的内部实现：URL 安全校验 + 哈希去重 + 6h TTL 缓存。"""
-    # 1. URL 安全校验（防 SSRF）
-    url_error = _validate_url(url)
-    if url_error:
-        return f"[URL 不合法] {url_error}"
-
-    # 2. 缓存检查
+    """fetch_web_content 的内部实现：URL 哈希去重 + 6h TTL 缓存。"""
     url_hash = hashlib.md5(url.encode()).hexdigest()
     now = _time.time()
+
+    # 缓存命中检查
     if url_hash in _fetch_cache:
         ts, cached = _fetch_cache[url_hash]
         if now - ts < FETCH_CACHE_TTL:
             return f"[缓存] {cached}"
 
-    # 3. 执行抓取
     try:
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -491,8 +434,6 @@ def _fetch_web_content_impl(url: str, max_length: int = 8000) -> str:
         if len(markdown_content) > max_length:
             markdown_content = markdown_content[:max_length] + f"\n\n...（内容已截断，原文共 {len(markdown_content)} 字符）"
 
-        # 缓存写入前淘汰旧条目
-        _cache_evict_if_needed()
         _fetch_cache[url_hash] = (now, markdown_content)
         return markdown_content
 

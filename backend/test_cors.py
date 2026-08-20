@@ -1,35 +1,48 @@
-import http.client, json
+"""CORS contract tests that run entirely in-process via FastAPI TestClient."""
+from unittest.mock import AsyncMock, patch
 
-# 模拟浏览器跨域 preflight (OPTIONS)
-conn = http.client.HTTPConnection("localhost", 8001, timeout=10)
-conn.request("OPTIONS", "/chat",
-    headers={
-        "Origin": "http://localhost:3000",
-        "Access-Control-Request-Method": "POST",
-        "Access-Control-Request-Headers": "content-type",
-    })
-resp = conn.getresponse()
-print("=== PREFLIGHT ===")
-print("Status:", resp.status)
-for h, v in resp.getheaders():
-    if "access-control" in h.lower() or "allow" in h.lower():
-        print(f"  {h}: {v}")
-conn.close()
+from fastapi.testclient import TestClient
 
-# 模拟实际 POST（带 Origin）
-conn = http.client.HTTPConnection("localhost", 8001, timeout=60)
-body = json.dumps({"message": "水稻怎么种", "thread_id": "cors_test"}).encode()
-conn.request("POST", "/chat", body=body,
-    headers={
-        "Origin": "http://localhost:3000",
-        "Content-Type": "application/json",
-        "Content-Length": str(len(body)),
-    })
-resp = conn.getresponse()
-print("\n=== POST ===")
-print("Status:", resp.status)
-for h, v in resp.getheaders():
-    if "access-control" in h.lower():
-        print(f"  {h}: {v}")
-print("  Body:", resp.read().decode()[:200])
-conn.close()
+from main import app
+
+
+_ORIGIN = "http://localhost:3000"
+
+
+def test_chat_preflight_returns_cors_headers():
+    with TestClient(app) as client:
+        response = client.options(
+            "/chat",
+            headers={
+                "Origin": _ORIGIN,
+                "Access-Control-Request-Method": "POST",
+                "Access-Control-Request-Headers": "content-type",
+            },
+        )
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] in {"*", _ORIGIN}
+    assert "POST" in response.headers["access-control-allow-methods"]
+    assert "content-type" in response.headers["access-control-allow-headers"].lower()
+
+
+def test_chat_post_returns_cors_header_without_calling_external_llm():
+    fake_result = {
+        "thread_id": "cors-test",
+        "message": "农业问题请提供作物和地区信息。",
+        "sources": [],
+        "tool_calls": [],
+        "answer_mode": "professional",
+        "completion_status": "complete",
+    }
+    with patch("main.agri_agent.chat", new=AsyncMock(return_value=fake_result)):
+        with TestClient(app) as client:
+            response = client.post(
+                "/chat",
+                headers={"Origin": _ORIGIN, "Content-Type": "application/json"},
+                json={"message": "请写一首星空诗", "thread_id": "cors-test"},
+            )
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] in {"*", _ORIGIN}
+    assert response.json()["thread_id"] == "cors-test"

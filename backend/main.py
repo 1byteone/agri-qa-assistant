@@ -2,9 +2,11 @@ import os
 import logging
 import asyncio
 import json
+import importlib.util
 from contextlib import asynccontextmanager
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from urllib.parse import urlparse
+from pathlib import Path
 
 import requests
 
@@ -14,25 +16,15 @@ os.environ.setdefault("OMP_NUM_THREADS", "1")
 os.environ.setdefault("MKL_NUM_THREADS", "1")
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
-from fastapi.exception_handlers import http_exception_handler
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 import uvicorn
 
-
-# 统一错误处理
-class AppError(Exception):
-    """应用层异常，仅返回友好消息和错误码，不泄露内部细节。"""
-    def __init__(self, status_code: int = 500, message: str = "服务器内部错误", error_code: str = "INTERNAL_ERROR"):
-        self.status_code = status_code
-        self.message = message
-        self.error_code = error_code
-
 from config import settings
-from schemas import ChatRequest, ChatResponse, EvaluationAnnotationRequest, HealthResponse, KnowledgeBaseStatus, CaseCreateRequest, FeedbackRequest
+from schemas import ChatRequest, ChatResponse, EvaluationAnnotationRequest, HealthResponse, KnowledgeBaseStatus, CaseCreateRequest, FeedbackRequest, DependencyStatus
 from agent import agri_agent
-from tools import get_mcp_status
+from tools import get_agri_weather, get_mcp_status
 from knowledge_base import knowledge_base, init_default_knowledge_base
 from memory import conversation_memory
 from document_ingestion import DocumentIngestionError, MAX_UPLOAD_BYTES, parse_document, public_analysis
@@ -75,12 +67,6 @@ async def lifespan(app: FastAPI):
         await case_manager.initialize()
     except Exception as e:
         logger.warning(f"案例管理表初始化失败: {e}")
-    # 初始化试点管理表
-    try:
-        from pilot_manager import pilot_manager
-        await pilot_manager.initialize()
-    except Exception as e:
-        logger.warning(f"试点管理表初始化失败: {e}")
     try:
         init_default_knowledge_base()
     except Exception as e:
@@ -98,27 +84,94 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS 配置 — 生产环境应限制为具体前端源
+# CORS 配置
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=os.environ.get("CORS_ORIGINS", "http://localhost:3000,http://localhost:8000").split(","),
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["Content-Type", "Authorization", "X-API-Key"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
+
+
+def _dependency(status: str, *, error: Optional[str] = None, details: Optional[Dict[str, Any]] = None) -> DependencyStatus:
+    """Normalize optional dependency probes into the public health contract."""
+    return DependencyStatus(status=status, error=error, details=details)
+
+
+def _health_status(dependencies: Dict[str, DependencyStatus]) -> str:
+    if any(item.status in {"error", "unavailable"} for item in dependencies.values()):
+        return "degraded"
+    return "healthy"
 
 
 @app.get("/health", response_model=HealthResponse)
 async def health_check():
-    """健康检查接口"""
-    kb_status = knowledge_base.get_status()
-    return HealthResponse(
-        status="healthy",
-        version="1.0.0",
-        knowledge_base=KnowledgeBaseStatus(**kb_status),
-        llm_connected=True,
-    )
+    """Return an inexpensive, non-generative readiness snapshot."""
+    try:
+        raw_kb: Dict[str, Any] = knowledge_base.get_status()
+    except Exception as exc:
+        raw_kb = {"total_documents": 0, "collection_name": "unknown", "error": str(exc)}
+    kb_error = raw_kb.get("error")
+    dependencies: Dict[str, DependencyStatus] = {
+        "knowledge_base": _dependency(
+            "error" if kb_error else "healthy",
+            error=str(kb_error) if kb_error else None,
+            details={key: value for key, value in raw_kb.items() if key not in {"error", "total_documents", "collection_name"}},
+        )
+    }
 
+    try:
+        from kg.connection import get_neo4j_status
+        neo4j = get_neo4j_status()
+        dependencies["neo4j"] = _dependency(
+            str(neo4j.get("status", "unknown")),
+            error=neo4j.get("error"),
+            details={key: value for key, value in neo4j.items() if key not in {"status", "error"}},
+        )
+    except Exception as exc:
+        dependencies["neo4j"] = _dependency("unavailable", error=str(exc))
+
+    # Do not import the global reranker here: its module-level initialization may
+    # download a large local model. Health checks must remain fast and side-effect free.
+    reranker_api_configured = bool(getattr(settings, "reranker_api_url", ""))
+    reranker_local_dependency = importlib.util.find_spec("sentence_transformers") is not None
+    if not getattr(settings, "reranker_enabled", True):
+        dependencies["reranker"] = _dependency("disabled", details={"mode": "disabled"})
+    elif reranker_api_configured or reranker_local_dependency:
+        dependencies["reranker"] = _dependency(
+            "configured",
+            details={
+                "mode": "api" if reranker_api_configured else "local",
+                "api_configured": reranker_api_configured,
+                "local_dependency_installed": reranker_local_dependency,
+                "model": "BAAI/bge-reranker-v2-m3",
+            },
+        )
+    else:
+        dependencies["reranker"] = _dependency(
+            "unavailable",
+            error="未配置 RERANKER_API_URL，且未安装 sentence-transformers",
+            details={"mode": "auto", "api_configured": False, "local_dependency_installed": False},
+        )
+
+    llm_configured = bool(settings.agnes_api_key and settings.agnes_base_url and settings.agnes_chat_model)
+    dependencies["llm"] = _dependency(
+        "configured" if llm_configured else "unavailable",
+        error=None if llm_configured else "LLM API key、base URL 或模型未配置",
+        details={"base_url": settings.agnes_base_url, "model": settings.agnes_chat_model},
+    )
+    return HealthResponse(
+        status=_health_status(dependencies),
+        version="1.0.0",
+        knowledge_base=KnowledgeBaseStatus(
+            total_documents=int(raw_kb.get("total_documents", 0)),
+            collection_name=str(raw_kb.get("collection_name", "unknown")),
+            last_updated=raw_kb.get("last_updated"),
+        ),
+        llm_connected=llm_configured,
+        dependencies=dependencies,
+    )
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):
@@ -141,7 +194,7 @@ async def chat(request: ChatRequest):
         )
     except Exception as e:
         logger.error(f"对话处理失败: {e}")
-        raise HTTPException(status_code=500, detail="对话处理失败，请稍后重试")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/chat/stream")
@@ -570,124 +623,6 @@ async def feedback_summary(case_id: Optional[str] = None):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# ── 试点管理 ─────────────────────────────────────────────────
-
-@app.post("/pilot/users")
-async def add_pilot_user(
-    username: str = Form(...),
-    display_name: str = Form(...),
-    role: str = Form(...),
-    organization: str | None = Form(None),
-    phone: str | None = Form(None),
-    email: str | None = Form(None),
-):
-    """添加试用用户"""
-    from pilot_manager import pilot_manager
-    try:
-        return await pilot_manager.add_user(
-            username=username,
-            display_name=display_name,
-            role=role,
-            organization=organization,
-            phone=phone,
-            email=email,
-        )
-    except Exception as e:
-        logger.error("添加试用用户失败: %s", e)
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.get("/pilot/users")
-async def list_pilot_users(active_only: bool = True):
-    """列出试用用户"""
-    from pilot_manager import pilot_manager
-    try:
-        return {"users": await pilot_manager.list_users(active_only=active_only)}
-    except Exception as e:
-        logger.error("列出试用用户失败: %s", e)
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.get("/pilot/users/{user_id}/stats")
-async def get_pilot_user_stats(user_id: str):
-    """获取用户试用统计"""
-    from pilot_manager import pilot_manager
-    try:
-        return await pilot_manager.get_user_stats(user_id)
-    except Exception as e:
-        logger.error("获取用户统计失败: %s", e)
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.post("/pilot/sessions")
-async def start_pilot_session(user_id: str = Form(...), thread_id: str = Form(...)):
-    """开始试用会话"""
-    from pilot_manager import pilot_manager
-    try:
-        return await pilot_manager.start_session(user_id=user_id, thread_id=thread_id)
-    except Exception as e:
-        logger.error("开始试用会话失败: %s", e)
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.post("/pilot/sessions/{session_id}/end")
-async def end_pilot_session(
-    session_id: str,
-    message_count: int = Form(0),
-    topics: str | None = Form(None),
-    satisfaction_score: int | None = Form(None),
-):
-    """结束试用会话"""
-    from pilot_manager import pilot_manager
-    try:
-        topics_list = json.loads(topics) if topics else []
-        return await pilot_manager.end_session(
-            session_id=session_id,
-            message_count=message_count,
-            topics=topics_list,
-            satisfaction_score=satisfaction_score,
-        )
-    except Exception as e:
-        logger.error("结束试用会话失败: %s", e)
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.post("/pilot/feedback")
-async def submit_pilot_feedback(
-    user_id: str = Form(...),
-    feedback_type: str = Form(...),
-    content: str = Form(...),
-    rating: int | None = Form(None),
-    category: str | None = Form(None),
-    session_id: str | None = Form(None),
-):
-    """提交试用反馈"""
-    from pilot_manager import pilot_manager
-    try:
-        return await pilot_manager.submit_feedback(
-            user_id=user_id,
-            feedback_type=feedback_type,
-            content=content,
-            rating=rating,
-            category=category,
-            session_id=session_id,
-        )
-    except Exception as e:
-        logger.error("提交试用反馈失败: %s", e)
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.get("/pilot/summary")
-async def pilot_summary():
-    """获取试点整体统计"""
-    from pilot_manager import pilot_manager
-    try:
-        return await pilot_manager.get_pilot_summary()
-    except Exception as e:
-        logger.error("获取试点统计失败: %s", e)
-        raise HTTPException(status_code=500, detail=str(e))
-
-
 @app.get("/news")
 async def get_news():
     """获取江农最新成就/新闻"""
@@ -695,45 +630,185 @@ async def get_news():
     return {"news": fetch_jxau_news()}
 
 
-# ── 图像诊断 ─────────────────────────────────────────────────
-
-@app.post("/diagnose/image")
-async def diagnose_image(
-    file: UploadFile = File(...),
-    description: str = Form(""),
-    crop: str = Form(""),
-):
-    """上传图片进行病虫害诊断。
-
-    返回诊断结果，包含可能原因、置信度和建议。
-    所有诊断结果均标注"需人工复核"。
-    """
-    from image_diagnosis import image_engine, IMAGE_STORE_DIR, MAX_IMAGE_BYTES
-
-    # 读取前先限制大小（防止 OOM）
-    content = await file.read(MAX_IMAGE_BYTES + 1)
-    if len(content) > MAX_IMAGE_BYTES:
-        raise HTTPException(status_code=422, detail="图片超过 10MB 大小限制")
-    content_type = file.content_type or "image/jpeg"
-
-    # 校验图片
-    error = image_engine.validate_image(content, content_type)
-    if error:
-        raise HTTPException(status_code=422, detail=error)
-
-    # 执行分析
-    result = image_engine.analyze(content, content_type=content_type, description=description, crop=crop)
-
-    # 保存图片到本地（可选，用于后续复审）
+@app.get("/weather")
+async def get_weather(location: str = "赣州", days: int = 3):
+    """Return the public weather adapter result used by the workspace context."""
+    if not 1 <= days <= 7:
+        raise HTTPException(status_code=422, detail="days 必须在 1-7 之间")
     try:
-        IMAGE_STORE_DIR.mkdir(parents=True, exist_ok=True)
-        ext = ".jpg" if content_type == "image/jpeg" else ".png" if content_type == "image/png" else ".webp"
-        image_path = IMAGE_STORE_DIR / f"{result.id}{ext}"
-        image_path.write_bytes(content)
-    except Exception as exc:
-        logger.warning("保存诊断图片失败: %s", exc)
+        result = await asyncio.to_thread(get_agri_weather.invoke, {"location": location, "days": days})
+        return json.loads(result)
+    except (TypeError, ValueError) as exc:
+        logger.error("天气适配器返回了不可解析的数据: %s", exc)
+        raise HTTPException(status_code=502, detail="天气服务返回格式无效") from exc
 
-    return result.to_dict()
+
+# ── 知识图谱 ─────────────────────────────────────────────────
+
+@app.get("/knowledge-graph/status")
+async def knowledge_graph_status():
+    """知识图谱状态（需要 Neo4j）"""
+    try:
+        from kg import get_neo4j_status
+        return get_neo4j_status()
+    except Exception as e:
+        return {"status": "unavailable", "error": str(e)}
+
+
+@app.get("/knowledge-graph/entity/{entity_name}")
+async def get_entity_neighborhood(entity_name: str, label: str = "Crop", limit: int = 20):
+    """获取实体邻域子图"""
+    try:
+        from kg.connection import get_entity_neighborhood
+        neighbors = get_entity_neighborhood(entity_name, label, limit)
+        return {"entity": entity_name, "label": label, "neighbors": neighbors}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/knowledge-graph/search")
+async def search_knowledge_graph(q: str, limit: int = 10):
+    """全文搜索知识图谱实体"""
+    try:
+        from kg.connection import search_entities
+        results = search_entities(q, limit)
+        return {"query": q, "results": results}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/knowledge-graph/build")
+async def build_knowledge_graph_endpoint():
+    """构建知识图谱（导入种子数据）"""
+    try:
+        from kg.builder import kg_builder
+        stats = kg_builder.build_full()
+        return {"status": "ok", "stats": stats}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ── 知识包管理 ────────────────────────────────────────────────
+
+@app.get("/knowledge-packs")
+async def list_knowledge_packs():
+    """列出所有知识包"""
+    from knowledge_pack_importer import list_knowledge_packs as _list
+    return {"packs": _list()}
+
+
+@app.post("/knowledge-packs/import")
+async def import_knowledge_packs_endpoint(force: bool = False):
+    """导入知识包到 ChromaDB"""
+    try:
+        from knowledge_pack_importer import import_knowledge_packs
+        stats = import_knowledge_packs(knowledge_base, force=force)
+        return {"status": "ok", "stats": stats}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ── 检索增强诊断 ─────────────────────────────────────────────
+
+@app.get("/retrieval/hybrid")
+async def hybrid_search(query: str, top_k: int = 5):
+    """混合检索诊断（Vector + BM25 + RRF + Reranker）"""
+    try:
+        result = knowledge_base.search_hybrid(query, top_k=top_k)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/retrieval/multi-query")
+async def multi_query_analysis(query: str):
+    """Multi-Query 分解诊断"""
+    try:
+        from retrieval.query_transformer import query_transformer
+        subqueries, trace = query_transformer.multi_query(query)
+        return {"original": query, "subqueries": subqueries, "trace": trace}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ── 评测流水线 ────────────────────────────────────────────────
+
+@app.get("/evaluations/agri-eval")
+async def run_agri_eval(max_items: int = 15):
+    """运行 AgriEval 评测"""
+    try:
+        from evaluation import AgriEvalRunner
+        runner = AgriEvalRunner()
+
+        def retrieve_fn(q):
+            return knowledge_base.search(q, top_k=5)
+
+        def generate_fn(q, ctx):
+            return f"[评测模式] 基于检索结果的回答占位（{len(ctx)} 字符上下文）"
+
+        report = runner.run_batch(retrieve_fn, generate_fn, max_items=max_items)
+        runner.save_report(report)
+        return report
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/system/info")
+async def system_info():
+    """系统信息（完整技术栈概览）"""
+    try:
+        # Keep this diagnostic endpoint side-effect free.  Importing the global
+        # reranker can initialize a large local model (or reach Hugging Face),
+        # which makes a simple system-info request unexpectedly slow or blocked.
+        from source_registry import source_registry
+        from kg.schema import ENTITY_TYPES, RELATION_TYPES
+
+        reranker_api_configured = bool(getattr(settings, "reranker_api_url", ""))
+        reranker_local_dependency = importlib.util.find_spec("sentence_transformers") is not None
+        reranker_info = {
+            "class": "BGEReranker",
+            "mode": (
+                "disabled" if not getattr(settings, "reranker_enabled", True)
+                else "api" if reranker_api_configured
+                else "local" if reranker_local_dependency
+                else "auto"
+            ),
+            "model": "BAAI/bge-reranker-v2-m3",
+            "available": (
+                not getattr(settings, "reranker_enabled", True)
+                or reranker_api_configured
+                or reranker_local_dependency
+            ),
+            "api_configured": reranker_api_configured,
+            "local_dependency_installed": reranker_local_dependency,
+        }
+
+        return {
+            "version": "2.0.0",
+            "modules": {
+                "retrieval": {
+                    "vector": "ChromaDB + LocalHashing",
+                    "bm25": "ChineseAgriculturalTokenizer + BM25Retriever",
+                    "rrf": "RRFFusion (k=60)",
+                    "reranker": reranker_info,
+                },
+                "knowledge_graph": {
+                    "entity_types": len(ENTITY_TYPES),
+                    "relation_types": len(RELATION_TYPES),
+                },
+                "data_sources": source_registry.get_stats(),
+                "knowledge_packs": len(list((Path(__file__).resolve().parent.parent / "data" / "knowledge-packs").glob("*.md"))),
+            },
+            "config": {
+                "rag_embedding_mode": settings.rag_embedding_mode,
+                "reranker_enabled": settings.reranker_enabled,
+                "rrf_k": settings.rrf_k,
+                "bm25_weight": settings.bm25_weight,
+                "vector_weight": settings.vector_weight,
+            },
+        }
+    except Exception as e:
+        return {"version": "2.0.0", "error": str(e)}
 
 
 if __name__ == "__main__":

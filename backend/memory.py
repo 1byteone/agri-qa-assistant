@@ -266,18 +266,19 @@ class ConversationMemory:
             # not need a migration for new tables, but may miss newly added
             # nullable/default columns. Add them idempotently when possible.
             if self.engine.url.get_backend_name() == "sqlite":
-                from sqlalchemy import inspect
-                # 读取模型声明的所有 agent_memories 列
-                declared = {c.name: c for c in AgentMemory.__table__.columns}
                 columns = (await conn.exec_driver_sql("PRAGMA table_info(agent_memories)")).all()
-                existing = {row[1] for row in columns}
-                missing = {name: col for name, col in declared.items() if name not in existing}
-                for name, col in missing.items():
-                    col_type = col.type.compile(dialect=self.engine.dialect)
-                    default = ""
-                    if col.default is not None:
-                        default = f" DEFAULT {col.default.arg!r}" if not isinstance(col.default.arg, str) else f" DEFAULT '{col.default.arg}'"
-                    await conn.exec_driver_sql(f"ALTER TABLE agent_memories ADD COLUMN {name} {col_type}{default}")
+                names = {row[1] for row in columns}
+                additions = {
+                    "authority_score": "FLOAT DEFAULT 0.5",
+                    "event_at": "DATETIME",
+                    "temporal_label": "VARCHAR(30)",
+                    "source_kind": "VARCHAR(30)",
+                    "extraction_mode": "VARCHAR(20)",
+                    "verification_status": "VARCHAR(20)",
+                }
+                for name, definition in additions.items():
+                    if name not in names:
+                        await conn.exec_driver_sql(f"ALTER TABLE agent_memories ADD COLUMN {name} {definition}")
         await self._backfill_threads()
         self._initialized = True
         logger.info("对话记忆数据库初始化完成")

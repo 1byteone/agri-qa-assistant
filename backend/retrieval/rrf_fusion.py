@@ -11,7 +11,7 @@ Rank Learning Methods" (Cormack et al., 2009)
 from __future__ import annotations
 import logging
 from collections import defaultdict
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -149,3 +149,57 @@ class RRFFusion:
             content_key=content_key,
             score_key=score_key,
         )
+
+    def fuse_with_trace(
+        self,
+        ranked_lists: Dict[str, List[Dict[str, Any]]],
+        content_key: str = "content",
+        score_key: str = "relevance",
+        latencies_ms: Optional[Dict[str, float]] = None,
+    ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+        """融合并输出完整 trace（含分支贡献度）。
+
+        Returns
+        -------
+        (results, trace) : tuple
+            融合结果列表和 trace 信息字典。
+        """
+        results = self.fuse(ranked_lists, content_key, score_key)
+
+        # 分支贡献统计
+        branch_coverage = defaultdict(lambda: {"count": 0, "total_score": 0.0})
+        for result in results:
+            # 通过 doc_identity 判断哪些分支贡献了
+            doc_id = _doc_identity(result, content_key)
+            for branch_name, branch_list in ranked_lists.items():
+                for item in branch_list:
+                    if _doc_identity(item, content_key) == doc_id:
+                        branch_coverage[branch_name]["count"] += 1
+                        branch_coverage[branch_name]["total_score"] += result.get("rrf_score", 0)
+                        break
+
+        total_results = len(results) or 1
+        names = list(ranked_lists.keys())
+        trace = {
+            "k": self.k,
+            "weights": self.weights,
+            "branches_used": [
+                {
+                    "name": name,
+                    "candidates": len(ranked_lists[name]),
+                    "latency_ms": (latencies_ms or {}).get(name, 0),
+                }
+                for name in names
+            ],
+            "total_fused": len(results),
+            "branch_contribution": {
+                name: {
+                    "count": stats["count"],
+                    "coverage": round(stats["count"] / total_results, 3),
+                    "total_score": round(stats["total_score"], 6),
+                }
+                for name, stats in branch_coverage.items()
+            },
+        }
+
+        return results, trace

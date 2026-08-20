@@ -44,9 +44,66 @@ class LocalHashingEmbeddingFunction:
         return self._embed(text)
 
     def __call__(self, input: List[str]) -> List[List[float]]:
-        # Chroma 可能传入单个字符串
-        if isinstance(input, str):
-            return [self._embed(input)]
+        return self.embed_documents(input)
+
+
+class BGEEmbeddingFunction:
+    """BGE-M3 Embedding 函数，优先使用 BGE-M3 API，不可用时回退到本地哈希。
+
+    配置方式：
+    - RAG_EMBEDDING_MODE=bge_m3  → 使用 BGE-M3
+    - RAG_EMBEDDING_MODE=local   → 使用本地哈希（默认）
+    - RAG_EMBEDDING_MODE=remote  → 使用 Agnes AI
+
+    环境变量：
+    - BGE_M3_API_URL: BGE-M3 API 地址
+    - BGE_M3_API_KEY: BGE-M3 API 密钥
+    """
+
+    dimension = 1024
+
+    def __init__(self):
+        self._bge_instance = None
+        self._fallback = LocalHashingEmbeddingFunction()
+        self._init_bge()
+
+    def _init_bge(self):
+        try:
+            from retrieval.bge_m3_embedding import BGEM3EmbeddingFunction
+            api_url = os.getenv("BGE_M3_API_URL", "")
+            api_key = os.getenv("BGE_M3_API_KEY", "")
+            mode = "api" if api_url else "local"
+            self._bge_instance = BGEM3EmbeddingFunction(
+                mode=mode,
+                api_url=api_url,
+                api_key=api_key,
+            )
+            if self._bge_instance.mode == "unavailable":
+                logger.warning("BGE-M3 不可用，使用本地哈希回退")
+                self._bge_instance = None
+            else:
+                logger.info(f"BGE-M3 嵌入初始化成功 (mode={mode})")
+        except ImportError:
+            logger.info("BGE-M3 模块未安装，使用本地哈希")
+            self._bge_instance = None
+
+    def embed_documents(self, texts: List[str]) -> List[List[float]]:
+        if self._bge_instance:
+            try:
+                return self._bge_instance.embed_documents(texts)
+            except Exception as e:
+                logger.warning(f"BGE-M3 嵌入失败，回退到哈希: {e}")
+        return self._fallback.embed_documents(texts)
+
+    def embed_query(self, text: str) -> List[float]:
+        if self._bge_instance:
+            try:
+                return self._bge_instance.embed_query(text)
+            except Exception as e:
+                logger.warning(f"BGE-M3 嵌入失败，回退到哈希: {e}")
+        return self._fallback.embed_query(text)
+
+    def __call__(self, input: List[str]) -> List[List[float]]:
         return self.embed_documents(input)
 
 
@@ -96,16 +153,26 @@ class AgnesEmbeddingFunction:
 
 
 class KnowledgeBase:
-    """农业领域私有知识库（ChromaDB）"""
+    """农业领域私有知识库（ChromaDB + BM25 混合检索）"""
 
     def __init__(self):
         self.persist_dir = settings.chroma_persist_dir
         self.embedding_mode = settings.rag_embedding_mode.lower()
-        if self.embedding_mode not in {"local", "remote"}:
-            raise ValueError("RAG_EMBEDDING_MODE 必须为 local 或 remote")
+        if self.embedding_mode not in {"local", "remote", "bge_m3"}:
+            raise ValueError("RAG_EMBEDDING_MODE 必须为 local / remote / bge_m3")
         self.collection_name = f"agri_knowledge_{self.embedding_mode}_v1"
-        self.embedding_fn = LocalHashingEmbeddingFunction() if self.embedding_mode == "local" else AgnesEmbeddingFunction()
+
+        # 嵌入函数选择
+        if self.embedding_mode == "bge_m3":
+            self.embedding_fn = BGEEmbeddingFunction()
+        elif self.embedding_mode == "local":
+            self.embedding_fn = LocalHashingEmbeddingFunction()
+        else:
+            self.embedding_fn = AgnesEmbeddingFunction()
+
         self._vectorstore: Optional[Chroma] = None
+        self._bm25_retriever = None
+        self._bm25_indexed = False
         self._ensure_db_dir()
 
     def _ensure_db_dir(self):
@@ -179,11 +246,6 @@ class KnowledgeBase:
 
     @staticmethod
     def choose_strategy(query: str) -> str:
-        """选择检索策略。
-
-        注意：当前 hybrid-metadata 和 hybrid-temporal 与 hybrid 走相同的检索路径，
-        差异仅体现在 metadata_boost 和 query_terms 中。后续可差异化实现。
-        """
         text = (query or "").lower()
         if re.search(r"政策|标准|规范|文件|编号|产品型号|id", text):
             return "hybrid-metadata"
@@ -265,16 +327,206 @@ class KnowledgeBase:
             item.pop("_rank_score", None)
         return filtered[:top_k]
 
+    def search_hybrid(
+        self,
+        query: str,
+        top_k: int = 5,
+        max_distance: float = 1.7,
+        use_bm25: bool = True,
+        use_reranker: bool = True,
+        bm25_weight: float = 0.4,
+        vector_weight: float = 0.6,
+        rrf_k: int = 60,
+    ) -> Dict[str, Any]:
+        """
+        真正的混合检索：Vector + BM25 + RRF + Reranker。
+
+        Returns:
+            Dict with keys: results, trace
+        """
+        import time
+        trace = {
+            "query": query,
+            "strategy": "hybrid_rrf_rerank",
+            "branches": {},
+            "rrf_k": rrf_k,
+        }
+
+        # ---- Vector Branch ----
+        vector_start = time.perf_counter()
+        vector_results = self.search(query, top_k=top_k * 3, max_distance=max_distance, strategy="vector")
+        vector_latency = (time.perf_counter() - vector_start) * 1000
+        trace["branches"]["vector"] = {
+            "candidates": len(vector_results),
+            "latency_ms": round(vector_latency, 2),
+            "weight": vector_weight,
+        }
+
+        if not use_bm25:
+            trace["rrf_applied"] = False
+            return {"results": vector_results[:top_k], "trace": trace}
+
+        # ---- BM25 Branch ----
+        bm25_start = time.perf_counter()
+        bm25_results = self._bm25_search(query, top_k=top_k * 3)
+        bm25_latency = (time.perf_counter() - bm25_start) * 1000
+        trace["branches"]["bm25"] = {
+            "candidates": len(bm25_results),
+            "latency_ms": round(bm25_latency, 2),
+            "weight": bm25_weight,
+        }
+
+        # ---- RRF Fusion ----
+        rrf_start = time.perf_counter()
+        try:
+            from retrieval.rrf_fusion import RRFFusion
+            fusion = RRFFusion(k=rrf_k, weights={"vector": vector_weight, "bm25": bm25_weight})
+            ranked_lists = {}
+            if vector_results:
+                ranked_lists["vector"] = vector_results
+            if bm25_results:
+                ranked_lists["bm25"] = bm25_results
+
+            if len(ranked_lists) > 1:
+                fused_results, rrf_trace = fusion.fuse_with_trace(
+                    ranked_lists,
+                    content_key="content",
+                    score_key="relevance",
+                )
+                trace["rrf_applied"] = True
+                trace["rrf_trace"] = rrf_trace
+            elif ranked_lists:
+                fused_results = list(ranked_lists.values())[0]
+                trace["rrf_applied"] = False
+                trace["rrf_reason"] = "single_branch"
+            else:
+                fused_results = []
+                trace["rrf_applied"] = False
+                trace["rrf_reason"] = "no_results"
+        except ImportError:
+            fused_results = self._simple_fusion(vector_results, bm25_results, vector_weight, bm25_weight)
+            trace["rrf_applied"] = False
+            trace["rrf_reason"] = "import_error"
+
+        rrf_latency = (time.perf_counter() - rrf_start) * 1000
+        trace["rrf_latency_ms"] = round(rrf_latency, 2)
+
+        # ---- Reranker ----
+        rerank_latency = 0
+        if use_reranker and fused_results:
+            try:
+                from retrieval.reranker import default_reranker
+                rerank_start = time.perf_counter()
+                reranked_results, rerank_trace = default_reranker.rerank(
+                    query, fused_results, top_k=top_k,
+                )
+                rerank_latency = (time.perf_counter() - rerank_start) * 1000
+                trace["reranker"] = rerank_trace
+                trace["total_latency_ms"] = round(vector_latency + bm25_latency + rrf_latency + rerank_latency, 2)
+                trace["final_count"] = len(reranked_results)
+                return {"results": reranked_results, "trace": trace}
+            except Exception as e:
+                logger.warning(f"Reranker 失败，回退到 RRF 结果: {e}")
+                trace["reranker"] = {"reranker_applied": False, "error": str(e)}
+
+        # 回退：直接使用 RRF 结果
+        trace["reranker"] = {"reranker_applied": False, "reason": "disabled_or_unavailable"}
+        trace["total_latency_ms"] = round(vector_latency + bm25_latency + rrf_latency, 2)
+        trace["final_count"] = len(fused_results[:top_k])
+
+        return {"results": fused_results[:top_k], "trace": trace}
+
+    def _bm25_search(self, query: str, top_k: int = 10) -> List[Dict[str, Any]]:
+        """BM25 检索（懒加载索引）"""
+        try:
+            from retrieval.bm25_retriever import BM25Retriever
+            if self._bm25_retriever is None:
+                self._bm25_retriever = BM25Retriever()
+
+            # 懒加载：第一次使用时从 ChromaDB 构建 BM25 索引
+            if not self._bm25_indexed:
+                self._build_bm25_index()
+
+            results = self._bm25_retriever.search(query, top_k=top_k)
+            return [
+                {
+                    "content": r.content,
+                    "metadata": r.metadata,
+                    "relevance": r.score,
+                    "retrieval_strategy": "bm25",
+                }
+                for r in results
+            ]
+        except Exception as e:
+            logger.warning(f"BM25 检索失败: {e}")
+            return []
+
+    def _build_bm25_index(self):
+        """从 ChromaDB 构建 BM25 索引"""
+        try:
+            from retrieval.bm25_retriever import BM25Retriever
+            vectorstore = self._get_vectorstore()
+            # 获取所有文档
+            collection = vectorstore._collection
+            data = collection.get(include=["documents", "metadatas"])
+            documents = []
+            for doc_text, meta in zip(data.get("documents", []), data.get("metadatas", [])):
+                documents.append({"content": doc_text, "metadata": meta or {}})
+
+            if documents:
+                self._bm25_retriever = BM25Retriever()
+                self._bm25_retriever.build_index(documents)
+                self._bm25_indexed = True
+                logger.info(f"BM25 索引构建完成: {len(documents)} 篇文档")
+        except Exception as e:
+            logger.warning(f"BM25 索引构建失败: {e}")
+
+    def _simple_fusion(
+        self,
+        vector_results: List[Dict[str, Any]],
+        bm25_results: List[Dict[str, Any]],
+        vector_weight: float,
+        bm25_weight: float,
+    ) -> List[Dict[str, Any]]:
+        """简单加权融合（RRF 不可用时的回退）"""
+        doc_scores: Dict[str, float] = {}
+        doc_data: Dict[str, Dict[str, Any]] = {}
+
+        for rank, item in enumerate(vector_results):
+            key = item.get("content", "")[:200]
+            doc_scores[key] = doc_scores.get(key, 0) + vector_weight / (1 + rank)
+            if key not in doc_data:
+                doc_data[key] = item
+
+        for rank, item in enumerate(bm25_results):
+            key = item.get("content", "")[:200]
+            doc_scores[key] = doc_scores.get(key, 0) + bm25_weight / (1 + rank)
+            if key not in doc_data:
+                doc_data[key] = item
+
+        sorted_keys = sorted(doc_scores.keys(), key=lambda k: doc_scores[k], reverse=True)
+        results = []
+        for key in sorted_keys:
+            item = dict(doc_data[key])
+            item["rrf_score"] = doc_scores[key]
+            results.append(item)
+        return results
+
     def get_status(self) -> Dict[str, Any]:
         """获取知识库状态"""
         try:
             vectorstore = self._get_vectorstore()
             count = vectorstore._collection.count()
+            bm25_stats = {}
+            if self._bm25_retriever and self._bm25_indexed:
+                bm25_stats = self._bm25_retriever.get_stats()
             return {
                 "total_documents": count,
                 "collection_name": self.collection_name,
                 "persist_dir": self.persist_dir,
                 "embedding_mode": self.embedding_mode,
+                "bm25_indexed": self._bm25_indexed,
+                "bm25_stats": bm25_stats,
             }
         except Exception as e:
             logger.error(f"获取知识库状态失败: {e}")

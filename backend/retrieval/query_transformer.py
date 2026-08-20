@@ -6,11 +6,12 @@ QueryTransformer — 查询改写与子查询分解。
 - 查询改写：补充隐含信息、规范化术语
 - 子查询分解：复合问题拆分为独立子查询
 - 同义词扩展：农业术语双语扩展
+- Multi-Query 分解：复杂问题拆分为多个可独立检索的子查询
 """
 from __future__ import annotations
 import re
 import logging
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -54,19 +55,39 @@ for cn_term, en_terms in SYNONYM_MAP.items():
     for en in en_terms:
         EN_TO_CN_MAP[en.lower()] = cn_term
 
-# ── 查询改写规则 ─────────────────────────────────────────────
+# ── Multi-Query 分解规则 ─────────────────────────────────────
 
-# 隐含信息补充规则
-IMPLICIT_RULES = [
-    # 无地区时补充"江西"
-    (re.compile(r"^([^地\s]*(?:怎么|如何|防治|治疗|管理))"), r"\1（江西地区）"),
-    # 无生育期时补充泛化
-    (re.compile(r"^([^生\s]*(?:施肥|追肥|灌溉))"), r"\1（全生育期）"),
+# 复合意图关键词（出现时触发分解）
+COMPOSITE_INTENT_KEYWORDS = [
+    # 症状 + 行动
+    (r"(?:叶[片尖]|茎|根|穗|果).{0,10}(?:干枯|发黄|斑点|卷曲|腐烂)", "symptom"),
+    (r"(?:怎么|如何|应该).{0,6}(?:防治|治疗|管理|处理)", "action"),
+    # 天气 + 农事
+    (r"(?:高温|暴雨|寒潮|干旱|连续阴雨)", "weather"),
+    (r"(?:什么时候|几月|播期|农时)", "timing"),
+    # 施肥 + 药剂
+    (r"(?:施肥|追肥|肥料|用量)", "fertilizer"),
+    (r"(?:药剂|农药|喷药|用药)", "pesticide"),
+    # 地区 + 作物
+    (r"(?:南昌|赣州|上饶|吉安|宜春|抚州|九江)", "region"),
+    (r"(?:水稻|油菜|脐橙|小麦|玉米|蔬菜)", "crop"),
 ]
+
+# 子查询模板
+SUBQUERY_TEMPLATES = {
+    "symptom": "{crop}{stage}出现{symptom}的可能原因和鉴别方法",
+    "action": "{crop}{symptom}情况下应该采取什么防治措施",
+    "weather": "{region}{crop}{stage}遇到{weather}如何管理",
+    "timing": "{region}{crop}{stage}的{timing}安排",
+    "fertilizer": "{crop}{stage}的施肥方案和用量",
+    "pesticide": "{crop}{pest_disease}的登记药剂和安全使用",
+    "region": "{region}{crop}的种植技术和管理要点",
+    "crop": "{crop}的栽培管理和病虫害防治",
+}
 
 
 class QueryTransformer:
-    """查询改写 + 子查询分解。
+    """查询改写 + 子查询分解 + Multi-Query 分解。
 
     Parameters
     ----------
@@ -142,6 +163,167 @@ class QueryTransformer:
 
         # 限制数量
         return unique_parts[: self.max_subqueries]
+
+    def multi_query(
+        self,
+        query: str,
+        context: Optional[Dict] = None,
+    ) -> Tuple[List[str], Dict]:
+        """
+        Multi-Query 分解：将复杂农业问题分解为多个可独立检索的子查询。
+
+        分解策略：
+        1. 规则分解：基于关键词模式识别复合意图
+        2. 场景补全：根据提取的实体补全子查询
+        3. 去重排序：确保子查询多样性
+
+        Returns
+        -------
+        (subqueries, trace) : tuple
+            子查询列表和 trace 信息。
+        """
+        text = (query or "").strip()
+        if not text:
+            return [query], {"strategy": "empty", "subqueries": []}
+
+        trace = {
+            "original_query": text,
+            "detected_intents": [],
+            "extracted_entities": {},
+            "strategy": "multi_query",
+        }
+
+        # 1. 提取实体（作物/地区/阶段/症状）
+        entities = self._extract_entities(text)
+        trace["extracted_entities"] = entities
+
+        # 2. 检测复合意图
+        intents = self._detect_intents(text)
+        trace["detected_intents"] = intents
+
+        # 3. 生成子查询
+        subqueries = []
+
+        # 策略 A：基于意图分解
+        if len(intents) >= 2:
+            for intent_type in intents[:self.max_subqueries]:
+                sq = self._generate_subquery(intent_type, entities, text)
+                if sq and sq not in subqueries:
+                    subqueries.append(sq)
+
+        # 策略 B：如果意图不够，按连接词分解
+        if len(subqueries) < 2:
+            decomposed = self.decompose(text)
+            for sq in decomposed:
+                if sq not in subqueries:
+                    subqueries.append(sq)
+
+        # 策略 C：补全缺失维度
+        if len(subqueries) < 2 and entities:
+            if "crop" in entities and "region" not in entities:
+                subqueries.append(f"江西省{entities['crop']}的种植技术")
+            if "crop" in entities and "stage" not in entities:
+                subqueries.append(f"{entities['crop']}的生育期管理要点")
+
+        # 确保至少有一个子查询
+        if not subqueries:
+            subqueries = [text]
+
+        subqueries = subqueries[:self.max_subqueries]
+        trace["subqueries"] = subqueries
+        trace["subquery_count"] = len(subqueries)
+
+        return subqueries, trace
+
+    def _extract_entities(self, text: str) -> Dict[str, str]:
+        """从查询中提取实体"""
+        entities = {}
+
+        # 作物
+        crops = ["水稻", "早稻", "晚稻", "双季稻", "小麦", "玉米", "油菜", "赣南脐橙", "脐橙", "蔬菜", "大豆", "棉花"]
+        for crop in crops:
+            if crop in text:
+                entities["crop"] = crop
+                break
+
+        # 地区
+        regions = ["江西省", "南昌", "赣州", "上饶", "吉安", "宜春", "抚州", "九江", "萍乡", "景德镇", "新余", "鹰潭"]
+        for region in regions:
+            if region in text:
+                entities["region"] = region
+                break
+
+        # 生育期
+        stages = ["播种期", "秧田期", "移栽期", "分蘖期", "拔节期", "孕穗期", "抽穗期", "灌浆期", "成熟期",
+                   "苗期", "蕾薹期", "花期", "膨果期", "采收期"]
+        for stage in stages:
+            if stage in text:
+                entities["stage"] = stage
+                break
+
+        # 症状
+        symptoms = ["叶尖干枯", "叶片黄化", "褐色斑点", "白穗", "倒伏", "卷叶", "虫蛀茎秆",
+                     "果实溃疡", "根腐", "萎蔫", "发黄", "斑点"]
+        for symptom in symptoms:
+            if symptom in text:
+                entities["symptom"] = symptom
+                break
+
+        # 病虫害
+        pests = ["稻飞虱", "稻纵卷叶螟", "二化螟", "蚜虫", "红蜘蛛", "柑橘木虱"]
+        for pest in pests:
+            if pest in text:
+                entities["pest_disease"] = pest
+                break
+
+        diseases = ["稻瘟病", "纹枯病", "白叶枯病", "赤霉病", "锈病", "溃疡病", "炭疽病"]
+        for disease in diseases:
+            if disease in text:
+                entities["pest_disease"] = disease
+                break
+
+        return entities
+
+    def _detect_intents(self, text: str) -> List[str]:
+        """检测查询中的复合意图"""
+        intents = []
+        seen = set()
+        for pattern, intent_type in COMPOSITE_INTENT_KEYWORDS:
+            if re.search(pattern, text) and intent_type not in seen:
+                intents.append(intent_type)
+                seen.add(intent_type)
+        return intents
+
+    def _generate_subquery(
+        self,
+        intent_type: str,
+        entities: Dict[str, str],
+        original: str,
+    ) -> str:
+        """根据意图类型和提取的实体生成子查询"""
+        crop = entities.get("crop", "作物")
+        region = entities.get("region", "江西")
+        stage = entities.get("stage", "")
+        symptom = entities.get("symptom", "")
+        pest_disease = entities.get("pest_disease", "")
+
+        template = SUBQUERY_TEMPLATES.get(intent_type)
+        if not template:
+            return ""
+
+        sq = template.format(
+            crop=crop,
+            region=region,
+            stage=stage if stage else "",
+            symptom=symptom if symptom else "",
+            weather="异常天气",
+            timing="时间安排",
+            pest_disease=pest_disease if pest_disease else "",
+        )
+        # 清理空占位
+        sq = re.sub(r"\s+", " ", sq).strip()
+        sq = re.sub(r"的\s+(的|和|与)", " ", sq)
+        return sq
 
     def expand_synonyms(self, query: str) -> List[str]:
         """同义词扩展：生成查询的同义词变体。

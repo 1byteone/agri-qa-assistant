@@ -37,11 +37,18 @@ class KnowledgeBaseStatus(BaseModel):
     collection_name: str
     last_updated: Optional[datetime] = None
 
+class DependencyStatus(BaseModel):
+    status: str
+    error: Optional[str] = None
+    details: Optional[Dict[str, Any]] = None
+
+
 class HealthResponse(BaseModel):
     status: str
     version: str
     knowledge_base: KnowledgeBaseStatus
     llm_connected: bool
+    dependencies: Dict[str, DependencyStatus] = Field(default_factory=dict)
 
 
 # ── 案例管理 ─────────────────────────────────────────────────

@@ -1,318 +1,419 @@
-# AgriQA Assistant - 农业智能问答原型系统
+# 🌾 CropWise - 江西农业智能知识服务平台
 
-![AgriQA Assistant Logo](docs/screenshots/homepage.png)
+<p align="center">
+  <img src="docs/marketing-kit/screenshots/chat-streaming.png" alt="CropWise Demo" width="800">
+</p>
 
-基于《第2章_构建智能体》构建的面向农业领域的智能问答原型系统，采用 LangGraph 目标导向型智能体架构，集成 ChromaDB 私有农业知识库，支持多轮对话记忆，并配备 Apple Liquid Glass 风格的高颜值前端界面。
+<p align="center">
+  <a href="#"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT License"></a>
+  <a href="#"><img src="https://img.shields.io/badge/Next.js-14-black" alt="Next.js 14"></a>
+  <a href="#"><img src="https://img.shields.io/badge/FastAPI-3.11+-blue" alt="FastAPI"></a>
+  <a href="#"><img src="https://img.shields.io/badge/LangGraph-Agent-purple" alt="LangGraph"></a>
+  <a href="#"><img src="https://img.shields.io/badge/ChromaDB-VectorDB-orange" alt="ChromaDB"></a>
+  <a href="#"><img src="https://img.shields.io/badge/BGE--M3-Embedding-1024d-green" alt="BGE-M3"></a>
+  <a href="#"><img src="https://img.shields.io/badge/Neo4j-KnowledgeGraph-5.x-red" alt="Neo4j"></a>
+</p>
 
-## 核心特性
+<p align="center">
+  <b>基于 Hybrid RAG + GraphRAG + 农业知识图谱的智能问答系统</b><br>
+  集成 ChromaDB 向量库 · Neo4j 知识图谱 · BGE-M3 嵌入 · Reranker 重排序 · 多轮对话记忆
+</p>
 
-- **专业农业知识库**：覆盖作物种植、病虫害防治、施肥灌溉、土壤管理、农机具使用等综合农技知识
-- **多轮对话记忆**：基于 SQLite 持久化存储对话历史，支持上下文连续性
-- **私有知识库优先**：优先检索 ChromaDB 向量数据库，确保答案专业可靠
-- **引导式兜底策略**：知识库无结果时诚实告知，并提供一般性解答建议
-- **Apple Liquid Glass UI**：深度毛玻璃效果、半透明层叠、动态光效、iOS 风格动画
-- **MCP 工具集成**：支持开源 MCP 服务（Fetch、Time、Memory）
+---
 
-## 技术架构
+## ✨ 核心特性
+
+<table>
+<tr>
+<td width="25%">
+<h3>🔍 Hybrid RAG</h3>
+<p>Vector + BM25 + RRF 融合 + BGE-Reranker 重排序，多路召回精准匹配</p>
+</td>
+<td width="25%">
+<h3>📊 知识图谱</h3>
+<p>Neo4j 农业知识图谱，12 类实体 + 16 类关系，支持结构化推理</p>
+</td>
+<td width="25%">
+<h3>🧠 Multi-Query</h3>
+<p>复杂问题自动分解为多个子查询，并行检索后 RRF 融合</p>
+</td>
+<td width="25%">
+<h3>🎨 Liquid Glass UI</h3>
+<p>Apple 风格毛玻璃设计、流畅动画、响应式布局</p>
+</td>
+</tr>
+<tr>
+<td>
+<h3>💬 智能对话</h3>
+<p>SSE 流式响应、决策卡、知识溯源、专业词条注释</p>
+</td>
+<td>
+<h3>🔍 作物诊断</h3>
+<p>结构化症状输入 → 智能诊断 → 证据来源背书</p>
+</td>
+<td>
+<h3>📅 农事日历</h3>
+<p>基于作物、地区、生长阶段的智能农事安排</p>
+</td>
+<td>
+<h3>📋 政策咨询</h3>
+<p>检索惠农政策证据，A 级来源背书，可追溯验证</p>
+</td>
+</tr>
+</table>
+
+---
+
+## 🏗️ 技术架构
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    前端：Next.js + shadcn/ui                  │
-│   Apple Liquid Glass 风格聊天界面                            │
-│   - 毛玻璃消息卡片                                            │
-│   - 圆角输入框 + SF 风格字体                                   │
-│   - 打字机效果 + 流式响应                                      │
-└───────────────────────────┬─────────────────────────────────┘
-                            │ HTTP/SSE
-┌───────────────────────────▼─────────────────────────────────┐
-│                  后端：FastAPI + LangGraph                    │
-│   - Agent 路由层：意图识别 → RAG / 通用 / 工具                 │
-│   - Memory 层：SQLite 持久化对话历史                          │
-│   - RAG 层：ChromaDB + 农业知识库                             │
-│   - Tools 层：MCP Fetch / Time + 农业工具                     │
-└───────────────────────────┬─────────────────────────────────┘
-                            │
-┌───────────────────────────▼─────────────────────────────────┐
-│                      外部服务                                 │
-│   - LLM：Agnes AI (agnes-2.0-flash)                          │
-│   - Embedding：Agnes AI embedding 模型                       │
-│   - 向量数据库：ChromaDB (本地持久化)                          │
-└─────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│                    前端：Next.js 14 + shadcn/ui                   │
+│    Apple Liquid Glass 风格 · 毛玻璃效果 · 流畅动画 · 响应式布局    │
+└──────────────────────────┬───────────────────────────────────────┘
+                           │ HTTP/SSE
+┌──────────────────────────▼───────────────────────────────────────┐
+│                 后端：FastAPI + LangGraph Agent                    │
+│  Domain Guard → Query Router → RAG Pipeline → LLM → Post-process │
+│  6 工具：作物知识 · 生长周期 · 农事天气 · 网页获取 · 资源搜索 · 时间  │
+└──────────────────────────┬───────────────────────────────────────┘
+                           │
+┌──────────────────────────▼───────────────────────────────────────┐
+│              Hybrid Retrieval Layer (混合检索层)                   │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐        │
+│  │ Vector   │  │ BM25     │  │ Graph    │  │ Temporal │        │
+│  │ (BGE-M3) │  │ (Lucene) │  │ (Neo4j)  │  │ (时间衰减) │        │
+│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘        │
+│       └──────────────┼──────────────┼──────────────┘             │
+│                      │     RRF Fusion │                          │
+│                      └────────┬───────┘                          │
+│                               │                                  │
+│                      ┌────────▼────────┐                         │
+│                      │  BGE-Reranker    │                         │
+│                      │  (交叉编码器精排)  │                         │
+│                      └────────┬────────┘                         │
+└───────────────────────────────┼──────────────────────────────────┘
+                                │
+┌───────────────────────────────▼──────────────────────────────────┐
+│                         Storage Layer                            │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐       │
+│  │ ChromaDB │  │ Neo4j    │  │ SQLite   │  │ Redis    │       │
+│  │ (向量库)  │  │ (知识图谱)│  │ (记忆)    │  │ (缓存)    │       │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘       │
+└──────────────────────────────────────────────────────────────────┘
 ```
 
-## 快速开始
+---
+
+## 🚀 快速开始
 
 ### 环境要求
 
 - Python 3.10+
 - Node.js 18+
-- pip / npm
+- Agnes AI API Key
 
-### 1. 克隆项目
+### 一键启动
 
 ```bash
-git clone https://github.com/1byteone/AI_EXAM.git
-cd AI_EXAM/agri-qa-assistant
+# 1. 克隆项目
+git clone https://github.com/1byteone/agri-qa-assistant.git
+cd agri-qa-assistant
+
+# 2. 后端
+cd backend
+pip install -r requirements.txt
+python main.py
+# 后端运行在 http://localhost:8000
+
+# 3. 前端（新终端）
+cd frontend
+npm install
+npm run dev
+# 前端运行在 http://localhost:3000
 ```
 
-### 2. 后端部署
+### 配置环境变量
+
+```bash
+cp backend/.env.example backend/.env
+# 编辑 .env，填入 AGNES_AI_API_KEY
+```
+
+### 导入知识包
+
+```bash
+cd backend
+python import_knowledge_packs.py
+# 将 10 个农业知识包导入 ChromaDB
+```
+
+### 启动 Neo4j（可选）
+
+```bash
+# Docker 方式
+docker compose -f docker-compose.neo4j.yml up -d
+
+# 导入种子数据
+python kg/import_seeds.py
+```
+
+---
+
+## 📊 知识库规模
+
+| 类型 | 数量 | 说明 |
+|------|------|------|
+| **知识包** | 10 个 | 水稻病虫害/脐橙/油菜/肥料/农时/政策/灌溉/土壤/农机/蔬菜 |
+| **文档块** | 122+ 块 | 结构化 Markdown 知识包 |
+| **默认文档** | 19 篇 | 基础农业知识（种植/病虫害/肥料/土壤/农机） |
+| **评测样本** | 15 条 | 诊断/施肥/天气/政策/安全场景 |
+| **知识图谱** | 64 实体 | 12 类实体 + 16 类关系（种子数据） |
+| **数据源** | 12 个 | A/B/C/D 四级来源登记 |
+
+---
+
+## 🔧 检索增强架构
+
+### Hybrid RAG Pipeline
+
+```
+用户问题
+  → QueryTransformer.multi_query()
+    实体提取 + 意图检测 + Multi-Query 分解
+  → 多子查询并行检索
+    ├─→ Vector Branch (BGE-M3 / ChromaDB)
+    ├─→ BM25 Branch (中文农业分词)
+    └─→ RRF Fusion (k=60, 分支加权)
+  → Reranker (BGE-Reranker-v2-M3)
+    交叉编码器精排，top-30 → top-5
+  → 证据门控 + 决策卡生成
+  → SSE 流式输出
+```
+
+### 知识图谱 Schema
+
+```
+实体类型 (12):
+├── Crop（作物）         ├── Disease（病害）
+├── Pest（虫害）         ├── Chemical（农药）
+├── Fertilizer（肥料）   ├── Variety（品种）
+├── Region（地区）       ├── Policy（政策）
+├── Measure（技术措施）   ├── GrowthStage（生育期）
+├── Symptom（症状）      └── Document（文档/证据）
+
+关系类型 (16):
+├── SUSCEPTIBLE_TO    作物易感病虫害
+├── CONTROLLED_BY     病虫害被药剂防治
+├── APPLIES_TO        药剂适用于作物
+├── SUITABLE_FOR_REGION 作物适宜地区
+└── ... (共 16 类)
+```
+
+---
+
+## 📡 API 接口
+
+### 核心接口
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| POST | `/chat/stream` | SSE 流式对话 |
+| POST | `/chat` | 非流式对话 |
+| GET | `/health` | 健康检查 |
+| GET | `/system/info` | 系统信息 |
+
+### 检索接口
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/retrieval/hybrid` | 混合检索诊断 |
+| GET | `/retrieval/multi-query` | Multi-Query 分解 |
+| GET | `/knowledge-base/search` | 知识库搜索 |
+| GET | `/knowledge-base/status` | 知识库状态 |
+
+### 知识图谱接口
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/knowledge-graph/status` | 知识图谱状态 |
+| GET | `/knowledge-graph/entity/{name}` | 实体邻域查询 |
+| GET | `/knowledge-graph/search` | 全文搜索实体 |
+| POST | `/knowledge-graph/build` | 构建知识图谱 |
+
+### 知识包接口
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/knowledge-packs` | 列出知识包 |
+| POST | `/knowledge-packs/import` | 导入知识包 |
+
+### 评测接口
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/evaluations/agri-eval` | 运行 AgriEval 评测 |
+| GET | `/evaluations/retrieval` | 检索评测 |
+| GET | `/evaluations/items` | 评测条目列表 |
+
+### 病例管理接口
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| POST | `/cases` | 创建病例 |
+| GET | `/cases` | 列出病例 |
+| GET | `/cases/{id}` | 病例详情 |
+| GET | `/cases/{id}/timeline` | 病例时间线 |
+| POST | `/cases/{id}/escalate` | 升级病例 |
+| POST | `/cases/{id}/resolve` | 解决病例 |
+
+---
+
+## 🧪 测试
 
 ```bash
 cd backend
 
-# 创建虚拟环境
-python -m venv venv
-venv\Scripts\activate  # Windows
-# source venv/bin/activate  # Linux/Mac
+# 运行所有测试（75+ 项）
+python -m pytest test_w2_integration.py retrieval/ -v
 
-# 安装依赖
-pip install -r requirements.txt
+# 运行知识图谱测试
+python kg/import_seeds.py
 
-# 配置环境变量
-copy .env.example .env
-# 编辑 .env 文件，填入 Agnes AI API Key
-
-# 启动服务
-python main.py
+# 运行知识包导入测试
+python import_knowledge_packs.py
 ```
 
-后端服务将在 `http://localhost:8001` 启动。
+---
 
-### 3. 前端部署
-
-```bash
-cd frontend
-
-# 安装依赖
-npm install
-
-# 启动开发服务器
-npm run dev
-```
-
-前端服务将在 `http://localhost:3000` 启动。
-
-### 4. 访问应用
-
-打开浏览器访问 `http://localhost:3000`
-
-## 环境配置
-
-### 后端环境变量 (.env)
-
-```env
-# LLM 配置（必填）
-AGNES_AI_API_KEY=sk-your-agnes-api-key
-AGNES_AI_BASE_URL=https://apihub.agnes-ai.cn
-AGNES_AI_CHAT_MODEL=agnes-2.0-flash
-AGNES_AI_EMBEDDING_MODEL=text-embedding-3-small
-
-# 数据库配置
-CHROMA_PERSIST_DIR=./data/chroma_db
-SQLITE_DB_URL=sqlite+aiosqlite:///./data/agri_qa.db
-
-# MCP 服务
-MCP_FETCH_ENABLED=true
-MCP_TIME_ENABLED=true
-MCP_MEMORY_ENABLED=false
-```
-
-## 知识库管理
-
-### 初始化默认知识库
-
-首次启动后端时，系统会自动初始化默认农业知识库，包含：
-- 作物种植技术（水稻、小麦、玉米）
-- 病虫害防治（稻飞虱、小麦锈病、玉米螟、蚜虫）
-- 肥料施用（氮磷钾肥、测土配方、叶面肥）
-- 土壤管理（土壤改良、节水灌溉）
-- 农机具（旋耕机、植保无人机）
-
-### 添加自定义知识
-
-```python
-from knowledge_base import knowledge_base
-
-# 添加文档
-documents = [
-    Document(
-        page_content="你的农业知识内容...",
-        metadata={"category": "crop", "crop": "蔬菜", "topic": "planting"}
-    )
-]
-knowledge_base.add_documents(documents)
-
-# 或添加纯文本
-knowledge_base.add_texts(
-    ["文本内容1", "文本内容2"],
-    metadatas=[{"category": "crop"}, {"category": "pest"}]
-)
-```
-
-## API 接口
-
-### POST /chat
-多轮对话接口
-
-**请求体：**
-```json
-{
-  "message": "水稻稻飞虱怎么防治？",
-  "thread_id": "thread_001",
-  "user_id": "user_123"
-}
-```
-
-**响应体：**
-```json
-{
-  "thread_id": "thread_001",
-  "message": "稻飞虱是水稻主要害虫...",
-  "tool_calls": [{"name": "query_crop_knowledge", "args": {...}}],
-  "timestamp": "2025-01-15T10:30:00"
-}
-```
-
-### GET /history/{thread_id}
-获取对话历史
-
-### DELETE /history/{thread_id}
-清空对话历史
-
-### GET /knowledge-base/status
-知识库状态
-
-### GET /health
-健康检查
-
-## MCP 服务配置
-
-### 已集成的开源 MCP 服务
-
-| 服务 | 用途 | 状态 |
-|------|------|------|
-| mcp-server-fetch | 网页内容获取 | ✅ 已启用 |
-| mcp-server-time | 时间/时区查询 | ✅ 已启用 |
-| mcp-server-memory | 知识图谱记忆 | ⏸️ 可选 |
-
-### 安装 MCP 服务（可选）
-
-```bash
-# 使用 uvx 运行（推荐）
-uvx mcp-server-fetch
-uvx mcp-server-time
-
-# 或使用 pip 安装
-pip install mcp-server-fetch mcp-server-time
-```
-
-## 前端特性
-
-### Apple Liquid Glass 设计元素
-
-- **毛玻璃背景**：`backdrop-filter: blur(20px)` + 半透明背景
-- **圆角卡片**：`rounded-2xl` / `rounded-3xl`
-- **柔和阴影**：多层阴影模拟 iOS 浮层效果
-- **流畅动画**：framer-motion 实现消息入场、按钮悬停
-- **iOS 风格输入框**：内阴影 + 聚焦光效
-- **SF 字体栈**：`-apple-system, BlinkMacSystemFont`
-
-### 交互细节
-
-- 消息气泡圆角适配（用户右圆角小，助手左圆角小）
-- 自动滚动到底部
-- Enter 发送，Shift+Enter 换行
-- 加载状态动画
-- 建议问题快捷按钮
-
-## 项目结构
+## 📁 项目结构
 
 ```
 agri-qa-assistant/
-├── backend/
-│   ├── main.py              # FastAPI 主应用
-│   ├── agent.py             # LangGraph Agent
-│   ├── knowledge_base.py    # ChromaDB 知识库
-│   ├── memory.py            # SQLite 持久化记忆
-│   ├── tools.py             # 农业工具 + MCP 工具
-│   ├── config.py            # 配置管理
-│   ├── schemas.py           # Pydantic 模型
-│   ├── requirements.txt     # Python 依赖
-│   └── .env.example         # 环境变量模板
-├── frontend/
-│   ├── app/
-│   │   ├── page.tsx         # 主页面
-│   │   ├── layout.tsx       # 根布局
-│   │   └── globals.css      # Apple Liquid Glass 样式
-│   ├── components/
-│   │   └── chat-interface.tsx  # 聊天界面
-│   ├── lib/utils.ts         # 工具函数
-│   ├── tailwind.config.ts   # Tailwind 配置
-│   ├── next.config.js       # Next.js 配置
-│   └── package.json         # Node.js 依赖
-└── data/
-    └── knowledge_base/      # ChromaDB 持久化数据
+├── backend/                    # FastAPI 后端
+│   ├── main.py                # 主应用入口（API 路由）
+│   ├── agent.py               # LangGraph Agent
+│   ├── knowledge_base.py      # ChromaDB 知识库 + 混合检索
+│   ├── memory.py              # SQLite 对话记忆
+│   ├── tools.py               # 农业工具 + MCP
+│   ├── agriir_pipeline.py     # RAG 检索管道
+│   ├── config.py              # 配置管理
+│   ├── schemas.py             # Pydantic 模型
+│   ├── case_manager.py        # 病例管理
+│   ├── source_registry.py     # 数据源注册表
+│   ├── knowledge_pack_importer.py  # 知识包导入器
+│   ├── retrieval/             # 检索增强模块
+│   │   ├── bge_m3_embedding.py    # BGE-M3 嵌入
+│   │   ├── bm25_retriever.py      # BM25 检索
+│   │   ├── reranker.py            # BGE-Reranker 重排序
+│   │   ├── rrf_fusion.py          # RRF 融合
+│   │   ├── query_transformer.py   # 查询改写 + Multi-Query
+│   │   ├── query_router.py        # 查询路由
+│   │   └── parent_child.py        # 父子文档索引
+│   ├── kg/                    # 知识图谱模块
+│   │   ├── schema.py          # 实体/关系 Schema
+│   │   ├── connection.py      # Neo4j 连接
+│   │   ├── builder.py         # 知识图谱构建器
+│   │   ├── pipeline.py        # LLM 驱动构建 Pipeline
+│   │   └── import_seeds.py    # 种子数据导入
+│   ├── evaluation/            # 评测模块
+│   │   └── agri_eval_runner.py    # AgriEval 评测运行器
+│   └── data/                  # 数据存储
+├── frontend/                   # Next.js 前端
+├── data/
+│   ├── knowledge-packs/       # 10 个农业知识包
+│   │   ├── jiangxi-rice-pest-control.md
+│   │   ├── gannan-citrus-management.md
+│   │   ├── jiangxi-rapeseed-management.md
+│   │   ├── national-fertilizer-standards.md
+│   │   ├── jiangxi-county-calendar.md
+│   │   ├── jiangxi-agri-subsidy.md
+│   │   ├── water-conservation-irrigation.md
+│   │   ├── soil-management.md
+│   │   ├── jiangxi-agri-machinery.md
+│   │   └── vegetable-cultivation.md
+│   └── evals/                 # 评测集
+│       └── agri_eval_subset.jsonl
+├── docs/                      # 文档
+├── docker-compose.neo4j.yml   # Neo4j Docker 配置
+├── import_knowledge_packs.py  # 知识包导入脚本
+└── .github/workflows/ci.yml   # CI 流水线
 ```
 
-## 常见问题
+---
 
-### Q: 后端启动失败，提示找不到模块
-A: 确保在虚拟环境中安装了所有依赖：`pip install -r requirements.txt`
+## 🛠️ 技术栈
 
-### Q: 前端无法连接后端
-A: 检查 `next.config.js` 中的 rewrites 配置，确保后端运行在 `localhost:8001`
+| 维度 | 技术 | 说明 |
+|------|------|------|
+| **后端框架** | FastAPI + Python 3.10+ | 异步高性能 |
+| **Agent 架构** | LangGraph | 工具循环 + 状态管理 |
+| **向量数据库** | ChromaDB | 本地持久化 |
+| **嵌入模型** | BGE-M3 (1024d) / LocalHashing | 多语言语义嵌入 |
+| **关键词检索** | BM25 (中文农业分词) | 精确术语匹配 |
+| **融合算法** | RRF (k=60) | 多路排序融合 |
+| **重排序** | BGE-Reranker-v2-M3 | 交叉编码器精排 |
+| **知识图谱** | Neo4j 5.x | 实体-关系存储 |
+| **LLM** | Agnes AI / Qwen / DeepSeek | 大语言模型 |
+| **前端** | Next.js 14 + shadcn/ui | React 全栈 |
+| **评测** | Ragas + AgriEval | RAG 质量评测 |
 
-### Q: 知识库为空
-A: 首次启动时会自动初始化，如果失败可手动调用 `init_default_knowledge_base()`
+---
 
-### Q: 如何添加更多农业知识
-A: 编辑 `knowledge_base.py` 中的 `default_docs` 列表，或通过代码调用 `knowledge_base.add_documents()`
+## 📈 性能指标
 
-## 下一步计划
+| 指标 | 目标 | 说明 |
+|------|------|------|
+| Top-5 专家证据召回 | ≥ 85% | 基于专家金标 |
+| 引用覆盖率 | ≥ 90% | 每个结论可追溯 |
+| 高风险安全提醒 | 100% | 农药/剂量/间隔期 |
+| 非农业越界率 | < 1% | Domain Guard |
+| SSE 完整结束率 | ≥ 99% | done/error 明确 |
+| P95 首字延迟 | ≤ 3s | 本地知识库 |
 
-- [ ] 集成实时农产品价格 API
-- [ ] 支持图片上传（病虫害识别）
-- [ ] 添加语音输入/输出
-- [ ] 用户认证和多用户隔离
-- [ ] 导出对话记录
-- [ ] 部署到 Docker
+---
 
-## 基于文档
+## 🗺️ 开发路线图
 
-本项目基于《第2章_构建智能体.ipynb》中的 LangChain/LangGraph 智能体架构开发，核心代码模式遵循文档中的 `create_agent` 五层架构。
+### ✅ 已完成 (W1-W6)
 
-## License
+- [x] BGE-M3 嵌入模型集成
+- [x] BM25 关键词检索分支
+- [x] RRF 多路融合引擎
+- [x] QueryTransformer Multi-Query 分解
+- [x] BGE-Reranker 重排序
+- [x] Neo4j 知识图谱 Schema + 种子数据
+- [x] 知识图谱构建 Pipeline
+- [x] 10 个农业知识包（122 块）
+- [x] AgriEval 评测运行器
+- [x] 数据源注册表（12 个来源）
+- [x] GitHub Actions CI 流水线
+- [x] API 接口文档
 
-MIT
+### 🔜 进行中
 
-## 📸 产品截图
+- [ ] Neo4j Docker 部署 + 生产验证
+- [ ] 前端场景化入口 + 来源抽屉
+- [ ] 病例管理前端组件
+- [ ] 500+ 条评测集扩展
 
-### 桌面端界面
-![桌面端界面](docs/screenshots/homepage.png)
+### 📋 规划中
 
-### 移动端界面
-![移动端界面](docs/screenshots/mobile.png)
+- [ ] 多模态图片识别（病害诊断）
+- [ ] 农业大模型 LoRA 微调
+- [ ] 江西 11 地市县域数据体系
+- [ ] 微信小程序端
 
-## 🎯 产品演示
+---
 
-### 功能演示
+## 📄 License
 
-1. **智能问答**：输入农业问题，获得专业回答
-2. **知识库检索**：优先从私有农业知识库中检索答案
-3. **多轮对话**：支持上下文连续性对话
-4. **专业模式**：提供详细决策卡与知识依据
+MIT © 2026 江西农业大学
 
-### 在线演示
+---
 
-访问 [http://localhost:3000](http://localhost:3000) 体验完整功能
-
-## 📊 技术栈
-
-| 类别 | 技术 |
-|------|------|
-| 前端 | Next.js, React, Tailwind CSS, shadcn/ui |
-| 后端 | FastAPI, LangGraph, ChromaDB |
-| 数据库 | SQLite, ChromaDB |
-| AI | Agnes AI (agnes-2.0-flash) |
-| 工具 | MCP (Fetch, Time, Memory) |
-| 样式 | Apple Liquid Glass UI |
+<p align="center">
+  <b>江西农业大学 · 农业智能技术研究团队</b><br>
+  <a href="https://github.com/1byteone/agri-qa-assistant">GitHub</a> ·
+  <a href="docs/agri-qa-future-development-plan.md">开发计划</a>
+</p>

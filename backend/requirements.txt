@@ -1,19 +1,58 @@
+# ============================================
+# CropWise 农业智能知识服务平台 - Python 依赖
+# ============================================
+
+# ---- Web 框架 ----
 fastapi
 uvicorn
+
+# ---- LLM / Agent ----
 langchain
 langchain-openai
 langchain-community
 langchain-text-splitters
 langgraph
+
+# ---- 向量数据库 ----
 chromadb
+
+# ---- 数据模型 ----
 pydantic
 pydantic-settings
+
+# ---- 环境配置 ----
 python-dotenv
+
+# ---- HTTP ----
 requests
+
+# ---- 文件处理 ----
 python-multipart
 python-docx
 PyMuPDF
 beautifulsoup4
+
+# ---- 数据库 ----
 sqlalchemy
 aiosqlite
+
+# ---- 缓存 ----
 redis
+
+# ============================================
+# W2-W4 新增依赖
+# ============================================
+
+# ---- 知识图谱 ----
+neo4j                          # Neo4j Python 驱动
+
+# ---- 检索增强 ----
+# rank-bm25                    # BM25 检索（可选，当前使用内置实现）
+
+# ---- 嵌入模型（可选，按需安装） ----
+# sentence-transformers        # BGE-M3 / BGE-Reranker 本地推理
+# torch                        # PyTorch（sentence-transformers 依赖）
+
+# ---- 测试 ----
+# pytest
+# pytest-asyncio

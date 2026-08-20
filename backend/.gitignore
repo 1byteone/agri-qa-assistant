@@ -13,8 +13,7 @@ ENV/
 
 # Python cache
 __pycache__/
-*.py[cod]
-*$py.class
+*.pyc
 *.pyo
 
 # Logs and temp files
@@ -32,14 +31,3 @@ temp/
 dist/
 build/
 *.egg-info/
-
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
-
-# Data (runtime)
-data/chroma_db/
-data/*.db
-data/*.sqlite
-data/*.sqlite3

@@ -62,6 +62,11 @@ def _safe_tool_args(args: Any) -> Dict[str, Any]:
     return safe
 
 
+def _run_tool(name, args):
+    """同步执行单个工具，返回字符串结果"""
+    return _run_tool_audited(name, args)["result"]
+
+
 def _run_tool_audited(name: str, args: Any) -> Dict[str, Any]:
     """Invoke a tool and return a stable audit record for SSE and API clients."""
     import time
@@ -120,13 +125,6 @@ _extract_date_literal = extract_date_literal
 _needs_time_preflight = needs_time_preflight
 
 
-# 从多智能体模块导入（用于安全和分析检查）
-try:
-    from multiagent_orchestrator import Orchestrator as _MultiAgentOrchestrator
-    _HAS_MULTIAGENT = True
-except ImportError:
-    _HAS_MULTIAGENT = False
-
 # _enforce_evidence_policy 需要注入 agriir_pipeline 引用
 def _enforce_evidence_policy_with_pipeline(answer: str, question: str, citations: List[Dict[str, Any]]) -> str:
     return enforce_evidence_policy(answer, question, citations, requires_official_evidence_fn=agriir_pipeline.requires_official_evidence)
@@ -152,9 +150,8 @@ class AgricultureAgent:
             openai_proxy=proxy or None,
         ).bind_tools(_ALL_TOOLS)
 
-        # 内存会话历史（仅本进程有效，限制每条 thread 防内存泄漏）
+        # 内存会话历史（仅本进程有效）
         self._hist: Dict[str, List] = {}
-        self._hist_max_per_thread = 100
 
     async def stream_chat(self, message: str, thread_id: str, user_id=None, answer_mode: str = "professional", scenario_context: Optional[Dict[str, Any]] = None) -> AsyncIterator[Dict[str, Any]]:
         """Yield a transport-neutral event stream while preserving the existing tool loop."""
@@ -431,32 +428,6 @@ class AgricultureAgent:
             answer = policy_answer
             yield {"type": "answer-replace", "text": answer, "mode": answer_mode, "reason": "evidence-policy"}
 
-        # ── 多智能体安全/分析检查 ──
-        if _HAS_MULTIAGENT:
-            try:
-                _orchestrator = _MultiAgentOrchestrator()
-                _orchestrator.setup(knowledge_base)
-                _retrieval = {
-                    "results": kb_results,
-                    "citations": citations,
-                    "graph_channel_used": retrieval_trace.get("graph_channel_used", False),
-                    "graph_count": retrieval_trace.get("graph_count", 0),
-                    "strategy": retrieval_strategy,
-                }
-                _analyst = _orchestrator.analyst.run(message, _retrieval)
-                _safety = _orchestrator.safety.run(message, answer, citations, _analyst)
-                yield {"type": "trace", "stage": "multiagent",
-                       "analyst_risk": _analyst.get("risk_scope"),
-                       "safety_safe": _safety.get("safe", True),
-                       "safety_warnings": _safety.get("reasons", [])}
-                # 安全检查失败时附加警告（不阻止回答）
-                if not _safety.get("safe", True):
-                    warnings_text = "; ".join(_safety.get("reasons", []))
-                    answer = answer + f"\n\n⚠️ **安全提醒**: {warnings_text}"
-                    yield {"type": "answer-replace", "text": answer, "mode": answer_mode, "reason": "safety-warning"}
-            except Exception as exc:
-                logger.debug("多智能体检查跳过: %s", exc)
-
         # Build the decision card before appending the traceable citation block;
         # citations belong to the collapsed evidence layer, not the action card.
         decision_card = _extract_decision_card(answer, message) if answer_mode != "brief" else None
@@ -500,9 +471,6 @@ class AgricultureAgent:
             {"role": "user", "content": message},
             {"role": "assistant", "content": answer},
         ])
-        # 截断防内存泄漏
-        if len(self._hist[thread_id]) > self._hist_max_per_thread:
-            self._hist[thread_id] = self._hist[thread_id][-self._hist_max_per_thread:]
         yield {"type": "done", "thread_id": thread_id, "message": answer, "tool_calls": tool_calls_out, "answer_mode": answer_mode, "completion_status": completion_status}
 
     async def chat(self, message: str, thread_id: str, user_id=None, answer_mode: str = "professional", scenario_context: Optional[Dict[str, Any]] = None):

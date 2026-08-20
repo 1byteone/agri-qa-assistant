@@ -1,0 +1,48 @@
+version: '3.8'
+
+# CropWise 农业知识图谱 Neo4j 服务
+# 启动: docker compose -f docker-compose.neo4j.yml up -d
+# 访问: http://localhost:7474 (浏览器) / bolt://localhost:7687 (驱动)
+
+services:
+  neo4j:
+    image: neo4j:5-community
+    container_name: cropwise-neo4j
+    restart: unless-stopped
+    ports:
+      - "7474:7474"   # HTTP (浏览器)
+      - "7687:7687"   # Bolt (驱动)
+    environment:
+      # 认证
+      NEO4J_AUTH: neo4j/cropwise2026
+      # 内存配置（社区版限制）
+      NEO4J_PLUGINS: '["apoc"]'
+      NEO4J_dbms_memory_heap_initial__size: "512m"
+      NEO4J_dbms_memory_heap_max__size: "1G"
+      NEO4J_dbms_memory_pagecache_size: "512m"
+      # 日志
+      NEO4J_dbms_logs_debug_enabled: "true"
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+      - neo4j_import:/import
+      # 挂载初始化脚本
+      - ./backend/kg/init.cypher:/init.cypher
+    healthcheck:
+      test: ["CMD", "cypher-shell", "-u", "neo4j", "-p", "cropwise2026", "RETURN 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: >
+      sh -c "
+        echo 'Waiting for Neo4j to start...'
+        sleep 15
+        echo 'Running init script...'
+        cat /init.cypher | cypher-shell -u neo4j -p cropwise2026 || true
+        echo 'Neo4j ready.'
+      "
+
+volumes:
+  neo4j_data:
+  neo4j_logs:
+  neo4j_import:

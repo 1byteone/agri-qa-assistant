@@ -1,108 +1,26 @@
-# ============================================
-# Agri-QA-Assistant .gitignore
-# ============================================
-
-# ------------------------------------------
-# Environment & Secrets
-# ------------------------------------------
+# AgriQA Assistant local/runtime exclusions
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env.*.local
-*.env
-
-# ------------------------------------------
-# Python
-# ------------------------------------------
-# Virtual environments
-venv/
-env/
-ENV/
-.venv/
-.python-version
-
-# Byte-compiled / optimized / DLL files
+.env.*
 __pycache__/
 *.py[cod]
-*$py.class
-*.pyo
-
-# Distribution / packaging
-dist/
-build/
-*.egg-info/
-*.egg
-.eggs/
-
-# Testing
 .pytest_cache/
-.coverage
-htmlcov/
-.tox/
-.nox/
-
-# Logs
-*.log
-*.err.log
-*.out.log
-logs/
-
-# ------------------------------------------
-# Node.js / Frontend
-# ------------------------------------------
 node_modules/
-.next/
-.next-*/
-.next.*
-out/
-.npm
-.yarn-integrity
-
-# TypeScript
+frontend/.next/
 *.tsbuildinfo
-tsconfig.tsbuildinfo
+.next/
+.firecrawl/
+.crawl_cache/
+torchinductor_*/
 
-# ------------------------------------------
-# IDE & OS
-# ------------------------------------------
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.DS_Store
-Thumbs.db
-desktop.ini
-*.lnk
-
-# ------------------------------------------
-# Build Artifacts
-# ------------------------------------------
-*.map
-.vercel/
-.netlify/
-
-# ------------------------------------------
-# Data (runtime-generated, not source)
-# ------------------------------------------
+# Runtime-generated indexes and local databases
+backend/data/chroma_db/
+backend/data/*.db
+backend/data/*.sqlite
+backend/data/*.sqlite3
 data/chroma_db/
 data/*.db
 data/*.sqlite
 data/*.sqlite3
 
-# ------------------------------------------
-# Crawl / Scraping Cache
-# ------------------------------------------
-.firecrawl/
-.crawl_cache/
-
-# ------------------------------------------
-# Temporary / Debug
-# ------------------------------------------
-tmp/
-temp/
-.tmp/
-_debug/
-*.tmp
+# Large local media exports; keep source docs and screenshots in Git
+docs/marketing-kit/videos/

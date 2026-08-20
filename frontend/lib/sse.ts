@@ -1,65 +1,42 @@
-export type StreamEventType = "status" | "mode" | "answer-replace" | "guard" | "delta" | "tool" | "time-context" | "ui" | "sources" | "trace" | "resources" | "memory" | "memory-candidate" | "memory-action" | "memory-organized" | "done" | "error"
+export type SseEvent = Record<string, unknown>
 
-export interface StreamEvent {
-  type: StreamEventType
-  [key: string]: unknown
-}
+export type SseEventHandler = (event: SseEvent) => void
 
-/**
- * Parses SSE across arbitrary ReadableStream chunk boundaries. A network chunk
- * is not an event boundary, so JSON is decoded only after a complete frame.
- */
-export class SSEEventParser {
+/** Incrementally parses JSON SSE data frames, including CRLF and an unterminated tail. */
+export class SseEventParser {
   private buffer = ""
+  private readonly onEvent: SseEventHandler
 
-  push(chunk: string): StreamEvent[] {
-    this.buffer += chunk.replace(/\r\n/g, "\n")
+  constructor(onEvent: SseEventHandler) {
+    this.onEvent = onEvent
+  }
+
+  push(chunk: string, flush = false): void {
+    this.buffer += chunk.replace(/\r\n/g, "\n").replace(/\r/g, "\n")
     const frames = this.buffer.split("\n\n")
-    this.buffer = frames.pop() ?? ""
-    return frames.flatMap((frame) => this.parseFrame(frame))
-  }
+    const remainder = frames.pop() ?? ""
+    this.buffer = flush ? "" : remainder
+    if (flush && remainder.trim()) frames.push(remainder)
 
-  flush(): StreamEvent[] {
-    const frame = this.buffer.trim()
-    this.buffer = ""
-    return frame ? this.parseFrame(frame) : []
-  }
-
-  private parseFrame(frame: string): StreamEvent[] {
-    let eventType = "message"
-    const dataLines: string[] = []
-
-    for (const line of frame.split("\n")) {
-      if (!line || line.startsWith(":")) continue
-      if (line.startsWith("event:")) eventType = line.slice(6).trim()
-      if (line.startsWith("data:")) dataLines.push(line.slice(5).trimStart())
+    for (const frame of frames) {
+      const data = frame
+        .split("\n")
+        .filter((line) => line.startsWith("data:"))
+        .map((line) => line.slice(5).trim())
+        .join("\n")
+      if (!data) continue
+      try {
+        const parsed: unknown = JSON.parse(data)
+        if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+          this.onEvent(parsed as SseEvent)
+        }
+      } catch (error) {
+        console.warn("无法解析农业 Agent 事件", error)
+      }
     }
-
-    if (dataLines.length === 0) return []
-    const parsed = JSON.parse(dataLines.join("\n")) as StreamEvent
-    return [{ ...parsed, type: (parsed.type ?? eventType) as StreamEventType }]
   }
-}
 
-export async function consumeSSE(
-  response: Response,
-  onEvent: (event: StreamEvent) => void,
-): Promise<void> {
-  if (!response.body) throw new Error("浏览器不支持流式响应")
-
-  const reader = response.body.getReader()
-  const decoder = new TextDecoder()
-  const parser = new SSEEventParser()
-
-  try {
-    while (true) {
-      const { done, value } = await reader.read()
-      if (done) break
-      for (const event of parser.push(decoder.decode(value, { stream: true }))) onEvent(event)
-    }
-    for (const event of parser.push(decoder.decode())) onEvent(event)
-    for (const event of parser.flush()) onEvent(event)
-  } finally {
-    reader.releaseLock()
+  flush(): void {
+    this.push("", true)
   }
 }

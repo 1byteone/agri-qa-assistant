@@ -1,0 +1,3 @@
+# Debug scripts - for development only, not for production
+*.py
+!__init__.py

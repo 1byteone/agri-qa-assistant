@@ -1,76 +1,59 @@
 /** @type {import('next').NextConfig} */
-const backendOrigin = process.env.BACKEND_ORIGIN || 'http://localhost:8001'
-
 const nextConfig = {
-  // Keep hot-reload artifacts isolated from the production build. This avoids
-  // webpack-runtime referencing a chunk removed by another Next process.
-  distDir: process.env.NEXT_DIST_DIR || (process.env.NODE_ENV === 'development' ? '.next-dev' : '.next'),
   reactStrictMode: true,
   async rewrites() {
     return [
       {
         source: '/api/chat',
-        destination: `${backendOrigin}/chat`,
+        destination: 'http://localhost:8000/chat',
       },
       {
         source: '/api/chat/stream',
-        destination: `${backendOrigin}/chat/stream`,
-      },
-      {
-        source: '/api/history/:path*',
-        destination: `${backendOrigin}/history/:path*`,
-      },
-      {
-        source: '/api/threads/:path*',
-        destination: `${backendOrigin}/threads/:path*`,
+        destination: 'http://localhost:8000/chat/stream',
       },
       {
         source: '/api/threads',
-        destination: `${backendOrigin}/threads`,
-      },
-      {
-        source: '/api/health',
-        destination: `${backendOrigin}/health`,
-      },
-      {
-        source: '/api/mcp/status',
-        destination: `${backendOrigin}/mcp/status`,
-      },
-      {
-        source: '/api/knowledge-base/documents/analyze',
-        destination: `${backendOrigin}/knowledge-base/documents/analyze`,
-      },
-      {
-        source: '/api/knowledge-base/documents',
-        destination: `${backendOrigin}/knowledge-base/documents`,
-      },
-      {
-        source: '/api/knowledge-base/status',
-        destination: `${backendOrigin}/knowledge-base/status`,
-      },
-      {
-        source: '/api/knowledge-base/search',
-        destination: `${backendOrigin}/knowledge-base/search`,
-      },
-      {
-        source: '/api/evidence-sources',
-        destination: `${backendOrigin}/evidence-sources`,
-      },
-      {
-        source: '/api/evaluations/:path*',
-        destination: `${backendOrigin}/evaluations/:path*`,
-      },
-      {
-        source: '/api/agri-terms/lookup',
-        destination: `${backendOrigin}/agri-terms/lookup`,
+        destination: 'http://localhost:8000/threads',
       },
       {
         source: '/api/news',
-        destination: `${backendOrigin}/news`,
+        destination: 'http://localhost:8000/news',
       },
       {
-        source: '/api/resource-image',
-        destination: `${backendOrigin}/resource-image`,
+        source: '/api/weather',
+        destination: 'http://localhost:8000/weather',
+      },
+      {
+        source: '/api/knowledge-base/status',
+        destination: 'http://localhost:8000/knowledge-base/status',
+      },
+      {
+        source: '/api/knowledge-base/search',
+        destination: 'http://localhost:8000/knowledge-base/search',
+      },
+      {
+        source: '/api/knowledge-graph/status',
+        destination: 'http://localhost:8000/knowledge-graph/status',
+      },
+      {
+        source: '/api/knowledge-graph/search',
+        destination: 'http://localhost:8000/knowledge-graph/search',
+      },
+      {
+        source: '/api/system/info',
+        destination: 'http://localhost:8000/system/info',
+      },
+      {
+        source: '/api/evidence-sources',
+        destination: 'http://localhost:8000/evidence-sources',
+      },
+      {
+        source: '/api/history/:path*',
+        destination: 'http://localhost:8000/history/:path*',
+      },
+      {
+        source: '/api/health',
+        destination: 'http://localhost:8000/health',
       },
     ]
   },

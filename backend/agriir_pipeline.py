@@ -13,7 +13,7 @@ import re
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -126,6 +126,16 @@ class AgriIRPipeline:
         hints = [hint for hint in hints if hint and hint not in refined]
         return "；".join([refined, *hints]) if hints else refined
 
+    def multi_query_decompose(self, query: str, context: Optional[Dict[str, Any]] = None) -> Tuple[List[str], Dict[str, Any]]:
+        """Multi-Query 分解：将复杂农业问题分解为多个可独立检索的子查询。"""
+        try:
+            from retrieval.query_transformer import query_transformer
+            return query_transformer.multi_query(query, context)
+        except ImportError:
+            # 回退到简单分解
+            parts = self.decompose_query(query)
+            return parts, {"strategy": "simple_decompose", "subqueries": parts}
+
     def decompose_query(self, query: str) -> List[str]:
         parts = [part.strip(" ，,、；;。") for part in re.split(r"(?:并且|同时|以及|和|与|及|\?|？|。|；|;)", query or "")]
         parts = [part for part in parts if len(part) >= 2]
@@ -135,84 +145,60 @@ class AgriIRPipeline:
 
     def retrieve(self, query: str, knowledge_base: Any, context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         refined = self.refine_query(query, context)
-        subqueries = self.decompose_query(refined)
-        strategy = knowledge_base.choose_strategy(refined)
         top_k = next((stage.top_k for stage in self.config.stages if stage.name == "parallel_retrieval" and stage.top_k), 3)
         required_scope = self.required_evidence_scope(refined)
         candidate_top_k = max(int(top_k), int(top_k) * 3) if required_scope else int(top_k)
 
-        # ── QueryRouter 路由提示 ──
-        search_hints = {}
-        try:
-            from retrieval.query_router import query_router
-            route = query_router.route(query)
-            scenario = query_router.classify_scenario(query)
-            search_hints = query_router.get_search_hints(query, scenario)
-            logger.info("QueryRouter: route=%s, scenario=%s, hints=%s", route.value, scenario, search_hints)
-        except ImportError:
-            pass
+        # ── Multi-Query 分解 ──
+        subqueries, mq_trace = self.multi_query_decompose(refined, context)
+        strategy = knowledge_base.choose_strategy(refined)
 
-        # ── 并行检索 ──
-        candidates: List[Dict[str, Any]] = []
+        # ── 多路检索：对每个子查询执行 Hybrid RRF + Reranker 检索 ──
+        all_candidates: List[Dict[str, Any]] = []
+        retrieval_traces: List[Dict[str, Any]] = []
         for subquery in subqueries:
             try:
-                for item in knowledge_base.search(subquery, top_k=candidate_top_k, strategy=strategy):
-                    item = dict(item)
-                    item["subquery"] = subquery
-                    item["retrieval_channel"] = "vector"
-                    candidates.append(item)
+                # 优先使用 search_hybrid（Vector + BM25 + RRF + Reranker）
+                if hasattr(knowledge_base, "search_hybrid"):
+                    hybrid_result = knowledge_base.search_hybrid(
+                        subquery,
+                        top_k=candidate_top_k,
+                        use_bm25=True,
+                        use_reranker=True,
+                        bm25_weight=0.4,
+                        vector_weight=0.6,
+                    )
+                    for item in hybrid_result.get("results", []):
+                        item = dict(item)
+                        item["subquery"] = subquery
+                        all_candidates.append(item)
+                    retrieval_traces.append({
+                        "subquery": subquery,
+                        **hybrid_result.get("trace", {}),
+                    })
+                else:
+                    # 回退到原有 search 方法
+                    for item in knowledge_base.search(subquery, top_k=candidate_top_k, strategy=strategy):
+                        item = dict(item)
+                        item["subquery"] = subquery
+                        all_candidates.append(item)
             except Exception as exc:
                 logger.warning("AgriIR retrieval failed for subquery: %s", exc)
 
-        # ── 图谱检索通道（GraphRAG）：与向量检索并行 ──
-        graph_results: List[Dict[str, Any]] = []
-        try:
-            from graph.graph_store import GraphStore
-            from graph.graph_retriever import GraphRetriever
-            graph_store = GraphStore()
-            graph_store.initialize()
-            graph_retriever = GraphRetriever(graph_store)
-
-            # 实体邻域检索
-            local_results = graph_retriever.search(query, top_k=2)
-            # 社区级检索（针对诊断/政策等综合分析场景）
-            scenario = search_hints.get("scenario")
-            if scenario in ("diagnosis", "policy", "fertilizer"):
-                community_results = graph_retriever.community_search(query, top_k=1)
-                local_results = local_results + community_results
-
-            for item in local_results:
-                item["subquery"] = item.get("metadata", {}).get("entity_name", query)
-                item["retrieval_channel"] = "graph"
-                graph_results.append(item)
-
-            if graph_results:
-                logger.info("知识图谱检索: %d 条结果", len(graph_results))
-        except ImportError:
-            logger.debug("知识图谱模块未安装，跳过图谱检索")
-        except Exception as exc:
-            logger.warning("知识图谱检索失败: %s", exc)
-
-        # ── RRF 融合：向量通道 + 图谱通道 + 各子查询多维融合 ──
-        all_candidates = candidates + graph_results
+        # ── 跨子查询 RRF 融合 ──
         try:
             from retrieval.rrf_fusion import rrf_fusion
-            # 按子查询+通道分组，每组是一个 ranked list
             subquery_groups: Dict[str, List[Dict[str, Any]]] = {}
             for item in all_candidates:
                 sq = item.get("subquery", "")
-                channel = item.get("retrieval_channel", "vector")
-                key = f"{sq}|{channel}"
-                subquery_groups.setdefault(key, []).append(item)
+                subquery_groups.setdefault(sq, []).append(item)
             if len(subquery_groups) > 1:
                 ranked_lists = list(subquery_groups.values())
                 ranked = rrf_fusion(ranked_lists, k=60)
-                logger.info("RRF fusion applied: %d 组 (%d 向量 + %d 图谱) → %d ranked",
-                            len(ranked_lists), len(candidates), len(graph_results), len(ranked))
+                logger.info("RRF fusion applied: %d subqueries → %d ranked", len(ranked_lists), len(ranked))
             else:
                 ranked = sorted(all_candidates, key=lambda x: float(x.get("relevance", 0.0)), reverse=True)
         except ImportError:
-            # 回退到原有去重排序
             unique: Dict[str, Dict[str, Any]] = {}
             for item in all_candidates:
                 metadata = item.get("metadata") or {}
@@ -224,18 +210,8 @@ class AgriIRPipeline:
                     unique[key] = item
             ranked = sorted(unique.values(), key=lambda item: float(item.get("relevance", 0.0)), reverse=True)
 
-        # ── Parent-Child 上下文恢复 ──
-        try:
-            from retrieval.parent_child import ParentChildIndexer
-            indexer = ParentChildIndexer()
-            ranked = indexer.enrich_results(ranked, include_parent=True)
-        except ImportError:
-            pass
-
         result_limit = max(1, int(top_k))
         if required_scope:
-            # A high-risk answer must retain an admissible official candidate
-            # even when broad background chunks have a slightly higher vector score.
             ranked_citations = self.build_citations(ranked, query=refined, threshold=self.citation_threshold_for(knowledge_base))
             admissible = [item for item, citation in zip(ranked, ranked_citations) if citation.get("eligible")]
             if admissible:
@@ -246,19 +222,15 @@ class AgriIRPipeline:
                 ]
         results = ranked[:result_limit]
         citations = self.build_citations(results, query=refined, threshold=self.citation_threshold_for(knowledge_base))
-
-        # 标记图谱检索结果
-        graph_channel_used = len(graph_results) > 0
-
         return {
             "query": query,
             "refined_query": refined,
             "subqueries": subqueries,
+            "multi_query_trace": mq_trace,
+            "retrieval_traces": retrieval_traces,
             "strategy": strategy,
             "results": results,
             "citations": citations,
-            "graph_channel_used": graph_channel_used,
-            "graph_count": len(graph_results),
         }
 
     @staticmethod
