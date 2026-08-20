@@ -1,0 +1,9 @@
+# 前端 .dockerignore
+node_modules/
+.next/
+.git/
+.gitignore
+.vscode/
+.idea/
+*.md
+!README.md

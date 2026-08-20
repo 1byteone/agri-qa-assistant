@@ -1,0 +1,22 @@
+# 后端 .dockerignore
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.git/
+.gitignore
+.vscode/
+.idea/
+*.md
+!README.md
+data/
+!data/evals/
+!data/knowledge_graph/
+!data/evidence-packs/
+logs/
+*.log
+venv/
+.venv/
+.env
+.env.local
+.env.*.local
